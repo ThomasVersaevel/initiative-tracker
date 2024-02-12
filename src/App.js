@@ -7,7 +7,7 @@ function App() {
     {
       initiative: 0,
       charactername: "",
-      movement: "",
+      speed: "",
       hp: "",
       ac: "",
       conditions: "",
@@ -23,7 +23,7 @@ function App() {
       initialGridRows.push({
         initiative: 0,
         charactername: "",
-        movement: "",
+        speed: "",
         hp: "",
         ac: "",
         conditions: "",
@@ -60,7 +60,7 @@ function App() {
       {
         initiative: 0,
         charactername: "",
-        movement: "",
+        speed: "",
         hp: "",
         ac: "",
         conditions: "",
@@ -88,31 +88,31 @@ function App() {
       </header>
       <div className="App-body">
         <div className="row mb-3">
-          <div className="col-2">
+          <div className="col-1">
             <input
-              className="form-control"
+              className="form-control "
               type="number"
               value={rowCount}
               onChange={(e) => setRowCount(parseInt(e.target.value))}
             />
           </div>
           <div className="col-2">
-            <button className="btn btn-secondary" onClick={createRows}>
+            <button className="btn btn-secondary blue" onClick={createRows}>
               Create Rows
             </button>
           </div>
         </div>
         <div className="grid">
           <div className="row topRow">
-            <div className="col">Initiative</div>
-            <div className="col">Player Name</div>
-            <div className="col">Movement</div>
-            <div className="col">HP</div>
-            <div className="col">AC</div>
-            <div className="col">Conditions</div>
+            <div className="col-1 cell">Initiative</div>
+            <div className="col-4 cell">Player Name</div>
+            <div className="col-1 cell">Speed</div>
+            <div className="col-1 cell">HP</div>
+            <div className="col-1 cell">AC</div>
+            <div className="col-4 cell">Conditions</div>
           </div>
           {gridRows.map((row) => (
-            <div key={row.id} className="GridRow">
+            <div key={row.id}>
               <GridRow
                 key={row.id}
                 id={row.id}

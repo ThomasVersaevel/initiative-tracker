@@ -15,7 +15,7 @@ export function GridRow({ id, initialValues, updateValues }) {
 
   return (
     <div className="row form-inline grid-row">
-      <div className="col">
+      <div className="col-1 cell">
         <input
           className="form-control grid-row-input"
           name="initiative"
@@ -24,7 +24,7 @@ export function GridRow({ id, initialValues, updateValues }) {
           onChange={handleInputChange}
         />
       </div>
-      <div className="col largeField">
+      <div className="col-4 cell">
         <input
           className="form-control grid-row-input"
           name="charactername"
@@ -32,16 +32,16 @@ export function GridRow({ id, initialValues, updateValues }) {
           onChange={handleInputChange}
         />
       </div>
-      <div className="col">
+      <div className="col-1 cell">
         <input
           className="form-control grid-row-input"
-          name="movement"
+          name="speed"
           type="number"
-          value={values.movement}
+          value={values.speed}
           onChange={handleInputChange}
         />
       </div>
-      <div className="col">
+      <div className="col-1 cell">
         <input
           className="form-control grid-row-input"
           name="hp"
@@ -50,7 +50,7 @@ export function GridRow({ id, initialValues, updateValues }) {
           onChange={handleInputChange}
         />
       </div>
-      <div className="col">
+      <div className="col-1 cell">
         <input
           className="form-control grid-row-input"
           name="ac"
@@ -59,7 +59,7 @@ export function GridRow({ id, initialValues, updateValues }) {
           onChange={handleInputChange}
         />
       </div>
-      <div className="col">
+      <div className="col-4 cell">
         <input
           className="form-control grid-row-input"
           name="conditions"
