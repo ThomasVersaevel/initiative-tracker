@@ -1,3 +1,35 @@
 .largeField {
   max-width: 15%;
 }
+
+.grid-row {
+  background-color: rgb(46, 129, 253);
+  color: white;
+}
+
+.form-control.grid-row-input {
+  background-color: transparent;
+  border: none; 
+  box-shadow: none;   
+}
+
+.form-control.grid-row-input:focus {
+  background-color: transparent;
+  border: none; 
+  box-shadow: none;   
+}
+
+/* removes arrow spinner in number fields */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.col {
+  border-right: 3px solid black;
+}
+
+.col:first-child {
+  border-left: 3px solid black;
+}

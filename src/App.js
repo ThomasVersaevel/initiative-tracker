@@ -5,7 +5,7 @@ import { GridRow } from "./components/GridRow";
 function App() {
   const [gridRows, setGridRows] = useState([
     {
-      initiative: "",
+      initiative: 0,
       charactername: "",
       movement: "",
       hp: "",
@@ -21,7 +21,7 @@ function App() {
     const initialGridRows = [];
     for (let i = 1; i <= initialRowCount; i++) {
       initialGridRows.push({
-        initiative: "",
+        initiative: 0,
         charactername: "",
         movement: "",
         hp: "",
@@ -58,7 +58,7 @@ function App() {
     setGridRows([
       ...gridRows,
       {
-        initiative: "",
+        initiative: 0,
         charactername: "",
         movement: "",
         hp: "",
@@ -75,6 +75,7 @@ function App() {
     sortedGridRows.sort((a, b) => {
       const initiativeA = parseInt(a.initiative);
       const initiativeB = parseInt(b.initiative);
+      ;
       return initiativeB - initiativeA; // Sort in descending order
     });
     setGridRows(sortedGridRows);
@@ -86,19 +87,23 @@ function App() {
         <h1>Thomas and Sharon's Initiative Tracker</h1>
       </header>
       <div className="App-body">
-        <div className="input-container">
-          <input
-            className="form-control"
-            type="number"
-            value={rowCount}
-            onChange={(e) => setRowCount(parseInt(e.target.value))}
-          />
-          <button className="btn btn-secondary" onClick={createRows}>
-            Create Rows
-          </button>
+        <div className="row mb-3">
+          <div className="col-2">
+            <input
+              className="form-control"
+              type="number"
+              value={rowCount}
+              onChange={(e) => setRowCount(parseInt(e.target.value))}
+            />
+          </div>
+          <div className="col-2">
+            <button className="btn btn-secondary" onClick={createRows}>
+              Create Rows
+            </button>
+          </div>
         </div>
         <div className="grid">
-          <div className="row">
+          <div className="row topRow">
             <div className="col">Initiative</div>
             <div className="col">Player Name</div>
             <div className="col">Movement</div>
@@ -109,7 +114,6 @@ function App() {
           {gridRows.map((row) => (
             <div key={row.id} className="GridRow">
               <GridRow
-                className="GridRow"
                 key={row.id}
                 id={row.id}
                 initialValues={row}
@@ -119,22 +123,22 @@ function App() {
           ))}
         </div>
         <div className="row mt-2">
-          <div className="col">
-            <button className="btn btn-secondary" onClick={addRow}>
-              Add Row
+          <div className="col-1">
+            <button className="btn btn-secondary green" onClick={addRow}>
+              +Row
             </button>
           </div>
-          <div className="col">
-            <button className="btn btn-secondary" onClick={sortDescending}>
-              Sort Descending
+          <div className="col-1">
+            <button className="btn btn-secondary yellow" onClick={sortDescending}>
+              Sort
             </button>
           </div>
-          <div className="col">
+          <div className="col-1">
             <button
-              className="btn btn-secondary"
+              className="btn btn-secondary red"
               onClick={clearInitiativeInputs}
             >
-              Clear Initiatives
+              Clear
             </button>
           </div>
         </div>

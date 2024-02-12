@@ -13,6 +13,10 @@
   }
 }
 
+.row.topRow {
+  background-color: rgb(31, 84, 164);
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 10vh;
@@ -35,14 +39,42 @@
 .App-link {
   color: #61dafb;
 }
+
 .input-container {
   margin-bottom: 20px;
 }
 
 .topRow {
+  margin: 0;
+  border-top: 3px solid black;
   border-bottom: 3px solid black;
 }
+
 .GridRow {
-  margin: 0;
   border-bottom: 3px solid black;
+}
+
+.row.GridRow.col {
+  border: 3px solid black;
+}
+
+.btn.btn-secondary.green {
+  background-color: rgb(60, 255, 21);
+  color: black;
+  border-color: black;
+  min-width: 100%;
+}
+
+.btn.btn-secondary.yellow {
+  background-color: rgb(229, 255, 30);
+  color: black;
+  border-color: black;
+  min-width: 100%;
+}
+
+.btn.btn-secondary.red {
+  background-color: rgb(255, 21, 21);
+  color: black;
+  border-color: black;
+  min-width: 100%;
 }

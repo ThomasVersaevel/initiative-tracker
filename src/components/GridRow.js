@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./GridRow.css";
 
 export function GridRow({ id, initialValues, updateValues }) {
   const [values, setValues] = useState(initialValues);
@@ -13,10 +14,10 @@ export function GridRow({ id, initialValues, updateValues }) {
   };
 
   return (
-    <div className="row form-inline">
+    <div className="row form-inline grid-row">
       <div className="col">
         <input
-          className="form-control"
+          className="form-control grid-row-input"
           name="initiative"
           type="number"
           value={values.initiative}
@@ -25,7 +26,7 @@ export function GridRow({ id, initialValues, updateValues }) {
       </div>
       <div className="col largeField">
         <input
-          className="form-control"
+          className="form-control grid-row-input"
           name="charactername"
           value={values.charactername}
           onChange={handleInputChange}
@@ -33,7 +34,7 @@ export function GridRow({ id, initialValues, updateValues }) {
       </div>
       <div className="col">
         <input
-          className="form-control"
+          className="form-control grid-row-input"
           name="movement"
           type="number"
           value={values.movement}
@@ -42,7 +43,7 @@ export function GridRow({ id, initialValues, updateValues }) {
       </div>
       <div className="col">
         <input
-          className="form-control"
+          className="form-control grid-row-input"
           name="hp"
           type="number"
           value={values.hp}
@@ -51,7 +52,7 @@ export function GridRow({ id, initialValues, updateValues }) {
       </div>
       <div className="col">
         <input
-          className="form-control"
+          className="form-control grid-row-input"
           name="ac"
           type="number"
           value={values.ac}
@@ -60,7 +61,7 @@ export function GridRow({ id, initialValues, updateValues }) {
       </div>
       <div className="col">
         <input
-          className="form-control"
+          className="form-control grid-row-input"
           name="conditions"
           value={values.conditions}
           onChange={handleInputChange}
