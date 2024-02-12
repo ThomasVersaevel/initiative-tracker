@@ -3,6 +3,7 @@ import "./App.css";
 import { GridRow } from "./components/GridRow";
 
 function App() {
+  const [turn, setTurn] = useState(1);
   const [gridRows, setGridRows] = useState([
     {
       initiative: 0,
@@ -83,7 +84,7 @@ function App() {
     setGridRows((prevGridRows) => prevGridRows.filter((row) => row.id !== id));
   };
 
-  const nextTurn = () => {}
+  const nextTurn = () => { setTurn(turn + 1) }
 
   return (
     <div className="App">
@@ -94,7 +95,7 @@ function App() {
         <div className="row mb-3">
           <div className="col-1">
             <input
-              className="form-control "
+              className="form-control"
               type="number"
               value={rowCount}
               onChange={(e) => setRowCount(parseInt(e.target.value))}
@@ -105,8 +106,14 @@ function App() {
               Create Rows
             </button>
           </div>
-          <div className="col-6">
-          <button className="btn btn-secondary blue" onClick={nextTurn}>
+          <div className="col-6 turn-container">
+            <input
+              className="form-control"
+              type="number"
+              value={turn}
+              readOnly
+            />
+            <button className="btn btn-secondary blue" onClick={nextTurn}>
               Next
             </button>
           </div>

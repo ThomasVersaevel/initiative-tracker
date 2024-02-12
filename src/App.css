@@ -1,6 +1,14 @@
 .App {
   text-align: center;
 }
+.turn-container {
+  justify-content: center;
+  text-align: center;
+}
+.turn-container.form-control {
+  max-width: 10%;
+  text-align: center;
+}
 
 .row.topRow {
   background-color: rgb(20, 74, 132);
