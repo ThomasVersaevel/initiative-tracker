@@ -3,39 +3,71 @@ import "./App.css";
 import { GridRow } from "./components/GridRow";
 
 function App() {
-  const [gridRows, setGridRows] = useState([{ initiative: "", id: 0 }]);
+  const [gridRows, setGridRows] = useState([
+    {
+      initiative: "",
+      charactername: "",
+      movement: "",
+      hp: "",
+      ac: "",
+      conditions: "",
+      id: 0,
+    },
+  ]);
   const [rowCount, setRowCount] = useState(1);
 
   const createRows = () => {
     const initialRowCount = parseInt(rowCount);
     const initialGridRows = [];
     for (let i = 1; i <= initialRowCount; i++) {
-      initialGridRows.push({ initiative: "", id: i });
+      initialGridRows.push({
+        initiative: "",
+        charactername: "",
+        movement: "",
+        hp: "",
+        ac: "",
+        conditions: "",
+        id: i,
+      });
     }
     setGridRows(initialGridRows);
   };
 
-  const clearInitiativeInputs = () => {
-    const initiativeInputs = document.getElementsByName("initiative");
-    initiativeInputs.forEach((input) => {
-      input.value = ""; // Clear input value
-    });
-  };
-
-  const addRow = () => {
-    setGridRows([...gridRows, { initiative: 0, id: rowCount }]);
-    setRowCount(rowCount + 1);
-  };
-
-  const updateInitiative = (id, value) => {
+  const updateValues = (id, name, value) => {
     setGridRows((prevGridRows) =>
       prevGridRows.map((row) => {
         if (row.id === id) {
-          return { ...row, initiative: value };
+          return { ...row, [name]: value };
         }
         return row;
       })
     );
+  };
+
+  const clearInitiativeInputs = () => {
+    setGridRows((prevGridRows) =>
+      prevGridRows.map((row) => {
+        // Clear initiative field
+        updateValues(row.id, "initiative", "");
+        return row;
+      })
+    );
+  };
+
+  const addRow = () => {
+    setGridRows([
+      ...gridRows,
+      {
+        initiative: "",
+        charactername: "",
+        movement: "",
+        hp: "",
+        ac: "",
+        conditions: "",
+        id: rowCount,
+      },
+    ]);
+    setRowCount(rowCount + 1);
   };
 
   const sortDescending = () => {
@@ -74,15 +106,14 @@ function App() {
             <div className="col">AC</div>
             <div className="col">Conditions</div>
           </div>
-          {gridRows.map((row, index) => (
-            <div key={index + 1} className="GridRow">
+          {gridRows.map((row) => (
+            <div key={row.id} className="GridRow">
               <GridRow
                 className="GridRow"
                 key={row.id}
                 id={row.id}
-                initiative={row.initiative}
-                updateInitiative={updateInitiative}
-                onClearInitiatives={clearInitiativeInputs}
+                initialValues={row}
+                updateValues={updateValues}
               />
             </div>
           ))}
