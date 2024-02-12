@@ -1,8 +1,27 @@
 import React, { useState } from "react";
 import "./GridRow.css";
 
-export function GridRow({ id, initialValues, updateValues }) {
+const conditions = [
+  "blinded",
+  "charmed",
+  "deafened",
+  "frightened",
+  "grappled",
+  "incapacitated",
+  "invisible",
+  "paralyzed",
+  "petrified",
+  "poisoned",
+  "prone",
+  "restrained",
+  "stunned",
+  "unconscious",
+  "surprised",
+]
+
+export function GridRow({ id, initialValues, updateValues, onDeleteRow }) {
   const [values, setValues] = useState(initialValues);
+  const [selectedCondition, setSelectedCondition] = useState("");
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -11,6 +30,12 @@ export function GridRow({ id, initialValues, updateValues }) {
       [name]: value,
     }));
     updateValues(id, name, value);
+  };
+
+  const handleConditionChange = (event) => {
+    const { value } = event.target;
+    setSelectedCondition(value);
+    updateValues(id, "conditions", value);
   };
 
   return (
@@ -30,6 +55,7 @@ export function GridRow({ id, initialValues, updateValues }) {
           name="charactername"
           value={values.charactername}
           onChange={handleInputChange}
+          autocomplete="off"
         />
       </div>
       <div className="col-1 cell">
@@ -59,13 +85,28 @@ export function GridRow({ id, initialValues, updateValues }) {
           onChange={handleInputChange}
         />
       </div>
-      <div className="col-4 cell">
-        <input
+      <div className="col-3 cell">
+        <select
           className="form-control grid-row-input"
           name="conditions"
           value={values.conditions}
           onChange={handleInputChange}
-        />
+        >
+          <option className="option" value="">-</option>
+          {conditions.map((condition, index) => (
+            <option className="option" key={index} value={condition}>
+              {condition}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="col-1 cell">
+        <button
+          className="btn btn-danger"
+          onClick={() => onDeleteRow(id)}
+        >
+          Delete
+        </button>
       </div>
     </div>
   );

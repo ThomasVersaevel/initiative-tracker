@@ -48,8 +48,7 @@ function App() {
     setGridRows((prevGridRows) =>
       prevGridRows.map((row) => {
         // Clear initiative field
-        updateValues(row.id, "initiative", "");
-        return row;
+        return { ...row, initiative: "" };
       })
     );
   };
@@ -75,11 +74,16 @@ function App() {
     sortedGridRows.sort((a, b) => {
       const initiativeA = parseInt(a.initiative);
       const initiativeB = parseInt(b.initiative);
-      ;
       return initiativeB - initiativeA; // Sort in descending order
     });
     setGridRows(sortedGridRows);
   };
+
+  const onDeleteRow = (id) => {
+    setGridRows((prevGridRows) => prevGridRows.filter((row) => row.id !== id));
+  };
+
+  const nextTurn = () => {}
 
   return (
     <div className="App">
@@ -101,6 +105,11 @@ function App() {
               Create Rows
             </button>
           </div>
+          <div className="col-6">
+          <button className="btn btn-secondary blue" onClick={nextTurn}>
+              Next
+            </button>
+          </div>
         </div>
         <div className="grid">
           <div className="row topRow">
@@ -110,6 +119,7 @@ function App() {
             <div className="col-1 cell">HP</div>
             <div className="col-1 cell">AC</div>
             <div className="col-4 cell">Conditions</div>
+            <div className="col-1 cell"></div> {/* Empty column for delete button */}
           </div>
           {gridRows.map((row) => (
             <div key={row.id}>
@@ -118,6 +128,7 @@ function App() {
                 id={row.id}
                 initialValues={row}
                 updateValues={updateValues}
+                onDeleteRow={onDeleteRow}
               />
             </div>
           ))}
