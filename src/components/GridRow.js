@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./GridRow.css";
 
 const conditions = [
@@ -20,9 +20,15 @@ const conditions = [
   "unconscious",
 ];
 
-export function GridRow({ id, initialValues, updateValues, onDeleteRow, highlighted }) {
+export function GridRow({
+  id,
+  initialValues,
+  updateValues,
+  onDeleteRow,
+  highlighted,
+}) {
   const [values, setValues] = useState(initialValues);
-
+  console.log(initialValues);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setValues((prevValues) => ({
@@ -33,7 +39,9 @@ export function GridRow({ id, initialValues, updateValues, onDeleteRow, highligh
   };
 
   return (
-    <div className={`row form-inline ${highlighted ? 'highlighted' : 'grid-row'}`}>
+    <div
+      className={`row form-inline ${highlighted ? "highlighted" : "grid-row"}`}
+    >
       <div className="col-1 cell">
         <input
           className="form-control grid-row-input"
@@ -79,9 +87,9 @@ export function GridRow({ id, initialValues, updateValues, onDeleteRow, highligh
           onChange={handleInputChange}
         />
       </div>
-      <div className="col-3 cell">
+      <div className="col-2 cell">
         <select
-          className="form-control grid-row-input"
+          className="form-control grid-row-input conditions-field"
           name="conditions"
           value={values.conditions}
           onChange={handleInputChange}
@@ -95,6 +103,8 @@ export function GridRow({ id, initialValues, updateValues, onDeleteRow, highligh
             </option>
           ))}
         </select>
+      </div>
+      <div className="col-1 cell">
         <input
           className="form-control grid-row-input"
           name="timer"

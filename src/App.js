@@ -49,12 +49,19 @@ function App() {
   };
 
   const clearInitiativeInputs = () => {
-    setGridRows((prevGridRows) =>
-      prevGridRows.map((row) => ({
-        ...row,
-        initiative: 0, // Clear initiative field
-      }))
-    );
+    // Clear initiative inputs of each grid row in the state
+    const updatedGridRows = gridRows.map((row) => ({
+      ...row,
+      initiative: 0,
+    }));
+    setGridRows(updatedGridRows);
+
+    // Update state within each GridRow component
+    updatedGridRows.forEach((row) => {
+      const { id } = row;
+      updateValues(id, "initiative", 0);
+      console.log(row.initiative);
+    });
   };
 
   const addRow = () => {
@@ -90,7 +97,8 @@ function App() {
 
   const nextTurn = () => {
     setHighlightedRow((prevHighlightedRow) => {
-      const nextRow = prevHighlightedRow < gridRows.length - 1 ? prevHighlightedRow + 1 : 0;
+      const nextRow =
+        prevHighlightedRow < gridRows.length - 1 ? prevHighlightedRow + 1 : 0;
       if (nextRow === 0) {
         setTurn(turn + 1);
         decreaseTimer();
@@ -100,7 +108,16 @@ function App() {
   };
 
   const decreaseTimer = () => {
-    gridRows.forEach((row) => row.timer > 0 && setGridRows((prevGridRows) => prevGridRows.map((row) => ({ ...row, timer: Math.max(row.timer - 1, 0) }))));
+    gridRows.forEach(
+      (row) =>
+        row.timer > 0 &&
+        setGridRows((prevGridRows) =>
+          prevGridRows.map((row) => ({
+            ...row,
+            timer: Math.max(row.timer - 1, 0),
+          }))
+        )
+    );
   };
 
   return (
@@ -123,8 +140,7 @@ function App() {
               Create Rows
             </button>
           </div>
-          <div className="col-2">
-          </div>
+          <div className="col-2"></div>
           <div className="col-2 turn-container">
             <input
               className="form-control turn-counter"
@@ -136,8 +152,7 @@ function App() {
               <div className="next-button">Next</div>
             </button>
           </div>
-          <div className="col-2">
-          </div>
+          <div className="col-2"></div>
         </div>
         <div className="grid">
           <div className="row topRow">
@@ -146,7 +161,8 @@ function App() {
             <div className="col-1 cell">Speed</div>
             <div className="col-1 cell">HP</div>
             <div className="col-1 cell">AC</div>
-            <div className="col-4 cell">Conditions</div>
+            <div className="col-2 cell">Conditions</div>
+            <div className="col-1 cell">Timer</div>
             <div className="col-1 cell"></div>{" "}
           </div>
           {gridRows.map((row, index) => (
