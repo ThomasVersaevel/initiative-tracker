@@ -100,6 +100,18 @@ function App() {
     });
   };
 
+  const prevTurn = () => {
+    setHighlightedRow((prevHighlightedRow) => {
+      const nextRow =
+        prevHighlightedRow > 0 ? prevHighlightedRow - 1 : gridRows.length - 1;
+      if (nextRow === gridRows.length - 1) {
+        setTurn(turn - 1);
+        increaseTimer();
+      }
+      return nextRow;
+    });
+  };
+
   const decreaseTimer = () => {
     if (gridRows.some(row => row.timer > 0)) {
       const updatedGridRows = gridRows.map(row => {
@@ -107,6 +119,21 @@ function App() {
           return {
             ...row,
             timer: Math.max(row.timer - 1, 0)
+          };
+        }
+        return row;
+      });
+      setGridRows(updatedGridRows);
+    }
+  };
+
+  const increaseTimer = () => {
+    if (gridRows.some(row => row.conditions !== "")) {
+      const updatedGridRows = gridRows.map(row => {
+        if (row.conditions !== "") {
+          return {
+            ...row,
+            timer: Math.max(row.timer + 1, 0)
           };
         }
         return row;
@@ -136,18 +163,24 @@ function App() {
             </button>
           </div>
           <div className="col-2"></div>
-          <div className="col-2 turn-container">
+          <div className="col-4 turn-container">
             <input
               className="form-control turn-counter"
-              type="number"
-              value={turn}
+              value={"Round " + turn}
               readOnly
             />
-            <button className="btn btn-secondary blue" onClick={nextTurn}>
-              <div className="next-button">Next</div>
-            </button>
+            <div className="margin-left-10px">
+              <button className="btn btn-secondary blue" onClick={nextTurn}>
+                <div className="next-button">Next</div>
+              </button>
+            </div>
+            <div className="margin-left-10px">
+              <button className="btn btn-secondary blue" onClick={prevTurn} disabled={turn === 1 && highlightedRow === 0}>
+                <div className="next-button">Prev</div>
+              </button>
+            </div>
           </div>
-          <div className="col-2"></div>
+          <div className="col-1"></div>
         </div>
         <div className="grid">
           <div className="row topRow">
@@ -197,7 +230,7 @@ function App() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 
