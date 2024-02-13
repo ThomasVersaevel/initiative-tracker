@@ -17,7 +17,7 @@ function App() {
     },
   ]);
   const [rowCount, setRowCount] = useState(1);
-  const [highlightedRow, setHighlighedRow] =useState(0);
+  const [highlightedRow, setHighlightedRow] = useState(0);
 
   const createRows = () => {
     const initialRowCount = parseInt(rowCount);
@@ -50,10 +50,10 @@ function App() {
 
   const clearInitiativeInputs = () => {
     setGridRows((prevGridRows) =>
-      prevGridRows.map((row) => {
-        // Clear initiative field
-        return { ...row, initiative: "" };
-      })
+      prevGridRows.map((row) => ({
+        ...row,
+        initiative: 0, // Clear initiative field
+      }))
     );
   };
 
@@ -88,22 +88,20 @@ function App() {
     setGridRows((prevGridRows) => prevGridRows.filter((row) => row.id !== id));
   };
 
-  const decreaseTimer = (id) => {
-    setGridRows((prevGridRows) =>
-      prevGridRows.map((row) => {
-        if (row.id === id) {
-          return { ...row, timer: Math.max(row.timer - 1, 0) };
-        }
-        return row;
-      })
-    );
-  };
-
   const nextTurn = () => {
-    setTurn(turn + 1);
-    gridRows.forEach((row) => row.timer > 0 && decreaseTimer(row.id));
+    setHighlightedRow((prevHighlightedRow) => {
+      const nextRow = prevHighlightedRow < gridRows.length - 1 ? prevHighlightedRow + 1 : 0;
+      if (nextRow === 0) {
+        setTurn(turn + 1);
+        decreaseTimer();
+      }
+      return nextRow;
+    });
   };
 
+  const decreaseTimer = () => {
+    gridRows.forEach((row) => row.timer > 0 && setGridRows((prevGridRows) => prevGridRows.map((row) => ({ ...row, timer: Math.max(row.timer - 1, 0) }))));
+  };
 
   return (
     <div className="App">
@@ -154,13 +152,12 @@ function App() {
           {gridRows.map((row, index) => (
             <div key={row.id}>
               <GridRow
-                highlighted={index===highlightedRow}
+                highlighted={index === highlightedRow}
                 key={row.id}
                 id={row.id}
                 initialValues={row}
                 updateValues={updateValues}
                 onDeleteRow={onDeleteRow}
-                turn={turn}
               />
             </div>
           ))}

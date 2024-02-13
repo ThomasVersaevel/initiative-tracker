@@ -22,7 +22,6 @@ const conditions = [
 
 export function GridRow({ id, initialValues, updateValues, onDeleteRow, highlighted }) {
   const [values, setValues] = useState(initialValues);
-  const [remainingTime, setRemainingTime] = useState(initialValues.timer);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -31,11 +30,6 @@ export function GridRow({ id, initialValues, updateValues, onDeleteRow, highligh
       [name]: value,
     }));
     updateValues(id, name, value);
-  };
-
-  // Maybe on reaching 0 we highlight the condition field
-  const decreaseTimer = () => {
-      setRemainingTime(Math.max(remainingTime - 1, 0))
   };
 
   return (
@@ -105,7 +99,8 @@ export function GridRow({ id, initialValues, updateValues, onDeleteRow, highligh
           className="form-control grid-row-input"
           name="timer"
           type="number"
-          value={remainingTime}
+          value={values.timer}
+          onChange={handleInputChange}
         />
       </div>
       <div className="col-1 cell delete">
