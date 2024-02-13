@@ -55,13 +55,6 @@ function App() {
       initiative: 0,
     }));
     setGridRows(updatedGridRows);
-
-    // Update state within each GridRow component
-    updatedGridRows.forEach((row) => {
-      const { id } = row;
-      updateValues(id, "initiative", 0);
-      console.log(row.initiative);
-    });
   };
 
   const addRow = () => {

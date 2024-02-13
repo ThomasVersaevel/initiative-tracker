@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./GridRow.css";
 
 const conditions = [
@@ -28,7 +28,6 @@ export function GridRow({
   highlighted,
 }) {
   const [values, setValues] = useState(initialValues);
-  console.log(initialValues);
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setValues((prevValues) => ({
@@ -37,6 +36,8 @@ export function GridRow({
     }));
     updateValues(id, name, value);
   };
+
+  useEffect(()=> {setValues(initialValues)},[initialValues]);
 
   return (
     <div
