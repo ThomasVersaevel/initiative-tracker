@@ -1,0 +1,55 @@
+.grid-row {
+  background-color: rgb(26, 98, 174);
+  color: white;
+  border-bottom: 3px solid black;
+}
+.highlighted {
+  background-color: rgb(46, 145, 250);
+  color: white;
+  border-bottom: 3px solid black;
+}
+
+.form-control.grid-row-input {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  color: white;
+  font-size: 20px;
+}
+
+.form-control.grid-row-input:focus {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  color: white;
+  font-size: 20px;
+}
+
+/* removes arrow spinner in number fields */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.cell {
+  border-right: 3px solid black;
+}
+
+.delete {
+  text-align: center;
+}
+
+.cell:first-child {
+  border-left: 3px solid black;
+}
+
+.option {
+  margin-left: -3%;
+  background-color: rgb(26, 98, 174);
+  border: 1px solid black;
+}
+
+.option:hover {
+  background-color: rgb(21, 76, 134);
+}

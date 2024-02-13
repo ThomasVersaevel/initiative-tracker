@@ -1,0 +1,7 @@
+Popup on condition that requires saving throw
+greyout on surprise for one round
+round tracker
+timers for conditions in condition cell
+
+drag and drop
+app theme (roze)

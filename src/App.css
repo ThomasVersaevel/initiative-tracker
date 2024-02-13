@@ -1,0 +1,133 @@
+/* div {
+  border: 2px solid green;
+} */
+
+:root {
+  --darkblue: rgb(20, 74, 132);
+}
+
+.App {
+  text-align: center;
+}
+.turn-container {
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+.turn-container.form-control {
+  max-width: 10%;
+  text-align: center;
+}
+.form-control.turn-counter {
+  color: white;
+  border-color: black;
+  background-color: var(--darkblue,);;
+  text-align: center;
+  font-size: 20px;
+}
+.next-button {
+  font-size: 20px;
+}
+
+.margin-left-10px {
+  margin-left: 10px;
+}
+
+.row.topRow {
+  background-color: var(--darkblue);
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 10vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-body {
+  background-color: #373c46;
+  min-height: 90vh;
+  color: white;
+  padding-left: 5%;
+  padding-right: 5%;
+  font-size: 20px;
+  text-align: left;
+  padding-top: 2%;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.input-container {
+  margin-bottom: 20px;
+}
+
+.topRow {
+  margin: 0;
+  border-top: 3px solid black;
+  border-bottom: 3px solid black;
+}
+
+.row.GridRow.cell {
+  border: 3px solid black;
+}
+
+.form-control.turn-counter {
+  width: 30%;
+}
+
+.btn.btn-secondary.green {
+  background-color: rgb(60, 255, 21);
+  color: black;
+  border-color: black;
+  min-width: 100%;
+}
+
+.btn.btn-secondary.green:active {
+  background-color: rgb(50, 215, 16);
+  color: black;
+  border-color: black;
+  min-width: 100%;
+}
+
+.btn.btn-secondary.yellow {
+  background-color: rgb(229, 255, 30);
+  color: black;
+  border-color: black;
+  min-width: 100%;
+}
+
+.btn.btn-secondary.yellow:active {
+  background-color: rgb(191, 212, 26);
+  color: black;
+  border-color: black;
+  min-width: 100%;
+}
+
+.btn.btn-secondary.red {
+  background-color: rgb(255, 21, 21);
+  color: black;
+  border-color: black;
+  min-width: 100%;
+}
+
+.btn.btn-secondary.red:active {
+  background-color: rgb(211, 21, 21);
+  color: black;
+  border-color: black;
+  min-width: 100%;
+}
+
+.btn.btn-secondary.blue {
+  background-color: #009adc;
+  border-color: black;
+}
+.btn.btn-secondary.blue:active {
+  background-color: #0287c0;
+  border-color: black;
+}
