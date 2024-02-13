@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./GridRow.css";
 
 const conditions = [
   "blinded",
   "charmed",
+  "concentration",
   "deafened",
   "frightened",
   "grappled",
@@ -15,13 +16,13 @@ const conditions = [
   "prone",
   "restrained",
   "stunned",
-  "unconscious",
   "surprised",
+  "unconscious",
 ];
 
 export function GridRow({ id, initialValues, updateValues, onDeleteRow, highlighted }) {
   const [values, setValues] = useState(initialValues);
-  const [selectedCondition, setSelectedCondition] = useState("");
+  const [remainingTime, setRemainingTime] = useState(initialValues.timer);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -32,10 +33,9 @@ export function GridRow({ id, initialValues, updateValues, onDeleteRow, highligh
     updateValues(id, name, value);
   };
 
-  const handleConditionChange = (event) => {
-    const { value } = event.target;
-    setSelectedCondition(value);
-    updateValues(id, "conditions", value);
+  // Maybe on reaching 0 we highlight the condition field
+  const decreaseTimer = () => {
+      setRemainingTime(Math.max(remainingTime - 1, 0))
   };
 
   return (
@@ -55,7 +55,7 @@ export function GridRow({ id, initialValues, updateValues, onDeleteRow, highligh
           name="charactername"
           value={values.charactername}
           onChange={handleInputChange}
-          autocomplete="off"
+          autoComplete="off"
         />
       </div>
       <div className="col-1 cell">
@@ -101,6 +101,12 @@ export function GridRow({ id, initialValues, updateValues, onDeleteRow, highligh
             </option>
           ))}
         </select>
+        <input
+          className="form-control grid-row-input"
+          name="timer"
+          type="number"
+          value={remainingTime}
+        />
       </div>
       <div className="col-1 cell delete">
         <button className="btn btn-danger" onClick={() => onDeleteRow(id)}>

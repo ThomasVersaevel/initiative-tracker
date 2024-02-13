@@ -12,11 +12,12 @@ function App() {
       hp: "",
       ac: "",
       conditions: "",
+      timer: 0,
       id: 0,
     },
   ]);
   const [rowCount, setRowCount] = useState(1);
-  const [highlightedRow, setHighlightedRow] = useState(0);
+  const [highlightedRow, setHighlighedRow] =useState(0);
 
   const createRows = () => {
     const initialRowCount = parseInt(rowCount);
@@ -29,6 +30,7 @@ function App() {
         hp: "",
         ac: "",
         conditions: "",
+        timer: 0,
         id: i,
       });
     }
@@ -65,6 +67,7 @@ function App() {
         hp: "",
         ac: "",
         conditions: "",
+        timer: 0,
         id: rowCount,
       },
     ]);
@@ -85,15 +88,22 @@ function App() {
     setGridRows((prevGridRows) => prevGridRows.filter((row) => row.id !== id));
   };
 
-  const nextTurn = () => {
-    setHighlightedRow((prevHighlightedRow) => {
-      const nextRow = prevHighlightedRow < gridRows.length - 1 ? prevHighlightedRow + 1 : 0;
-      if (nextRow === 0) {
-        setTurn(turn + 1);
-      }
-      return nextRow;
-    });
+  const decreaseTimer = (id) => {
+    setGridRows((prevGridRows) =>
+      prevGridRows.map((row) => {
+        if (row.id === id) {
+          return { ...row, timer: Math.max(row.timer - 1, 0) };
+        }
+        return row;
+      })
+    );
   };
+
+  const nextTurn = () => {
+    setTurn(turn + 1);
+    gridRows.forEach((row) => row.timer > 0 && decreaseTimer(row.id));
+  };
+
 
   return (
     <div className="App">
@@ -110,7 +120,7 @@ function App() {
               onChange={(e) => setRowCount(parseInt(e.target.value))}
             />
           </div>
-          <div className="col-2">
+          <div className="col-2 next-button">
             <button className="btn btn-secondary blue" onClick={createRows}>
               Create Rows
             </button>
@@ -150,6 +160,7 @@ function App() {
                 initialValues={row}
                 updateValues={updateValues}
                 onDeleteRow={onDeleteRow}
+                turn={turn}
               />
             </div>
           ))}
