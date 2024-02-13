@@ -16,6 +16,7 @@ function App() {
     },
   ]);
   const [rowCount, setRowCount] = useState(1);
+  const [highlightedRow, setHighlightedRow] = useState(0);
 
   const createRows = () => {
     const initialRowCount = parseInt(rowCount);
@@ -85,7 +86,13 @@ function App() {
   };
 
   const nextTurn = () => {
-    setTurn(turn + 1);
+    setHighlightedRow((prevHighlightedRow) => {
+      const nextRow = prevHighlightedRow < gridRows.length - 1 ? prevHighlightedRow + 1 : 0;
+      if (nextRow === 0) {
+        setTurn(turn + 1);
+      }
+      return nextRow;
+    });
   };
 
   return (
@@ -108,6 +115,8 @@ function App() {
               Create Rows
             </button>
           </div>
+          <div className="col-2">
+          </div>
           <div className="col-2 turn-container">
             <input
               className="form-control turn-counter"
@@ -116,8 +125,10 @@ function App() {
               readOnly
             />
             <button className="btn btn-secondary blue" onClick={nextTurn}>
-              Next
+              <div className="next-button">Next</div>
             </button>
+          </div>
+          <div className="col-2">
           </div>
         </div>
         <div className="grid">
@@ -129,11 +140,11 @@ function App() {
             <div className="col-1 cell">AC</div>
             <div className="col-4 cell">Conditions</div>
             <div className="col-1 cell"></div>{" "}
-            {/* Empty column for delete button */}
           </div>
-          {gridRows.map((row) => (
+          {gridRows.map((row, index) => (
             <div key={row.id}>
               <GridRow
+                highlighted={index===highlightedRow}
                 key={row.id}
                 id={row.id}
                 initialValues={row}

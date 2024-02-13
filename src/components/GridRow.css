@@ -3,6 +3,11 @@
   color: white;
   border-bottom: 3px solid black;
 }
+.highlighted {
+  background-color: rgb(46, 145, 250);
+  color: white;
+  border-bottom: 3px solid black;
+}
 
 .form-control.grid-row-input {
   background-color: transparent;

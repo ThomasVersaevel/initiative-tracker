@@ -1,17 +1,36 @@
+/* div {
+  border: 2px solid green;
+} */
+:root {
+  --darkblue: rgb(20, 74, 132);
+}
+
 .App {
   text-align: center;
 }
 .turn-container {
-  justify-content: center;
+  display: flex;
+  align-items: center;
   text-align: center;
 }
 .turn-container.form-control {
   max-width: 10%;
   text-align: center;
 }
+.form-control.turn-counter {
+  color: white;
+  border-color: black;
+  background-color: var(--darkblue,);;
+  text-align: center;
+  margin-right: 10px;
+  font-size: 20px;
+}
+.next-button {
+  font-size: 20px;
+}
 
 .row.topRow {
-  background-color: rgb(20, 74, 132);
+  background-color: var(--darkblue);
 }
 
 .App-header {

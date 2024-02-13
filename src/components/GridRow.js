@@ -19,7 +19,7 @@ const conditions = [
   "surprised",
 ];
 
-export function GridRow({ id, initialValues, updateValues, onDeleteRow }) {
+export function GridRow({ id, initialValues, updateValues, onDeleteRow, highlighted }) {
   const [values, setValues] = useState(initialValues);
   const [selectedCondition, setSelectedCondition] = useState("");
 
@@ -39,7 +39,7 @@ export function GridRow({ id, initialValues, updateValues, onDeleteRow }) {
   };
 
   return (
-    <div className="row form-inline grid-row">
+    <div className={`row form-inline ${highlighted ? 'highlighted' : 'grid-row'}`}>
       <div className="col-1 cell">
         <input
           className="form-control grid-row-input"
