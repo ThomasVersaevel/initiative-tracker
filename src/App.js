@@ -101,16 +101,18 @@ function App() {
   };
 
   const decreaseTimer = () => {
-    gridRows.forEach(
-      (row) =>
-        row.timer > 0 &&
-        setGridRows((prevGridRows) =>
-          prevGridRows.map((row) => ({
+    if (gridRows.some(row => row.timer > 0)) {
+      const updatedGridRows = gridRows.map(row => {
+        if (row.timer > 0) {
+          return {
             ...row,
-            timer: Math.max(row.timer - 1, 0),
-          }))
-        )
-    );
+            timer: Math.max(row.timer - 1, 0)
+          };
+        }
+        return row;
+      });
+      setGridRows(updatedGridRows);
+    }
   };
 
   return (
