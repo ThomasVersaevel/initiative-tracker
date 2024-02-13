@@ -84,7 +84,9 @@ function App() {
     setGridRows((prevGridRows) => prevGridRows.filter((row) => row.id !== id));
   };
 
-  const nextTurn = () => { setTurn(turn + 1) }
+  const nextTurn = () => {
+    setTurn(turn + 1);
+  };
 
   return (
     <div className="App">
@@ -106,9 +108,9 @@ function App() {
               Create Rows
             </button>
           </div>
-          <div className="col-6 turn-container">
+          <div className="col-2 turn-container">
             <input
-              className="form-control"
+              className="form-control turn-counter"
               type="number"
               value={turn}
               readOnly
@@ -126,7 +128,8 @@ function App() {
             <div className="col-1 cell">HP</div>
             <div className="col-1 cell">AC</div>
             <div className="col-4 cell">Conditions</div>
-            <div className="col-1 cell"></div> {/* Empty column for delete button */}
+            <div className="col-1 cell"></div>{" "}
+            {/* Empty column for delete button */}
           </div>
           {gridRows.map((row) => (
             <div key={row.id}>
@@ -147,7 +150,10 @@ function App() {
             </button>
           </div>
           <div className="col-1">
-            <button className="btn btn-secondary yellow" onClick={sortDescending}>
+            <button
+              className="btn btn-secondary yellow"
+              onClick={sortDescending}
+            >
               Sort
             </button>
           </div>

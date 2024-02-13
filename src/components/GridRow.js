@@ -17,7 +17,7 @@ const conditions = [
   "stunned",
   "unconscious",
   "surprised",
-]
+];
 
 export function GridRow({ id, initialValues, updateValues, onDeleteRow }) {
   const [values, setValues] = useState(initialValues);
@@ -92,7 +92,9 @@ export function GridRow({ id, initialValues, updateValues, onDeleteRow }) {
           value={values.conditions}
           onChange={handleInputChange}
         >
-          <option className="option" value="">-</option>
+          <option className="option" value="">
+            -
+          </option>
           {conditions.map((condition, index) => (
             <option className="option" key={index} value={condition}>
               {condition}
@@ -100,11 +102,8 @@ export function GridRow({ id, initialValues, updateValues, onDeleteRow }) {
           ))}
         </select>
       </div>
-      <div className="col-1 cell">
-        <button
-          className="btn btn-danger"
-          onClick={() => onDeleteRow(id)}
-        >
+      <div className="col-1 cell delete">
+        <button className="btn btn-danger" onClick={() => onDeleteRow(id)}>
           Delete
         </button>
       </div>

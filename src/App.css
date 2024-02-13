@@ -54,6 +54,10 @@
   border: 3px solid black;
 }
 
+.form-control.turn-counter {
+  width: 30%;
+}
+
 .btn.btn-secondary.green {
   background-color: rgb(60, 255, 21);
   color: black;
@@ -97,7 +101,7 @@
 }
 
 .btn.btn-secondary.blue {
-  background-color: #009ADC;
+  background-color: #009adc;
   border-color: black;
 }
 .btn.btn-secondary.blue:active {
