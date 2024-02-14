@@ -36,6 +36,25 @@
   --succesActive: #E45998; 
 }
 
+.App.green {
+  --darkblue: #18392b;
+  --blue: #14452f;
+  --blueActive: #0f5132;
+  --highlightedRow: #0A5c36;
+  --row: #14452f;
+  --main: #095330;
+  --header: #073b23;
+  --mainText: white;
+  --buttonText: black;
+  --border: black;
+  --danger: #ff1515;
+  --dangerActive: #d31515;
+  --warning: #e5ff1e;
+  --warningActive: #bfd41a;
+  --succes: #3cff15;
+  --succesActive: #32d710; 
+}
+
 .grid-row {
   background-color: var(--row);
   color: var(--mainText);
