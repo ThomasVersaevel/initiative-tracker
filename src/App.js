@@ -28,7 +28,6 @@ function App() {
     { label: "Dark", value: "dark" },
   ];
 
-
   const createRows = () => {
     const initialRowCount = parseInt(rowCount);
     const initialGridRows = [];
@@ -123,12 +122,12 @@ function App() {
   };
 
   const decreaseTimer = () => {
-    if (gridRows.some(row => row.timer > 0)) {
-      const updatedGridRows = gridRows.map(row => {
+    if (gridRows.some((row) => row.timer > 0)) {
+      const updatedGridRows = gridRows.map((row) => {
         if (row.timer > 0) {
           return {
             ...row,
-            timer: Math.max(row.timer - 1, 0)
+            timer: Math.max(row.timer - 1, 0),
           };
         }
         return row;
@@ -138,12 +137,12 @@ function App() {
   };
 
   const increaseTimer = () => {
-    if (gridRows.some(row => row.conditions !== "")) {
-      const updatedGridRows = gridRows.map(row => {
+    if (gridRows.some((row) => row.conditions !== "")) {
+      const updatedGridRows = gridRows.map((row) => {
         if (row.conditions !== "") {
           return {
             ...row,
-            timer: Math.max(row.timer + 1, 0)
+            timer: Math.max(row.timer + 1, 0),
           };
         }
         return row;
@@ -154,7 +153,7 @@ function App() {
 
   const onSelectTheme = (selectedTheme) => {
     setTheme(selectedTheme);
-  }
+  };
 
   return (
     <div className={`App ${theme}`}>
@@ -163,7 +162,10 @@ function App() {
           <h1>Take Initiative</h1>
         </div>
         <div className="class-selector">
-          <select className="form-control select" onChange={(e) => onSelectTheme(e.target.value)}>
+          <select
+            className="form-control select"
+            onChange={(e) => onSelectTheme(e.target.value)}
+          >
             {themes.map((option, index) => (
               <option className="option" key={index} value={option.value}>
                 {option.label}
@@ -200,7 +202,11 @@ function App() {
               </button>
             </div>
             <div className="margin-left-10px">
-              <button className="btn btn-secondary blue" onClick={prevTurn} disabled={turn === 1 && highlightedRow === 0}>
+              <button
+                className="btn btn-secondary blue"
+                onClick={prevTurn}
+                disabled={turn === 1 && highlightedRow === 0}
+              >
                 <div className="next-button">Prev</div>
               </button>
             </div>
@@ -234,21 +240,18 @@ function App() {
         </div>
         <div className="row mt-2">
           <div className="col-1">
-            <button className="btn btn-secondary green" onClick={addRow}>
+            <button className="btn btn-secondary bot" onClick={addRow}>
               +Row
             </button>
           </div>
           <div className="col-1">
-            <button
-              className="btn btn-secondary yellow"
-              onClick={sortDescending}
-            >
+            <button className="btn btn-secondary bot" onClick={sortDescending}>
               Sort
             </button>
           </div>
           <div className="col-1">
             <button
-              className="btn btn-secondary red"
+              className="btn btn-secondary bot"
               onClick={clearInitiativeInputs}
             >
               Clear
@@ -256,7 +259,7 @@ function App() {
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 }
 

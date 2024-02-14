@@ -131,14 +131,21 @@
   width: 30%;
 }
 
-.btn.btn-secondary {
+.btn.btn-secondary.bot {
   background-color: var(--button);
   color: var(--buttonText);
   border-color: var(--border);
   min-width: 100%;
 }
 
-.btn.btn-secondary:active {
+.btn.btn-secondary.bot:hover {
+  background-color: var(--buttonActive);
+  color: var(--buttonText);
+  border-color: var(--border);
+  min-width: 100%;
+}
+
+.btn.btn-secondary.bot:active {
   background-color: var(--buttonActive);
   color: var(--buttonText);
   border-color: var(--border);
@@ -147,10 +154,18 @@
 
 .btn.btn-secondary.blue {
   background-color: var(--button);
+  color: var(--buttonText);
+  border-color: var(--border);
+}
+
+.btn.btn-secondary.blue:hover {
+  background-color: var(--buttonActive);
+  color: var(--buttonText);
   border-color: var(--border);
 }
 
 .btn.btn-secondary.blue:active {
   background-color: var(--buttonActive);
+  color: var(--buttonText);
   border-color: var(--border);
 }
