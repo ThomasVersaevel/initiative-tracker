@@ -25,6 +25,7 @@ function App() {
     { label: "Sharon", value: "sharon" },
     { label: "Green", value: "green" },
     { label: "Prisma", value: "prisma" },
+    { label: "Dark", value: "dark" },
   ];
 
 

@@ -74,6 +74,25 @@
   --succesActive: #7089C1; 
 }
 
+.App.dark {
+  --darkblue: #0A0E19;
+  --blue: #0A0E19;
+  --blueActive: #43485B;
+  --highlightedRow: #24313d;
+  --row: #141D26;
+  --main: #03080E;
+  --header: black;
+  --mainText: #9396A7;
+  --buttonText: #9396A7;
+  --border: #060D15;
+  --danger: #0A0E19;
+  --dangerActive: #43485B;
+  --warning: #0A0E19;
+  --warningActive: #43485B;
+  --succes: #0A0E19;
+  --succesActive: #43485B; 
+}
+
 .grid-row {
   background-color: var(--row);
   color: var(--mainText);
