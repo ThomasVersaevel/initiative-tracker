@@ -45,7 +45,11 @@ export function GridRow({
   return (
     <div
       className={`row form-inline ${
-        highlighted ? "highlighted" : "grid-row"
+        values.conditions === "surprised"
+          ? "surprised"
+          : highlighted
+          ? "highlighted"
+          : "grid-row"
       } App ${theme}`}
     >
       <div className="col-1 cell">

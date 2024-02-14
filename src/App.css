@@ -27,6 +27,7 @@
 
 .form-control.turn-counter:focus {
   background-color: var(--tableHeader);
+  color: var(--mainText);
 }
 
 .form-control.create-row-field {
@@ -39,6 +40,7 @@
 
 .form-control.create-row-field:focus {
   background-color: var(--tableHeader);
+  color: var(--mainText);
 }
 
 .next-button {
