@@ -156,18 +156,17 @@ function App() {
   return (
     <div className={`App ${theme}`}>
       <header className="App-header">
-        <div className="row">
-          <div className="col-1"></div>
-          <div className="col-10"><h1>Take Initiative</h1></div>
-          <div className="col-1">
-            <select onChange={(e) => onSelectTheme(e.target.value)}>
-              {themes.map((option, index) => (
-                <option key={index} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="title">
+          <h1>Take Initiative</h1>
+        </div>
+        <div className="class-selector">
+          <select className="form-control select" onChange={(e) => onSelectTheme(e.target.value)}>
+            {themes.map((option, index) => (
+              <option className="option" key={index} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
         </div>
       </header>
       <div className="App-body">

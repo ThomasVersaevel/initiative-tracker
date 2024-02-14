@@ -6,6 +6,7 @@
   --darkblue: #144a84;
   --blue: #009adc;
   --blueActive: #0287c0;
+  --link: #2e91fa;
   --highlightedRow: #2e91fa;
   --row: #1a62ae;
   --main: #373c46;
@@ -18,13 +19,14 @@
   --warning: #e5ff1e;
   --warningActive: #bfd41a;
   --succes: #3cff15;
-  --succesActive: #32d710; 
+  --succesActive: #32d710;
 }
 
 .App.sharon {
   --darkblue: #db397f;
   --blue: #db397f;
   --blueActive: #fe45fb;
+  --link: #fd99c4;
   --highlightedRow: #fd99c4;
   --row: #e65c97;
   --main: #f494c7;
@@ -37,9 +39,8 @@
   --warning: #e5ff1e;
   --warningActive: #bfd41a;
   --succes: #3cff15;
-  --succesActive: #32d710; 
+  --succesActive: #32d710;
 }
-
 
 .App {
   text-align: center;
@@ -76,6 +77,27 @@
   font-size: 20px;
 }
 
+.option {
+  margin-left: -3%;
+  background-color: var(--main);
+  border: 1px solid var(--border);
+}
+
+.form-control.select {
+  background-color: var(--main);
+  border-color: var(--border);
+  box-shadow: none;
+  color: var(--mainText);
+  font-size: 20px;
+}
+.form-control.select:focus {
+  background-color: var(--main);
+  border-color: var(--border);
+  box-shadow: none;
+  color: var(--mainText);
+  font-size: 20px;
+}
+
 .margin-left-10px {
   margin-left: 10px;
 }
@@ -86,13 +108,24 @@
 
 .App-header {
   background-color: var(--header);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   min-height: 10vh;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
   font-size: calc(10px + 2vmin);
   color: var(--mainText);
+}
+
+.title {
+  margin-left: 43%;
+  text-align: center;
+}
+
+.class-selector {
+  width: 10%;
+  margin-right: 20px;
 }
 
 .App-body {
@@ -107,7 +140,7 @@
 }
 
 .App-link {
-  color: #61dafb;
+  color: var(--link);
 }
 
 .input-container {

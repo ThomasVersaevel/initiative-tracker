@@ -91,7 +91,7 @@ export function GridRow({
       </div>
       <div className="col-2 cell">
         <select
-          className="form-control grid-row-input conditions-field"
+          className="form-control grid-row-input"
           name="conditions"
           value={values.conditions}
           onChange={handleInputChange}
