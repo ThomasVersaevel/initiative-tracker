@@ -26,6 +26,7 @@ function App() {
     { label: "Green", value: "green" },
     { label: "Prisma", value: "prisma" },
     { label: "Dark", value: "dark" },
+    { label: "Berry", value: "berry" },
   ];
 
   const createRows = () => {

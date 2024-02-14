@@ -78,6 +78,22 @@
   --delete: #000000;
 }
 
+.App.berry {
+  --tableHeader: #2f0101;
+  --button: #c5001e;
+  --buttonHover: #db0424;
+  --buttonActive: #ee0528;
+  --highlightedRow: #8f0a0c;
+  --row: #780002;
+  --main: #6b052a;
+  --header: #190f18;
+  --titleText: #c5001e;
+  --mainText: #ff8e8e;
+  --buttonText: #ff8e8e;
+  --border: #200201;
+  --delete: #000000;
+}
+
 .grid-row {
   background-color: var(--row);
   color: var(--mainText);
