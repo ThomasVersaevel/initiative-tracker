@@ -141,7 +141,7 @@
 }
 
 .btn.btn-secondary.bot:hover {
-  background-color: var(--buttonActive);
+  background-color: var(--buttonHover);
   color: var(--buttonText);
   border-color: var(--border);
   min-width: 100%;
@@ -161,7 +161,7 @@
 }
 
 .btn.btn-secondary.blue:hover {
-  background-color: var(--buttonActive);
+  background-color: var(--buttonHover);
   color: var(--buttonText);
   border-color: var(--border);
 }
