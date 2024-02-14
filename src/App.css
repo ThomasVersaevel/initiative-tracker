@@ -25,21 +25,20 @@
 .App.sharon {
   --darkblue: #db397f;
   --blue: #db397f;
-  --blueActive: #fe45fb;
-  --link: #fd99c4;
+  --blueActive: #E45998;
   --highlightedRow: #fd99c4;
   --row: #e65c97;
-  --main: #f494c7;
+  --main: #f494c7;  
   --header: #d5558d;
   --mainText: white;
-  --buttonText: black;
+  --buttonText: white;
   --border: #800e3f;
-  --danger: #ff1515;
-  --dangerActive: #d31515;
-  --warning: #e5ff1e;
-  --warningActive: #bfd41a;
-  --succes: #3cff15;
-  --succesActive: #32d710;
+  --danger: #db397f;
+  --dangerActive: #E45998;
+  --warning: #db397f;
+  --warningActive: #E45998;
+  --succes: #db397f;
+  --succesActive: #E45998; 
 }
 
 .App {
