@@ -23,6 +23,9 @@ function App() {
   const themes = [
     { label: "Default", value: "default" },
     { label: "Sharon", value: "sharon" },
+    { label: "Green", value: "green" },
+    { label: "Prisma", value: "prisma" },
+    { label: "Dark", value: "dark" },
   ];
 
 
