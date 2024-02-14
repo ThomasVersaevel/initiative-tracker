@@ -1,19 +1,57 @@
+:root {
+  --darkblue: #144a84;
+  --blue: #009adc;
+  --blueActive: #0287c0;
+  --highlightedRow: #2e91fa;
+  --row: #1a62ae;
+  --main: #373c46;
+  --header: #282c34;
+  --mainText: white;
+  --buttonText: black;
+  --border: black;
+  --danger: #ff1515;
+  --dangerActive: #d31515;
+  --warning: #e5ff1e;
+  --warningActive: #bfd41a;
+  --succes: #3cff15;
+  --succesActive: #32d710; 
+}
+
+.App.sharon {
+  --darkblue: #db397f;
+  --blue: #db397f;
+  --blueActive: #fe45fb;
+  --highlightedRow: #fd99c4;
+  --row: #e65c97;
+  --main: #f494c7;
+  --header: #d5558d;
+  --mainText: white;
+  --buttonText: black;
+  --border: #800e3f;
+  --danger: #ff1515;
+  --dangerActive: #d31515;
+  --warning: #e5ff1e;
+  --warningActive: #bfd41a;
+  --succes: #3cff15;
+  --succesActive: #32d710; 
+}
+
 .grid-row {
-  background-color: rgb(26, 98, 174);
-  color: white;
-  border-bottom: 3px solid black;
+  background-color: var(--row);
+  color: var(--mainText);
+  border-bottom: 3px solid var(--border);
 }
 .highlighted {
-  background-color: rgb(46, 145, 250);
-  color: white;
-  border-bottom: 3px solid black;
+  background-color: var(--highlightedRow);
+  color: var(--mainText);
+  border-bottom: 3px solid var(--border);
 }
 
 .form-control.grid-row-input {
   background-color: transparent;
   border: none;
   box-shadow: none;
-  color: white;
+  color: var(--mainText);
   font-size: 20px;
 }
 
@@ -21,7 +59,7 @@
   background-color: transparent;
   border: none;
   box-shadow: none;
-  color: white;
+  color: var(--mainText);
   font-size: 20px;
 }
 
@@ -33,7 +71,7 @@ input::-webkit-inner-spin-button {
 }
 
 .cell {
-  border-right: 3px solid black;
+  border-right: 3px solid var(--border);
 }
 
 .delete {
@@ -41,15 +79,15 @@ input::-webkit-inner-spin-button {
 }
 
 .cell:first-child {
-  border-left: 3px solid black;
+  border-left: 3px solid var(--border);
 }
 
 .option {
   margin-left: -3%;
-  background-color: rgb(26, 98, 174);
-  border: 1px solid black;
+  background-color: var(--row);
+  border: 1px solid var(--border);
 }
 
 .option:hover {
-  background-color: rgb(21, 76, 134);
+  background-color: var(--highlightedRow);
 }

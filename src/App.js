@@ -18,6 +18,13 @@ function App() {
   ]);
   const [rowCount, setRowCount] = useState(1);
   const [highlightedRow, setHighlightedRow] = useState(0);
+  const [theme, setTheme] = useState("default");
+
+  const themes = [
+    { label: "Default", value: "default" },
+    { label: "Sharon", value: "sharon" },
+  ];
+
 
   const createRows = () => {
     const initialRowCount = parseInt(rowCount);
@@ -142,16 +149,31 @@ function App() {
     }
   };
 
+  const onSelectTheme = (selectedTheme) => {
+    setTheme(selectedTheme);
+  }
+
   return (
-    <div className="App">
+    <div className={`App ${theme}`}>
       <header className="App-header">
-        <h1>Thomas and Sharon's Initiative Tracker</h1>
+        <div className="title">
+          <h1>Take Initiative</h1>
+        </div>
+        <div className="class-selector">
+          <select className="form-control select" onChange={(e) => onSelectTheme(e.target.value)}>
+            {themes.map((option, index) => (
+              <option className="option" key={index} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
       </header>
       <div className="App-body">
         <div className="row mb-3">
           <div className="col-1">
             <input
-              className="form-control"
+              className="form-control create-row-field"
               type="number"
               value={rowCount}
               onChange={(e) => setRowCount(parseInt(e.target.value))}
@@ -159,7 +181,7 @@ function App() {
           </div>
           <div className="col-2 next-button">
             <button className="btn btn-secondary blue" onClick={createRows}>
-              Create Rows
+              <div className="next-button"> Create Rows </div>
             </button>
           </div>
           <div className="col-2"></div>
@@ -202,6 +224,7 @@ function App() {
                 initialValues={row}
                 updateValues={updateValues}
                 onDeleteRow={onDeleteRow}
+                theme={theme}
               />
             </div>
           ))}

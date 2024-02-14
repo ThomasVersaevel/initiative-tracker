@@ -26,6 +26,7 @@ export function GridRow({
   updateValues,
   onDeleteRow,
   highlighted,
+  theme,
 }) {
   const [values, setValues] = useState(initialValues);
   const handleInputChange = (event) => {
@@ -41,7 +42,7 @@ export function GridRow({
 
   return (
     <div
-      className={`row form-inline ${highlighted ? "highlighted" : "grid-row"}`}
+      className={`row form-inline ${highlighted ? "highlighted" : "grid-row"} App ${theme}`}
     >
       <div className="col-1 cell">
         <input
@@ -90,7 +91,7 @@ export function GridRow({
       </div>
       <div className="col-2 cell">
         <select
-          className="form-control grid-row-input conditions-field"
+          className="form-control grid-row-input"
           name="conditions"
           value={values.conditions}
           onChange={handleInputChange}
