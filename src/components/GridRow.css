@@ -122,11 +122,13 @@ input::-webkit-inner-spin-button {
 
 .cell {
   border-right: 3px solid var(--border);
+  display: flex;
+  align-items: center;
 }
 
 .col-1.cell.delete {
   text-align: center;
-  margin: auto;
+  justify-content: center;
 }
 
 .btn.btn-danger {
@@ -135,7 +137,12 @@ input::-webkit-inner-spin-button {
 }
 
 .btn.btn-danger:hover {
-  background-color: var(--tableHeader);
+  background-color: var(--button);
+  border-color: var(--border);
+}
+
+.btn.btn-danger:active {
+  background-color: var(--button);
   border-color: var(--border);
 }
 
@@ -144,7 +151,6 @@ input::-webkit-inner-spin-button {
 }
 
 .option {
-  margin-left: -3%;
   background-color: var(--row);
   border: 1px solid var(--border);
 }

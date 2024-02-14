@@ -89,6 +89,20 @@
   color: var(--mainText);
 }
 
+.App-footer {
+  background-color: var(--header);
+  min-height: 5vh;
+}
+
+.footer-text {
+  position: relative;
+  float: right;
+  color: var(--mainText);
+  float: right;
+  margin-right: 1vw;
+  margin-top: 1vh;
+}
+
 .title {
   margin-left: 43%;
   color: var(--titleText);
@@ -102,7 +116,7 @@
 
 .App-body {
   background-color: var(--main);
-  min-height: 90vh;
+  min-height: 85vh;
   color: var(--mainText);
   padding-left: 5%;
   padding-right: 5%;

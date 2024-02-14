@@ -259,6 +259,11 @@ function App() {
           </div>
         </div>
       </div>
+      <div className="App-footer">
+        <div className="footer-text">
+          This website is made by Thomas and Sharon
+        </div>
+      </div>
     </div>
   );
 }
