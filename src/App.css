@@ -3,28 +3,75 @@
 } */
 
 :root {
-  --darkblue: rgb(20, 74, 132);
+  --darkblue: #144a84;
+  --blue: #009adc;
+  --blueActive: #0287c0;
+  --highlightedRow: #2e91fa;
+  --row: #1a62ae;
+  --main: #373c46;
+  --header: #282c34;
+  --mainText: white;
+  --buttonText: black;
+  --border: black;
+  --danger: #ff1515;
+  --dangerActive: #d31515;
+  --warning: #e5ff1e;
+  --warningActive: #bfd41a;
+  --succes: #3cff15;
+  --succesActive: #32d710; 
 }
+
+.App.sharon {
+  --darkblue: #db397f;
+  --blue: #db397f;
+  --blueActive: #fe45fb;
+  --highlightedRow: #fd99c4;
+  --row: #e65c97;
+  --main: #f494c7;
+  --header: #d5558d;
+  --mainText: white;
+  --buttonText: black;
+  --border: #800e3f;
+  --danger: #ff1515;
+  --dangerActive: #d31515;
+  --warning: #e5ff1e;
+  --warningActive: #bfd41a;
+  --succes: #3cff15;
+  --succesActive: #32d710; 
+}
+
 
 .App {
   text-align: center;
 }
+
 .turn-container {
   display: flex;
   align-items: center;
   text-align: center;
 }
+
 .turn-container.form-control {
   max-width: 10%;
   text-align: center;
 }
+
 .form-control.turn-counter {
-  color: white;
-  border-color: black;
-  background-color: var(--darkblue,);;
+  color: var(--mainText);
+  border-color: var(--border);
+  background-color: var(--darkblue);
   text-align: center;
   font-size: 20px;
 }
+
+.form-control.create-row-field {
+  color: var(--mainText);
+  border-color: var(--border);
+  background-color: var(--darkblue);
+  text-align: center;
+  font-size: 20px;
+}
+
 .next-button {
   font-size: 20px;
 }
@@ -38,20 +85,20 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  background-color: var(--header);
   min-height: 10vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: var(--mainText);
 }
 
 .App-body {
-  background-color: #373c46;
+  background-color: var(--main);
   min-height: 90vh;
-  color: white;
+  color: var(--mainText);
   padding-left: 5%;
   padding-right: 5%;
   font-size: 20px;
@@ -69,12 +116,12 @@
 
 .topRow {
   margin: 0;
-  border-top: 3px solid black;
-  border-bottom: 3px solid black;
+  border-top: 3px solid var(--border);
+  border-bottom: 3px solid var(--border);
 }
 
 .row.GridRow.cell {
-  border: 3px solid black;
+  border: 3px solid var(--border);
 }
 
 .form-control.turn-counter {
@@ -82,52 +129,53 @@
 }
 
 .btn.btn-secondary.green {
-  background-color: rgb(60, 255, 21);
-  color: black;
-  border-color: black;
+  background-color: var(--succes);
+  color: var(--buttonText);
+  border-color: var(--border);
   min-width: 100%;
 }
 
 .btn.btn-secondary.green:active {
-  background-color: rgb(50, 215, 16);
-  color: black;
-  border-color: black;
+  background-color: var(--succesActive);
+  color: var(--buttonText);
+  border-color: var(--border);
   min-width: 100%;
 }
 
 .btn.btn-secondary.yellow {
-  background-color: rgb(229, 255, 30);
-  color: black;
-  border-color: black;
+  background-color: var(--warning);
+  color: var(--buttonText);
+  border-color: var(--border);
   min-width: 100%;
 }
 
 .btn.btn-secondary.yellow:active {
-  background-color: rgb(191, 212, 26);
-  color: black;
-  border-color: black;
+  background-color: var(--warningActive);
+  color: var(--buttonText);
+  border-color: var(--border);
   min-width: 100%;
 }
 
 .btn.btn-secondary.red {
-  background-color: rgb(255, 21, 21);
-  color: black;
-  border-color: black;
+  background-color: var(--danger);
+  color: var(--buttonText);
+  border-color: var(--border);
   min-width: 100%;
 }
 
 .btn.btn-secondary.red:active {
-  background-color: rgb(211, 21, 21);
-  color: black;
-  border-color: black;
+  background-color: var(--dangerActive);
+  color: var(--buttonText);
+  border-color: var(--border);
   min-width: 100%;
 }
 
 .btn.btn-secondary.blue {
-  background-color: #009adc;
-  border-color: black;
+  background-color: var(--blue);
+  border-color: var(--border);
 }
+
 .btn.btn-secondary.blue:active {
-  background-color: #0287c0;
-  border-color: black;
+  background-color: var(--blueActive);
+  border-color: var(--border);
 }
