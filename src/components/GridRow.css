@@ -83,10 +83,18 @@
   color: var(--mainText);
   border-bottom: 3px solid var(--border);
 }
+
 .highlighted {
   background-color: var(--highlightedRow);
   color: var(--mainText);
   border-bottom: 3px solid var(--border);
+}
+
+.surprised {
+  background-color: grey;
+  color: var(--mainText);
+  border-bottom: 3px solid var(--border);
+  font-style: italic;
 }
 
 .form-control.grid-row-input {

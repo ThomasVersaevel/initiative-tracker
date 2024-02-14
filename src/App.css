@@ -27,6 +27,7 @@
 
 .form-control.turn-counter:focus {
   background-color: var(--tableHeader);
+  color: var(--mainText);
 }
 
 .form-control.create-row-field {
@@ -39,6 +40,7 @@
 
 .form-control.create-row-field:focus {
   background-color: var(--tableHeader);
+  color: var(--mainText);
 }
 
 .next-button {
@@ -139,7 +141,7 @@
 }
 
 .btn.btn-secondary.bot:hover {
-  background-color: var(--buttonActive);
+  background-color: var(--buttonHover);
   color: var(--buttonText);
   border-color: var(--border);
   min-width: 100%;
@@ -159,7 +161,7 @@
 }
 
 .btn.btn-secondary.blue:hover {
-  background-color: var(--buttonActive);
+  background-color: var(--buttonHover);
   color: var(--buttonText);
   border-color: var(--border);
 }
