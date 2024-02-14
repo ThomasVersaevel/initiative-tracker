@@ -1,96 +1,76 @@
 :root {
-  --darkblue: #144a84;
-  --blue: #009adc;
-  --blueActive: #0287c0;
+  --tableHeader: #144a84;
+  --button: #009adc;
+  --buttonActive: #0287c0;
   --highlightedRow: #2e91fa;
   --row: #1a62ae;
   --main: #373c46;
   --header: #282c34;
+  --titleText: #ffffff;
   --mainText: white;
-  --buttonText: black;
+  --buttonText: white;
   --border: black;
-  --danger: #ff1515;
-  --dangerActive: #d31515;
-  --warning: #e5ff1e;
-  --warningActive: #bfd41a;
-  --succes: #3cff15;
-  --succesActive: #32d710; 
+  --delete: #000000;
 }
 
 .App.sharon {
-  --darkblue: #db397f;
-  --blue: #db397f;
-  --blueActive: #E45998;
+  --tableHeader: #db397f;
+  --button: #db397f;
+  --buttonActive: #e45998;
   --highlightedRow: #fd99c4;
   --row: #e65c97;
-  --main: #f494c7;  
+  --main: #f494c7;
   --header: #d5558d;
+  --titleText: #000000;
   --mainText: white;
   --buttonText: white;
   --border: #800e3f;
-  --danger: #db397f;
-  --dangerActive: #E45998;
-  --warning: #db397f;
-  --warningActive: #E45998;
-  --succes: #db397f;
-  --succesActive: #E45998; 
+  --delete: #000000;
 }
 
 .App.green {
-  --darkblue: #18392b;
-  --blue: #14452f;
-  --blueActive: #0f5132;
-  --highlightedRow: #0A5c36;
+  --tableHeader: #18392b;
+  --button: #14452f;
+  --buttonActive: #0f5132;
+  --highlightedRow: #0a5c36;
   --row: #14452f;
   --main: #095330;
   --header: #073b23;
+  --titleText: #000000;
   --mainText: white;
   --buttonText: black;
   --border: black;
-  --danger: #ff1515;
-  --dangerActive: #d31515;
-  --warning: #e5ff1e;
-  --warningActive: #bfd41a;
-  --succes: #3cff15;
-  --succesActive: #32d710; 
+  --delete: #000000;
 }
 
 .App.prisma {
-  --darkblue: #6F54A1;
-  --blue: #6F54A1;
-  --blueActive: #7089C1;
-  --highlightedRow: #C7EEDB;
-  --row: #88D0C4;
-  --main: #CCBFF7;
-  --header: #790F6B;
+  --tableHeader: #6f54a1;
+  --button: #6f54a1;
+  --buttonActive: #7089c1;
+  --highlightedRow: #c7eedb;
+  --row: #88d0c4;
+  --main: #ccbff7;
+  --header: #790f6b;
+  --titleText: #000000;
   --mainText: black;
   --buttonText: black;
-  --border: #790F6B;
-  --danger: #6F54A1;
-  --dangerActive: #7089C1;
-  --warning: #6F54A1;
-  --warningActive: #7089C1;
-  --succes: #6F54A1;
-  --succesActive: #7089C1; 
+  --border: #790f6b;
+  --delete: #000000;
 }
 
 .App.dark {
-  --darkblue: #0A0E19;
-  --blue: #0A0E19;
-  --blueActive: #43485B;
+  --tableHeader: #0a0e19;
+  --button: #0a0e19;
+  --buttonActive: #43485b;
   --highlightedRow: #24313d;
-  --row: #141D26;
-  --main: #03080E;
+  --row: #141d26;
+  --main: #03080e;
   --header: black;
-  --mainText: #9396A7;
-  --buttonText: #9396A7;
-  --border: #060D15;
-  --danger: #0A0E19;
-  --dangerActive: #43485B;
-  --warning: #0A0E19;
-  --warningActive: #43485B;
-  --succes: #0A0E19;
-  --succesActive: #43485B; 
+  --titleText: #000000;
+  --mainText: #9396a7;
+  --buttonText: #9396a7;
+  --border: #060d15;
+  --delete: #000000;
 }
 
 .grid-row {
@@ -131,8 +111,19 @@ input::-webkit-inner-spin-button {
   border-right: 3px solid var(--border);
 }
 
-.delete {
+.col-1.cell.delete {
   text-align: center;
+  margin: auto;
+}
+
+.btn.btn-danger {
+  background-color: var(--tableHeader);
+  border-color: var(--border);
+}
+
+.btn.btn-danger:hover {
+  background-color: var(--tableHeader);
+  border-color: var(--border);
 }
 
 .cell:first-child {

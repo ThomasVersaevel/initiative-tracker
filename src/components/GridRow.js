@@ -38,11 +38,15 @@ export function GridRow({
     updateValues(id, name, value);
   };
 
-  useEffect(()=> {setValues(initialValues)},[initialValues]);
+  useEffect(() => {
+    setValues(initialValues);
+  }, [initialValues]);
 
   return (
     <div
-      className={`row form-inline ${highlighted ? "highlighted" : "grid-row"} App ${theme}`}
+      className={`row form-inline ${
+        highlighted ? "highlighted" : "grid-row"
+      } App ${theme}`}
     >
       <div className="col-1 cell">
         <input

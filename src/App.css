@@ -2,45 +2,6 @@
   border: 2px solid green;
 } */
 
-:root {
-  --darkblue: #144a84;
-  --blue: #009adc;
-  --blueActive: #0287c0;
-  --link: #2e91fa;
-  --highlightedRow: #2e91fa;
-  --row: #1a62ae;
-  --main: #373c46;
-  --header: #282c34;
-  --mainText: white;
-  --buttonText: black;
-  --border: black;
-  --danger: #ff1515;
-  --dangerActive: #d31515;
-  --warning: #e5ff1e;
-  --warningActive: #bfd41a;
-  --succes: #3cff15;
-  --succesActive: #32d710;
-}
-
-.App.sharon {
-  --darkblue: #db397f;
-  --blue: #db397f;
-  --blueActive: #E45998;
-  --highlightedRow: #fd99c4;
-  --row: #e65c97;
-  --main: #f494c7;  
-  --header: #d5558d;
-  --mainText: white;
-  --buttonText: white;
-  --border: #800e3f;
-  --danger: #db397f;
-  --dangerActive: #E45998;
-  --warning: #db397f;
-  --warningActive: #E45998;
-  --succes: #db397f;
-  --succesActive: #E45998; 
-}
-
 .App {
   text-align: center;
 }
@@ -59,20 +20,29 @@
 .form-control.turn-counter {
   color: var(--mainText);
   border-color: var(--border);
-  background-color: var(--darkblue);
+  background-color: var(--tableHeader);
   text-align: center;
   font-size: 20px;
+}
+
+.form-control.turn-counter:focus {
+  background-color: var(--tableHeader);
 }
 
 .form-control.create-row-field {
   color: var(--mainText);
   border-color: var(--border);
-  background-color: var(--darkblue);
+  background-color: var(--tableHeader);
   text-align: center;
   font-size: 20px;
 }
 
+.form-control.create-row-field:focus {
+  background-color: var(--tableHeader);
+}
+
 .next-button {
+  color: var(--buttonText);
   font-size: 20px;
 }
 
@@ -102,7 +72,7 @@
 }
 
 .row.topRow {
-  background-color: var(--darkblue);
+  background-color: var(--tableHeader);
 }
 
 .App-header {
@@ -119,6 +89,7 @@
 
 .title {
   margin-left: 43%;
+  color: var(--titleText);
   text-align: center;
 }
 
@@ -160,54 +131,26 @@
   width: 30%;
 }
 
-.btn.btn-secondary.green {
-  background-color: var(--succes);
+.btn.btn-secondary {
+  background-color: var(--button);
   color: var(--buttonText);
   border-color: var(--border);
   min-width: 100%;
 }
 
-.btn.btn-secondary.green:active {
-  background-color: var(--succesActive);
-  color: var(--buttonText);
-  border-color: var(--border);
-  min-width: 100%;
-}
-
-.btn.btn-secondary.yellow {
-  background-color: var(--warning);
-  color: var(--buttonText);
-  border-color: var(--border);
-  min-width: 100%;
-}
-
-.btn.btn-secondary.yellow:active {
-  background-color: var(--warningActive);
-  color: var(--buttonText);
-  border-color: var(--border);
-  min-width: 100%;
-}
-
-.btn.btn-secondary.red {
-  background-color: var(--danger);
-  color: var(--buttonText);
-  border-color: var(--border);
-  min-width: 100%;
-}
-
-.btn.btn-secondary.red:active {
-  background-color: var(--dangerActive);
+.btn.btn-secondary:active {
+  background-color: var(--buttonActive);
   color: var(--buttonText);
   border-color: var(--border);
   min-width: 100%;
 }
 
 .btn.btn-secondary.blue {
-  background-color: var(--blue);
+  background-color: var(--button);
   border-color: var(--border);
 }
 
 .btn.btn-secondary.blue:active {
-  background-color: var(--blueActive);
+  background-color: var(--buttonActive);
   border-color: var(--border);
 }
