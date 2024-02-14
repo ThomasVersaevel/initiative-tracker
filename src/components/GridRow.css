@@ -33,12 +33,12 @@
 .App.green {
   --tableHeader: #18392b;
   --button: #14452f;
-  --buttonHover: #13613d;
-  --buttonActive: #0f5132;
+  --buttonHover: #0f5132;
+  --buttonActive: #105a37;
   --highlightedRow: #0a5c36;
   --row: #14452f;
-  --main: #095330;
-  --header: #073b23;
+  --main: #0d633b;
+  --header: #084629;
   --titleText: #022314;
   --mainText: white;
   --buttonText: black;
