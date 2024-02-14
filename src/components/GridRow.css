@@ -17,13 +17,13 @@
 .App.sharon {
   --tableHeader: #db397f;
   --button: #db397f;
-  --buttonHover: #0097d8;
+  --buttonHover: #de4c8e;
   --buttonActive: #e45998;
   --highlightedRow: #fd99c4;
   --row: #e65c97;
   --main: #f494c7;
   --header: #d5558d;
-  --titleText: #000000;
+  --titleText: #680932;
   --mainText: white;
   --buttonText: white;
   --border: #800e3f;
@@ -39,23 +39,23 @@
   --row: #14452f;
   --main: #095330;
   --header: #073b23;
-  --titleText: #6a3605;
+  --titleText: #022314;
   --mainText: white;
   --buttonText: black;
-  --border: #442100;
+  --border: #022314;
   --delete: #000000;
 }
 
 .App.prisma {
   --tableHeader: #6f54a1;
   --button: #6f54a1;
-  --buttonHover: #708ac2;
+  --buttonHover: #6884c0;
   --buttonActive: #7089c1;
   --highlightedRow: #c7eedb;
   --row: #88d0c4;
   --main: #ccbff7;
   --header: #790f6b;
-  --titleText: #000000;
+  --titleText: #35032f;
   --mainText: black;
   --buttonText: black;
   --border: #790f6b;
@@ -65,13 +65,13 @@
 .App.dark {
   --tableHeader: #0a0e19;
   --button: #0a0e19;
-  --buttonHover: #50556b;
+  --buttonHover: #212538;
   --buttonActive: #43485b;
   --highlightedRow: #24313d;
   --row: #141d26;
   --main: #03080e;
   --header: black;
-  --titleText: #000000;
+  --titleText: #9396a7;
   --mainText: #9396a7;
   --buttonText: #9396a7;
   --border: #060d15;
