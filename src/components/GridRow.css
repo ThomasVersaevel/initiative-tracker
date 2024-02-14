@@ -55,6 +55,25 @@
   --succesActive: #32d710; 
 }
 
+.App.prisma {
+  --darkblue: #6F54A1;
+  --blue: #6F54A1;
+  --blueActive: #7089C1;
+  --highlightedRow: #C7EEDB;
+  --row: #88D0C4;
+  --main: #CCBFF7;
+  --header: #790F6B;
+  --mainText: black;
+  --buttonText: black;
+  --border: #790F6B;
+  --danger: #6F54A1;
+  --dangerActive: #7089C1;
+  --warning: #6F54A1;
+  --warningActive: #7089C1;
+  --succes: #6F54A1;
+  --succesActive: #7089C1; 
+}
+
 .grid-row {
   background-color: var(--row);
   color: var(--mainText);
