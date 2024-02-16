@@ -29,6 +29,8 @@ export function GridRow({
   theme,
 }) {
   const [values, setValues] = useState(initialValues);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setValues((prevValues) => ({

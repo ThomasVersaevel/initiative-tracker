@@ -19,6 +19,7 @@ function App() {
   const [rowCount, setRowCount] = useState(1);
   const [highlightedRow, setHighlightedRow] = useState(0);
   const [theme, setTheme] = useState("default");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const themes = [
     { label: "Default", value: "default" },
@@ -27,6 +28,14 @@ function App() {
     { label: "Prisma", value: "prisma" },
     { label: "Dark", value: "dark" },
   ];
+
+  const openPopup = () => {
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
 
   const createRows = () => {
     const initialRowCount = parseInt(rowCount);
@@ -175,6 +184,7 @@ function App() {
         </div>
       </header>
       <div className="App-body">
+        <Popup></Popup>
         <div className="row mb-3">
           <div className="col-1">
             <input
@@ -260,9 +270,7 @@ function App() {
         </div>
       </div>
       <div className="App-footer">
-        <div className="footer-text">
-          This website is made by Thomas and Sharon
-        </div>
+        <div className="footer-text">A website by Thomas and Sharon</div>
       </div>
     </div>
   );
