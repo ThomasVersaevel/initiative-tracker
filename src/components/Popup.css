@@ -11,23 +11,24 @@
 }
 
 .popup-content {
-  background-color: #fefefe;
+  background-color: var(--header);
   margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 30%;
+  padding: 2vw 1vw;
+  border: 1px solid var(--border);
+  width: 30vw;
 }
 
 .close {
-  color: #aaa;
+  color: var(--border);
   float: right;
   font-size: 28px;
   font-weight: bold;
+  bottom: 10rem;
 }
 
 .close:hover,
 .close:focus {
-  color: black;
+  color: var(--border);
   text-decoration: none;
   cursor: pointer;
 }

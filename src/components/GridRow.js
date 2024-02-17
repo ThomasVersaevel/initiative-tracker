@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./GridRow.css";
+import { Popup } from "./Popup";
 
-const conditions = [
+const condition = [
   "blinded",
   "charmed",
   "concentration",
@@ -20,6 +21,17 @@ const conditions = [
   "unconscious",
 ];
 
+const savingThrowConditions = [
+  "blinded",
+  "charmed",
+  "frightened",
+  "paralyzed",
+  "petrified",
+  "poisoned",
+  "stunned",
+  "unconscious",
+];
+
 export function GridRow({
   id,
   initialValues,
@@ -30,6 +42,7 @@ export function GridRow({
 }) {
   const [values, setValues] = useState(initialValues);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [hasOpenedPopup, setHasOpenedPopup] = useState(false);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -40,14 +53,33 @@ export function GridRow({
     updateValues(id, name, value);
   };
 
+  const openPopup = () => {
+    setIsPopupOpen(true);
+    setHasOpenedPopup(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
+
   useEffect(() => {
     setValues(initialValues);
   }, [initialValues]);
 
+  useEffect(() => {
+    if (!hasOpenedPopup && highlighted && values.condition !== "") {
+      if (savingThrowConditions.some((item) => item == values.condition)) {
+        openPopup();
+      }
+    } else {
+      setHasOpenedPopup(false);
+    }
+  }, [highlighted, values.condition]);
+
   return (
     <div
       className={`row form-inline ${
-        values.conditions === "surprised"
+        values.condition === "surprised"
           ? "surprised"
           : highlighted
           ? "highlighted"
@@ -102,14 +134,14 @@ export function GridRow({
       <div className="col-2 cell">
         <select
           className="form-control grid-row-input"
-          name="conditions"
-          value={values.conditions}
+          name="condition"
+          value={values.condition}
           onChange={handleInputChange}
         >
           <option className="option" value="">
             -
           </option>
-          {conditions.map((condition, index) => (
+          {condition.map((condition, index) => (
             <option className="option" key={index} value={condition}>
               {condition}
             </option>
@@ -130,6 +162,7 @@ export function GridRow({
           Delete
         </button>
       </div>
+      <Popup isOpen={isPopupOpen} onClose={closePopup}></Popup>
     </div>
   );
 }

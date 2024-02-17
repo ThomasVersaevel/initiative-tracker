@@ -2,17 +2,15 @@
 import React from "react";
 import "./Popup.css";
 
-const Popup = ({ isOpen, onClose }) => {
+export function Popup({ isOpen, onClose }) {
   return (
     <div className={`popup ${isOpen ? "open" : ""}`}>
       <div className="popup-content">
         <span className="close" onClick={onClose}>
           &times;
         </span>
-        <p>Saving throw needed</p>
+        <div>Saving throw needed</div>
       </div>
     </div>
   );
-};
-
-export default Popup;
+}

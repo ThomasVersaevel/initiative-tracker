@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
+import { Popup } from "./components/Popup";
 
 function App() {
   const [turn, setTurn] = useState(1);
@@ -11,7 +12,7 @@ function App() {
       speed: "",
       hp: "",
       ac: "",
-      conditions: "",
+      condition: "",
       timer: 0,
       id: 0,
     },
@@ -19,7 +20,6 @@ function App() {
   const [rowCount, setRowCount] = useState(1);
   const [highlightedRow, setHighlightedRow] = useState(0);
   const [theme, setTheme] = useState("default");
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   const themes = [
     { label: "Default", value: "default" },
@@ -28,14 +28,6 @@ function App() {
     { label: "Prisma", value: "prisma" },
     { label: "Dark", value: "dark" },
   ];
-
-  const openPopup = () => {
-    setIsPopupOpen(true);
-  };
-
-  const closePopup = () => {
-    setIsPopupOpen(false);
-  };
 
   const createRows = () => {
     const initialRowCount = parseInt(rowCount);
@@ -47,7 +39,7 @@ function App() {
         speed: "",
         hp: "",
         ac: "",
-        conditions: "",
+        condition: "",
         timer: 0,
         id: i,
       });
@@ -84,7 +76,7 @@ function App() {
         speed: "",
         hp: "",
         ac: "",
-        conditions: "",
+        condition: "",
         timer: 0,
         id: rowCount,
       },
@@ -146,9 +138,9 @@ function App() {
   };
 
   const increaseTimer = () => {
-    if (gridRows.some((row) => row.conditions !== "")) {
+    if (gridRows.some((row) => row.condition !== "")) {
       const updatedGridRows = gridRows.map((row) => {
-        if (row.conditions !== "") {
+        if (row.condition !== "") {
           return {
             ...row,
             timer: Math.max(row.timer + 1, 0),
@@ -184,7 +176,6 @@ function App() {
         </div>
       </header>
       <div className="App-body">
-        <Popup></Popup>
         <div className="row mb-3">
           <div className="col-1">
             <input
@@ -230,7 +221,7 @@ function App() {
             <div className="col-1 cell">Speed</div>
             <div className="col-1 cell">HP</div>
             <div className="col-1 cell">AC</div>
-            <div className="col-2 cell">Conditions</div>
+            <div className="col-2 cell">Condition</div>
             <div className="col-1 cell">Timer</div>
             <div className="col-1 cell"></div>{" "}
           </div>
