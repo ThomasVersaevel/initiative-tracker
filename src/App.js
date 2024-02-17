@@ -12,6 +12,7 @@ function App() {
       speed: "",
       hp: "",
       ac: "",
+      spell: "",
       condition: "",
       timer: 0,
       id: 0,
@@ -39,6 +40,7 @@ function App() {
         speed: "",
         hp: "",
         ac: "",
+        spell: "",
         condition: "",
         timer: 0,
         id: i,
@@ -76,6 +78,7 @@ function App() {
         speed: "",
         hp: "",
         ac: "",
+        spell: "",
         condition: "",
         timer: 0,
         id: rowCount,
@@ -217,10 +220,11 @@ function App() {
         <div className="grid">
           <div className="row topRow">
             <div className="col-1 cell">Initiative</div>
-            <div className="col-4 cell">Player Name</div>
+            <div className="col-3 cell">Player Name</div>
             <div className="col-1 cell">Speed</div>
             <div className="col-1 cell">HP</div>
             <div className="col-1 cell">AC</div>
+            <div className="col-1 cell">Spell Save</div>
             <div className="col-2 cell">Condition</div>
             <div className="col-1 cell">Timer</div>
             <div className="col-1 cell"></div>{" "}

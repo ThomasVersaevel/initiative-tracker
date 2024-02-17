@@ -95,7 +95,7 @@ export function GridRow({
           onChange={handleInputChange}
         />
       </div>
-      <div className="col-4 cell">
+      <div className="col-3 cell">
         <input
           className="form-control grid-row-input"
           name="charactername"
@@ -128,6 +128,15 @@ export function GridRow({
           name="ac"
           type="number"
           value={values.ac}
+          onChange={handleInputChange}
+        />
+      </div>
+      <div className="col-1 cell">
+        <input
+          className="form-control grid-row-input"
+          name="spell"
+          type="number"
+          value={values.spell}
           onChange={handleInputChange}
         />
       </div>
