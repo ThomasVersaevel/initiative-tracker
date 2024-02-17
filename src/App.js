@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
+import { Popup } from "./components/Popup";
 
 function App() {
   const [turn, setTurn] = useState(1);
@@ -11,7 +12,7 @@ function App() {
       speed: "",
       hp: "",
       ac: "",
-      conditions: "",
+      condition: "",
       timer: 0,
       id: 0,
     },
@@ -38,7 +39,7 @@ function App() {
         speed: "",
         hp: "",
         ac: "",
-        conditions: "",
+        condition: "",
         timer: 0,
         id: i,
       });
@@ -75,7 +76,7 @@ function App() {
         speed: "",
         hp: "",
         ac: "",
-        conditions: "",
+        condition: "",
         timer: 0,
         id: rowCount,
       },
@@ -137,9 +138,9 @@ function App() {
   };
 
   const increaseTimer = () => {
-    if (gridRows.some((row) => row.conditions !== "")) {
+    if (gridRows.some((row) => row.condition !== "")) {
       const updatedGridRows = gridRows.map((row) => {
-        if (row.conditions !== "") {
+        if (row.condition !== "") {
           return {
             ...row,
             timer: Math.max(row.timer + 1, 0),
@@ -220,7 +221,7 @@ function App() {
             <div className="col-1 cell">Speed</div>
             <div className="col-1 cell">HP</div>
             <div className="col-1 cell">AC</div>
-            <div className="col-2 cell">Conditions</div>
+            <div className="col-2 cell">Condition</div>
             <div className="col-1 cell">Timer</div>
             <div className="col-1 cell"></div>{" "}
           </div>
@@ -260,9 +261,7 @@ function App() {
         </div>
       </div>
       <div className="App-footer">
-        <div className="footer-text">
-          This website is made by Thomas and Sharon
-        </div>
+        <div className="footer-text">A website by Thomas and Sharon</div>
       </div>
     </div>
   );
