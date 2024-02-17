@@ -26,6 +26,7 @@ function App() {
     { label: "Green", value: "green" },
     { label: "Prisma", value: "prisma" },
     { label: "Dark", value: "dark" },
+    { label: "Berry", value: "berry" },
   ];
 
   const createRows = () => {
@@ -257,6 +258,11 @@ function App() {
               Clear
             </button>
           </div>
+        </div>
+      </div>
+      <div className="App-footer">
+        <div className="footer-text">
+          This website is made by Thomas and Sharon
         </div>
       </div>
     </div>

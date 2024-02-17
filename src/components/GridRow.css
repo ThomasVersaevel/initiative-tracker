@@ -78,6 +78,22 @@
   --delete: #000000;
 }
 
+.App.berry {
+  --tableHeader: #2f0101;
+  --button: #c5001e;
+  --buttonHover: #db0424;
+  --buttonActive: #ee0528;
+  --highlightedRow: #8f0a0c;
+  --row: #780002;
+  --main: #6b052a;
+  --header: #190f18;
+  --titleText: #c5001e;
+  --mainText: #ff8e8e;
+  --buttonText: #ff8e8e;
+  --border: #200201;
+  --delete: #000000;
+}
+
 .grid-row {
   background-color: var(--row);
   color: var(--mainText);
@@ -122,11 +138,13 @@ input::-webkit-inner-spin-button {
 
 .cell {
   border-right: 3px solid var(--border);
+  display: flex;
+  align-items: center;
 }
 
 .col-1.cell.delete {
   text-align: center;
-  margin: auto;
+  justify-content: center;
 }
 
 .btn.btn-danger {
@@ -135,7 +153,12 @@ input::-webkit-inner-spin-button {
 }
 
 .btn.btn-danger:hover {
-  background-color: var(--tableHeader);
+  background-color: var(--button);
+  border-color: var(--border);
+}
+
+.btn.btn-danger:active {
+  background-color: var(--button);
   border-color: var(--border);
 }
 
@@ -144,7 +167,6 @@ input::-webkit-inner-spin-button {
 }
 
 .option {
-  margin-left: -3%;
   background-color: var(--row);
   border: 1px solid var(--border);
 }
