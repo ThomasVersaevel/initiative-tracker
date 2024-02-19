@@ -21,6 +21,7 @@ function App() {
   const [rowCount, setRowCount] = useState(1);
   const [highlightedRow, setHighlightedRow] = useState(0);
   const [theme, setTheme] = useState("default");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const themes = [
     { label: "Default", value: "default" },
@@ -159,6 +160,12 @@ function App() {
     setTheme(selectedTheme);
   };
 
+  const handleUpload = () => {
+    if (selectedFile) {
+      const reader = new FileReader();
+    }
+  };
+
   return (
     <div className={`App ${theme}`}>
       <header className="App-header">
@@ -264,7 +271,20 @@ function App() {
           </div>
         </div>
       </div>
+      {selectedFile !== null && (
+        <div className="image-container">
+          <img src={selectedFile.name} alt="Uploaded Image"></img>
+        </div>
+      )}
       <div className="App-footer">
+        <div className="upload">
+          <input
+            className=""
+            name="upload"
+            type="file"
+            onChange={(e) => setSelectedFile(e.target.files[0])}
+          ></input>
+        </div>
         <div className="footer-text">A website by Thomas and Sharon</div>
       </div>
     </div>
