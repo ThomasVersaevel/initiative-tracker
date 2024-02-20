@@ -96,6 +96,7 @@ function App() {
       return initiativeB - initiativeA; // Sort in descending order
     });
     setGridRows(sortedGridRows);
+    setUploadedImages(sortUploadedImages(sortedGridRows, uploadedImages));
   };
 
   const onDeleteRow = (id) => {
@@ -172,6 +173,14 @@ function App() {
       };
       reader.readAsDataURL(selectedFile);
     }
+  };
+
+  const sortUploadedImages = (gridRows, uploadedImages) => {
+    const sortedUploadedImages = gridRows.map((row) => {
+      const image = uploadedImages[row.id];
+      return image;
+    });
+    return sortedUploadedImages;
   };
 
   return (
@@ -254,6 +263,8 @@ function App() {
                 updateValues={updateValues}
                 onDeleteRow={onDeleteRow}
                 theme={theme}
+                uploadedImages={uploadedImages}
+                setUploadedImages={setUploadedImages}
               />
             </div>
           ))}
