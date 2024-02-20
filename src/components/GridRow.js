@@ -68,7 +68,7 @@ export function GridRow({
 
   useEffect(() => {
     if (!hasOpenedPopup && highlighted && values.condition !== "") {
-      if (savingThrowConditions.some((item) => item == values.condition)) {
+      if (savingThrowConditions.some((item) => item === values.condition)) {
         openPopup();
       }
     } else {

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
-import { Popup } from "./components/Popup";
 
 function App() {
   const [turn, setTurn] = useState(1);
@@ -21,6 +20,8 @@ function App() {
   const [rowCount, setRowCount] = useState(1);
   const [highlightedRow, setHighlightedRow] = useState(0);
   const [theme, setTheme] = useState("default");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadedImages, setUploadedImages] = useState([]);
 
   const themes = [
     { label: "Default", value: "default" },
@@ -95,6 +96,7 @@ function App() {
       return initiativeB - initiativeA; // Sort in descending order
     });
     setGridRows(sortedGridRows);
+    setUploadedImages(sortUploadedImages(sortedGridRows, uploadedImages));
   };
 
   const onDeleteRow = (id) => {
@@ -157,6 +159,28 @@ function App() {
 
   const onSelectTheme = (selectedTheme) => {
     setTheme(selectedTheme);
+  };
+
+  const handleUpload = () => {
+    if (selectedFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedImages((prevImages) => {
+          const tempImages = [...prevImages];
+          tempImages[highlightedRow] = reader.result;
+          return tempImages;
+        });
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
+  const sortUploadedImages = (gridRows, uploadedImages) => {
+    const sortedUploadedImages = gridRows.map((row) => {
+      const image = uploadedImages[row.id];
+      return image;
+    });
+    return sortedUploadedImages;
   };
 
   return (
@@ -239,6 +263,8 @@ function App() {
                 updateValues={updateValues}
                 onDeleteRow={onDeleteRow}
                 theme={theme}
+                uploadedImages={uploadedImages}
+                setUploadedImages={setUploadedImages}
               />
             </div>
           ))}
@@ -263,8 +289,27 @@ function App() {
             </button>
           </div>
         </div>
+        {selectedFile !== null && (
+          <div className="image-container">
+            <img
+              className="uploaded-image"
+              src={uploadedImages[highlightedRow]}
+              alt={""}
+            />
+          </div>
+        )}
       </div>
       <div className="App-footer">
+        <div className="upload-container">
+          <input
+            name="upload"
+            type="file"
+            onChange={(e) => setSelectedFile(e.target.files[0])}
+          ></input>
+          <button className="btn btn-secondary blue" onClick={handleUpload}>
+            Upload
+          </button>
+        </div>
         <div className="footer-text">A website by Thomas and Sharon</div>
       </div>
     </div>

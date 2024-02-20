@@ -4,6 +4,15 @@
 
 .App {
   text-align: center;
+  overflow: hidden;
+}
+
+.image-container {
+  margin-top: 5vh;
+}
+
+.uploaded-image {
+  max-height: 50vh;
 }
 
 .turn-container {
@@ -92,15 +101,44 @@
 .App-footer {
   background-color: var(--header);
   min-height: 5vh;
+  display: block;
 }
 
 .footer-text {
   position: relative;
   float: right;
   color: var(--mainText);
-  float: right;
-  margin-right: 1vw;
+  margin-right: 5vw;
   margin-top: 1vh;
+}
+
+input[type="file"]::file-selector-button {
+  border: 1px solid black;
+  border-radius: 0.5rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  color: var(--buttonText);
+  background-color: var(--button);
+}
+
+input[type="file"]::file-selector-button:hover {
+  border: 1px solid black;
+  border-radius: 0.5rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  color: var(--buttonText);
+  background-color: var(--buttonActive);
+}
+
+.upload-container {
+  height: 5vh;
+  cursor: pointer;
+  color: var(--mainText);
+  position: relative;
+  float: left;
+  margin-left: 5vw;
+  display: flex;
+  align-items: center;
 }
 
 .title {
