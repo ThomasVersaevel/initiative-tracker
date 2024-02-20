@@ -109,7 +109,9 @@
   float: right;
   color: var(--mainText);
   margin-right: 5vw;
-  margin-top: 1vh;
+  height: 5vh;
+  display: flex;
+  align-items: center;
 }
 
 input[type="file"]::file-selector-button {
