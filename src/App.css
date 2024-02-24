@@ -82,6 +82,10 @@
   margin-left: 10px;
 }
 
+.col-1 {
+  white-space: nowrap;
+}
+
 .row.top-row {
   background-color: var(--tableHeader);
 }
