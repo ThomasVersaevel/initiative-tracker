@@ -1,2 +1,3 @@
-drag and drop
-battle block upload and integration
+drag and drop gridrows
+Drag and drop pictures
+Second stationary picture on the right hand side
