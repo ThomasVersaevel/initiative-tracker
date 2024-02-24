@@ -178,7 +178,6 @@ input[type="file"]::file-selector-button:hover {
 }
 
 .top-row {
-  margin: 0;
   border-top: 3px solid var(--border);
   border-bottom: 3px solid var(--border);
 }
