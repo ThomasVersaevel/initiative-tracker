@@ -173,7 +173,7 @@ input[type="file"]::file-selector-button:hover {
   margin-bottom: 20px;
 }
 
-.topRow {
+.top-row {
   margin: 0;
   border-top: 3px solid var(--border);
   border-bottom: 3px solid var(--border);

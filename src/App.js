@@ -243,7 +243,7 @@ function App() {
           <div className="col-1"></div>
         </div>
         <div className="grid">
-          <div className="row topRow">
+          <div className="row top-row">
             <div className="col-1 cell">Initiative</div>
             <div className="col-3 cell">Player Name</div>
             <div className="col-1 cell">Speed</div>
