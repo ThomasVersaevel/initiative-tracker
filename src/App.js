@@ -184,6 +184,11 @@ function App() {
     return sortedUploadedImages;
   };
 
+  const deleteImage = () => {
+    setSelectedFile(null);
+    handleUpload();
+  };
+
   return (
     <div className={`App ${theme}`}>
       <header className="App-header">
@@ -297,6 +302,22 @@ function App() {
               src={uploadedImages[highlightedRow]}
               alt={""}
             />
+            <div className="img-buttons">
+              <button className="delete-img-button" onClick={deleteImage}>
+                <img
+                  className="button-img"
+                  src="/images/trash-icon.png"
+                  alt=""
+                ></img>
+              </button>
+              <button className="upload-img-button">
+                <img
+                  className="button-img"
+                  src="/images/image-icon.png"
+                  alt=""
+                ></img>
+              </button>
+            </div>
           </div>
         )}
       </div>
