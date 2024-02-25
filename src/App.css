@@ -49,6 +49,10 @@
   background-color: var(--buttonActive);
 }
 
+.hidden {
+  display: none;
+}
+
 .upload-img-button {
   position: relative;
   display: flex;
@@ -72,6 +76,8 @@
 
 .button-img {
   max-width: 1vw;
+  filter: invert(99%) sepia(3%) saturate(405%) hue-rotate(303deg)
+    brightness(122%) contrast(100%);
 }
 
 .turn-container {

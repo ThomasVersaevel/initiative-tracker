@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
 
@@ -162,7 +162,7 @@ function App() {
     setTheme(selectedTheme);
   };
 
-  const handleUpload = () => {
+  const handleUpload = useCallback(() => {
     if (selectedFile) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -174,7 +174,7 @@ function App() {
       };
       reader.readAsDataURL(selectedFile);
     }
-  };
+  });
 
   const sortUploadedImages = (gridRows, uploadedImages) => {
     const sortedUploadedImages = gridRows.map((row) => {
@@ -184,10 +184,20 @@ function App() {
     return sortedUploadedImages;
   };
 
+  const uploadImage = useCallback(
+    (e) => {
+      setSelectedFile(e.target.files[0]);
+    },
+    [setSelectedFile]
+  );
+
   const deleteImage = () => {
     setSelectedFile(null);
-    handleUpload();
   };
+
+  useEffect(() => {
+    handleUpload();
+  }, [selectedFile]);
 
   return (
     <div className={`App ${theme}`}>
@@ -310,30 +320,36 @@ function App() {
                   alt=""
                 ></img>
               </button>
-              <button className="upload-img-button">
+              <label className="upload-img-button" for="file-upload">
                 <img
                   className="button-img"
                   src="/images/image-icon.png"
                   alt=""
                 ></img>
-              </button>
+              </label>
             </div>
           </div>
         )}
       </div>
       <div className="App-footer">
         <div className="upload-container">
-          <input
-            name="upload"
-            type="file"
-            onChange={(e) => setSelectedFile(e.target.files[0])}
-          ></input>
-          <button className="btn btn-secondary blue" onClick={handleUpload}>
-            Upload
-          </button>
+          <label className="btn btn-secondary blue" for="file-upload">
+            <img
+              className="button-img"
+              src="/images/image-icon.png"
+              alt=""
+            ></img>
+          </label>
         </div>
         <div className="footer-text">A website by Thomas and Sharon</div>
       </div>
+      <input
+        id="file-upload"
+        className="hidden"
+        name="upload"
+        type="file"
+        onChange={(e) => uploadImage(e)}
+      ></input>
     </div>
   );
 }
