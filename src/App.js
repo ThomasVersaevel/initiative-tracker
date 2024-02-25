@@ -162,7 +162,7 @@ function App() {
     setTheme(selectedTheme);
   };
 
-  const handleUpload = useCallback(() => {
+  const handleUpload = () => {
     if (selectedFile) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -174,7 +174,7 @@ function App() {
       };
       reader.readAsDataURL(selectedFile);
     }
-  });
+  };
 
   const sortUploadedImages = (gridRows, uploadedImages) => {
     const sortedUploadedImages = gridRows.map((row) => {
@@ -197,6 +197,7 @@ function App() {
 
   useEffect(() => {
     handleUpload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFile]);
 
   return (
@@ -339,6 +340,7 @@ function App() {
               src="/images/image-icon.png"
               alt=""
             ></img>
+            {" " + gridRows[highlightedRow].charactername}
           </label>
         </div>
         <div className="footer-text">A website by Thomas and Sharon</div>
