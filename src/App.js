@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
 
@@ -184,6 +184,22 @@ function App() {
     return sortedUploadedImages;
   };
 
+  const uploadImage = useCallback(
+    (e) => {
+      setSelectedFile(e.target.files[0]);
+    },
+    [setSelectedFile]
+  );
+
+  const deleteImage = () => {
+    setSelectedFile(null);
+  };
+
+  useEffect(() => {
+    handleUpload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedFile]);
+
   return (
     <div className={`App ${theme}`}>
       <header className="App-header">
@@ -297,22 +313,45 @@ function App() {
               src={uploadedImages[highlightedRow]}
               alt={""}
             />
+            <div className="img-buttons">
+              <button className="delete-img-button" onClick={deleteImage}>
+                <img
+                  className="button-img"
+                  src="/images/trash-icon.png"
+                  alt=""
+                ></img>
+              </button>
+              <label className="upload-img-button" for="file-upload">
+                <img
+                  className="button-img"
+                  src="/images/image-icon.png"
+                  alt=""
+                ></img>
+              </label>
+            </div>
           </div>
         )}
       </div>
       <div className="App-footer">
         <div className="upload-container">
-          <input
-            name="upload"
-            type="file"
-            onChange={(e) => setSelectedFile(e.target.files[0])}
-          ></input>
-          <button className="btn btn-secondary blue" onClick={handleUpload}>
-            Upload
-          </button>
+          <label className="btn btn-secondary blue" for="file-upload">
+            <img
+              className="button-img"
+              src="/images/image-icon.png"
+              alt=""
+            ></img>
+            {" " + gridRows[highlightedRow].charactername}
+          </label>
         </div>
         <div className="footer-text">A website by Thomas and Sharon</div>
       </div>
+      <input
+        id="file-upload"
+        className="hidden"
+        name="upload"
+        type="file"
+        onChange={(e) => uploadImage(e)}
+      ></input>
     </div>
   );
 }
