@@ -1,3 +1,4 @@
 drag and drop gridrows
 Drag and drop pictures
 Second stationary picture on the right hand side
+Delete button on pictures and deletion on clear
