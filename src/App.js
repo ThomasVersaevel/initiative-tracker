@@ -21,7 +21,9 @@ function App() {
   const [highlightedRow, setHighlightedRow] = useState(0);
   const [theme, setTheme] = useState("default");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedStationary, setSelectedStationary] = useState(null);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [uploadedStationary, setUploadedStationary] = useState([]);
 
   const themes = [
     { label: "Default", value: "default" },
@@ -176,6 +178,16 @@ function App() {
     }
   };
 
+  const handleStationaryUpload = () => {
+    if (selectedStationary) {
+      const reader2 = new FileReader();
+      reader2.onloadend = () => {
+        setUploadedStationary(reader2.result);
+      };
+      reader2.readAsDataURL(selectedStationary);
+    }
+  };
+
   const sortUploadedImages = (gridRows, uploadedImages) => {
     const sortedUploadedImages = gridRows.map((row) => {
       const image = uploadedImages[row.id];
@@ -191,9 +203,25 @@ function App() {
     [setSelectedFile]
   );
 
-  const deleteImage = () => {
-    setSelectedFile(null);
+  const uploadStationaryImage = useCallback(
+    (e) => {
+      setSelectedStationary(e.target.files[0]);
+    },
+    [setSelectedStationary]
+  );
+
+  const deleteImage = (nr) => {
+    if (nr === 1) {
+      setSelectedFile(null);
+    } else {
+      setSelectedStationary(null);
+    }
   };
+
+  useEffect(() => {
+    handleStationaryUpload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedStationary]);
 
   useEffect(() => {
     handleUpload();
@@ -281,7 +309,6 @@ function App() {
                 onDeleteRow={onDeleteRow}
                 theme={theme}
                 uploadedImages={uploadedImages}
-                setUploadedImages={setUploadedImages}
               />
             </div>
           ))}
@@ -314,7 +341,10 @@ function App() {
               alt={""}
             />
             <div className="img-buttons">
-              <button className="delete-img-button" onClick={deleteImage}>
+              <button
+                className="delete-img-button"
+                onClick={() => deleteImage(1)}
+              >
                 <img
                   className="button-img"
                   src="/images/trash-icon.png"
@@ -322,6 +352,30 @@ function App() {
                 ></img>
               </button>
               <label className="upload-img-button" for="file-upload">
+                <img
+                  className="button-img"
+                  src="/images/image-icon.png"
+                  alt=""
+                ></img>
+              </label>
+            </div>
+          </div>
+        )}
+        {selectedStationary !== null && (
+          <div className="stationary-container">
+            <img className="uploaded-image" src={uploadedStationary} alt={""} />
+            <div className="img-buttons">
+              <button
+                className="delete-img-button"
+                onClick={() => deleteImage(2)}
+              >
+                <img
+                  className="button-img"
+                  src="/images/trash-icon.png"
+                  alt=""
+                ></img>
+              </button>
+              <label className="upload-img-button" for="stationary-file-upload">
                 <img
                   className="button-img"
                   src="/images/image-icon.png"
@@ -340,10 +394,22 @@ function App() {
               src="/images/image-icon.png"
               alt=""
             ></img>
-            {" " + gridRows[highlightedRow].charactername}
+            {gridRows[highlightedRow].charactername === ""
+              ? " Add"
+              : " " + gridRows[highlightedRow].charactername}
           </label>
         </div>
         <div className="footer-text">A website by Thomas and Sharon</div>
+        <div className="upload-container-right">
+          <label className="btn btn-secondary blue" for="stationary-upload">
+            {"Fixed "}
+            <img
+              className="button-img"
+              src="/images/image-icon.png"
+              alt=""
+            ></img>
+          </label>
+        </div>
       </div>
       <input
         id="file-upload"
@@ -352,8 +418,14 @@ function App() {
         type="file"
         onChange={(e) => uploadImage(e)}
       ></input>
+      <input
+        id="stationary-upload"
+        className="hidden"
+        name="stationary-upload"
+        type="file"
+        onChange={(e) => uploadStationaryImage(e)}
+      ></input>
     </div>
   );
 }
-
 export default App;
