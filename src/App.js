@@ -402,7 +402,7 @@ function App() {
         <div className="footer-text">A website by Thomas and Sharon</div>
         <div className="upload-container-right">
           <label className="btn btn-secondary blue" for="stationary-upload">
-            {"Stationary "}
+            {"Fixed "}
             <img
               className="button-img"
               src="/images/image-icon.png"
