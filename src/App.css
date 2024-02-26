@@ -187,6 +187,7 @@
   align-items: center;
   position: fixed;
   width: 100%;
+  bottom: 0;
 }
 
 .footer-text {
@@ -252,13 +253,16 @@ input[type="file"]::file-selector-button:hover {
 
 .App-body {
   background-color: var(--main);
-  min-height: 88vh;
+  min-height: 100vh;
+  top: 6vh;
   color: var(--mainText);
   padding-left: 5%;
   padding-right: 5%;
   font-size: 20px;
   text-align: left;
   padding-top: 2%;
+  overflow-y: scroll;
+  overflow-y: hidden;
 }
 
 .App-link {
