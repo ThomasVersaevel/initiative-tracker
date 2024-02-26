@@ -19,9 +19,10 @@
 
 .stationary-container {
   margin-top: 5vh;
+  margin-bottom: 5vh;
   position: relative;
+  float: right;
   display: inline-block;
-  float: right; /* Ignore comment */
 }
 
 .stationary-container:hover .img-buttons {
@@ -184,6 +185,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: fixed;
+  width: 100%;
 }
 
 .footer-text {
