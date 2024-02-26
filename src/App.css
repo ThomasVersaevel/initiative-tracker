@@ -17,6 +17,17 @@
   display: block;
 }
 
+.stationary-container {
+  margin-top: 5vh;
+  position: relative;
+  display: inline-block;
+  float: right; /* Ignore comment */
+}
+
+.stationary-container:hover .img-buttons {
+  display: block;
+}
+
 .img-buttons {
   position: absolute;
   top: 0;
@@ -160,7 +171,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 10vh;
+  min-height: 7vh;
   display: flex;
   align-items: center;
   font-size: calc(10px + 2vmin);
@@ -170,7 +181,9 @@
 .App-footer {
   background-color: var(--header);
   min-height: 5vh;
-  display: block;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .footer-text {
@@ -212,6 +225,17 @@ input[type="file"]::file-selector-button:hover {
   align-items: center;
 }
 
+.upload-container-right {
+  height: 5vh;
+  cursor: pointer;
+  color: var(--mainText);
+  position: relative;
+  float: right;
+  margin-right: 5vw;
+  display: flex;
+  align-items: center;
+}
+
 .title {
   margin-left: 43%;
   color: var(--titleText);
@@ -225,7 +249,7 @@ input[type="file"]::file-selector-button:hover {
 
 .App-body {
   background-color: var(--main);
-  min-height: 85vh;
+  min-height: 88vh;
   color: var(--mainText);
   padding-left: 5%;
   padding-right: 5%;

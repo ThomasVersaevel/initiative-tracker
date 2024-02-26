@@ -74,7 +74,7 @@ export function GridRow({
     } else {
       setHasOpenedPopup(false);
     }
-  }, [highlighted, values.condition]);
+  }, [hasOpenedPopup, highlighted, values.condition]);
 
   return (
     <div
