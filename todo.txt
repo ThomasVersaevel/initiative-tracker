@@ -1,9 +1,6 @@
 drag and drop gridrows
-Drag and drop pictures
-Second stationary picture on the right hand side
 - Add carousel for all uploaded grid images (buttons in footer)
 - Add combat cheat sheet hover button
-Delete button on pictures and deletion on clear
 
 optional:
 favorite character button that saves a cookie with gridrow info

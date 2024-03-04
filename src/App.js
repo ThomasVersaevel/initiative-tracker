@@ -379,7 +379,7 @@ function App() {
                   alt=""
                 ></img>
               </button>
-              <label className="upload-img-button" for="file-upload">
+              <label className="upload-img-button" htmlFor="file-upload">
                 <img
                   className="button-img"
                   src="/images/image-icon.png"
@@ -403,7 +403,7 @@ function App() {
                   alt=""
                 ></img>
               </button>
-              <label className="upload-img-button" for="stationary-file-upload">
+              <label className="upload-img-button" htmlFor="stationary-file-upload">
                 <img
                   className="button-img"
                   src="/images/image-icon.png"
@@ -416,7 +416,7 @@ function App() {
       </div>
       <div className="App-footer">
         <div className="upload-container">
-          <label className="btn btn-secondary blue" for="file-upload">
+          <label className="btn btn-secondary blue" htmlFor="file-upload">
             <img
               className="button-img"
               src="/images/image-icon.png"
@@ -429,7 +429,7 @@ function App() {
         </div>
         <div className="footer-text">A website by Thomas and Sharon</div>
         <div className="upload-container-right">
-          <label className="btn btn-secondary blue" for="stationary-upload">
+          <label className="btn btn-secondary blue" htmlFor="stationary-upload">
             {"Fixed "}
             <img
               className="button-img"
