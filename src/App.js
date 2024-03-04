@@ -228,6 +228,34 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedFile]);
 
+  useEffect(() => {
+    const handlePaste = (event) => {
+      const items = (event.clipboardData || event.originalEvent.clipboardData)
+        .items;
+      for (const item of items) {
+        if (item.type.indexOf("image") !== -1) {
+          const blob = item.getAsFile();
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            setUploadedImages((prevImages) => {
+              const tempImages = [...prevImages];
+              tempImages[highlightedRow] = event.target.result;
+              return tempImages;
+            });
+          };
+          reader.readAsDataURL(blob);
+        }
+      }
+    };
+  
+    document.addEventListener("paste", handlePaste);
+  
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+    };
+  }, [highlightedRow, setUploadedImages]);
+  
+
   return (
     <div className={`App ${theme}`}>
       <header className="App-header">
