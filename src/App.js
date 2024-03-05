@@ -286,7 +286,7 @@ function App() {
             />
           </div>
           <div className="col-2 next-button">
-            <button className="btn btn-secondary blue" onClick={createRows}>
+            <button className="btn btn-secondary bot" onClick={createRows}>
               <div className="next-button"> Create Rows </div>
             </button>
           </div>
@@ -298,13 +298,13 @@ function App() {
               readOnly
             />
             <div className="margin-left-10px">
-              <button className="btn btn-secondary blue" onClick={nextTurn}>
+              <button className="btn btn-secondary bot" onClick={nextTurn}>
                 <div className="next-button">Next</div>
               </button>
             </div>
             <div className="margin-left-10px">
               <button
-                className="btn btn-secondary blue"
+                className="btn btn-secondary bot"
                 onClick={prevTurn}
                 disabled={turn === 1 && highlightedRow === 0}
               >
@@ -416,7 +416,7 @@ function App() {
       </div>
       <div className="App-footer">
         <div className="upload-container">
-          <label className="btn btn-secondary blue" htmlFor="file-upload">
+          <label className="btn btn-secondary bot image" htmlFor="file-upload">
             <img
               className="button-img"
               src="/images/image-icon.png"
@@ -429,7 +429,7 @@ function App() {
         </div>
         <div className="footer-text">A website by Thomas and Sharon</div>
         <div className="upload-container-right">
-          <label className="btn btn-secondary blue" htmlFor="stationary-upload">
+          <label className="btn btn-secondary bot" htmlFor="stationary-upload">
             {"Fixed "}
             <img
               className="button-img"

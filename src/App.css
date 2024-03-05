@@ -108,7 +108,7 @@
   border-color: var(--border);
   background-color: var(--tableHeader);
   text-align: center;
-  font-size: 20px;
+  font-size: 1.5vw;
 }
 
 .form-control.turn-counter:focus {
@@ -121,7 +121,7 @@
   border-color: var(--border);
   background-color: var(--tableHeader);
   text-align: center;
-  font-size: 20px;
+  font-size: 1.5vw;
 }
 
 .form-control.create-row-field:focus {
@@ -131,7 +131,7 @@
 
 .next-button {
   color: var(--buttonText);
-  font-size: 20px;
+  font-size: 1.5vw;
 }
 
 .option {
@@ -145,14 +145,14 @@
   border-color: var(--border);
   box-shadow: none;
   color: var(--mainText);
-  font-size: 20px;
+  font-size: 1.5vw;
 }
 .form-control.select:focus {
   background-color: var(--main);
   border-color: var(--border);
   box-shadow: none;
   color: var(--mainText);
-  font-size: 20px;
+  font-size: 1.5vw;
 }
 
 .margin-left-10px {
@@ -194,7 +194,7 @@
   position: relative;
   float: right;
   color: var(--mainText);
-  margin-right: 5vw;
+  margin-right: 15vw;
   height: 5vh;
   display: flex;
   align-items: center;
@@ -227,7 +227,7 @@ input[type="file"]::file-selector-button:hover {
   margin-left: 5vw;
   display: flex;
   align-items: center;
-  width: 100px;
+  width: 20vw;
 }
 
 .upload-container-right {
@@ -259,7 +259,7 @@ input[type="file"]::file-selector-button:hover {
   color: var(--mainText);
   padding-left: 5%;
   padding-right: 5%;
-  font-size: 20px;
+  font-size: 1.4vw;
   text-align: left;
   padding-top: 2%;
   overflow-y: scroll;
@@ -287,6 +287,14 @@ input[type="file"]::file-selector-button:hover {
   width: 30%;
 }
 
+.btn.btn.btn-secondary {
+  font-size: 1.5vw;
+}
+
+.btn.btn-secondary.bot.image {
+  min-width: 10%;
+}
+
 .btn.btn-secondary.bot {
   background-color: var(--button);
   color: var(--buttonText);
@@ -298,29 +306,9 @@ input[type="file"]::file-selector-button:hover {
   background-color: var(--buttonHover);
   color: var(--buttonText);
   border-color: var(--border);
-  min-width: 100%;
 }
 
 .btn.btn-secondary.bot:active {
-  background-color: var(--buttonActive);
-  color: var(--buttonText);
-  border-color: var(--border);
-  min-width: 100%;
-}
-
-.btn.btn-secondary.blue {
-  background-color: var(--button);
-  color: var(--buttonText);
-  border-color: var(--border);
-}
-
-.btn.btn-secondary.blue:hover {
-  background-color: var(--buttonHover);
-  color: var(--buttonText);
-  border-color: var(--border);
-}
-
-.btn.btn-secondary.blue:active {
   background-color: var(--buttonActive);
   color: var(--buttonText);
   border-color: var(--border);
