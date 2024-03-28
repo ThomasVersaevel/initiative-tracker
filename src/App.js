@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
+import { Soundboard } from "./components/Soundboard";
 
 function App() {
   const [turn, setTurn] = useState(1);
@@ -427,7 +428,10 @@ function App() {
               : " " + gridRows[highlightedRow].charactername}
           </label>
         </div>
-        <div className="footer-text">A website by Thomas and Sharon</div>
+        <div>
+          <Soundboard></Soundboard>
+        </div>
+        {/*<div className="footer-text">A website by Thomas and Sharon</div>*/}
         <div className="upload-container-right">
           <label className="btn btn-secondary bot" htmlFor="stationary-upload">
             {"Fixed "}
