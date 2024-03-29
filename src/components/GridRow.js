@@ -42,7 +42,7 @@ export function GridRow({
 }) {
   const [values, setValues] = useState(initialValues);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [hasOpenedPopup, setHasOpenedPopup] = useState(false);
+  const [prevHighlighted, setPrevHighlighted] = useState(false);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -53,28 +53,22 @@ export function GridRow({
     updateValues(id, name, value);
   };
 
-  const openPopup = () => {
-    setIsPopupOpen(true);
-    setHasOpenedPopup(true);
-  };
-
-  const closePopup = () => {
-    setIsPopupOpen(false);
-  };
-
   useEffect(() => {
     setValues(initialValues);
   }, [initialValues]);
 
   useEffect(() => {
-    if (!hasOpenedPopup && highlighted && values.condition !== "") {
+    if (highlighted && values.condition !== "" && !isPopupOpen && !prevHighlighted) {
       if (savingThrowConditions.some((item) => item === values.condition)) {
-        openPopup();
+        setIsPopupOpen(true);
       }
-    } else {
-      setHasOpenedPopup(false);
     }
-  }, [hasOpenedPopup, highlighted, values.condition]);
+    setPrevHighlighted(highlighted);
+  }, [highlighted, values.condition, isPopupOpen, prevHighlighted]);
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
 
   return (
     <div
@@ -171,7 +165,9 @@ export function GridRow({
           Delete
         </button>
       </div>
-      <Popup isOpen={isPopupOpen} onClose={closePopup}></Popup>
+      {isPopupOpen && (
+        <Popup isOpen={isPopupOpen} onClose={closePopup}></Popup>
+      )}
     </div>
   );
 }
