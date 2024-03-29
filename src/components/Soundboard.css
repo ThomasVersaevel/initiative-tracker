@@ -1,24 +1,23 @@
-.audio-player {
-    margin-top: 10px;
-  }
-  
-  .audio-player audio {
-    width: 50px; /* Set the width of the audio player */
-    height: auto;
-  }
-  
-  /* Hide the default audio controls */
-  .audio-player audio::-webkit-media-controls-panel {
-    display: none;
-  }
-  
-  /* Style the play button */
-  .audio-player audio::-webkit-media-controls-play-button {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background: url(./../../public/images/speaker.png) no-repeat;
-    background-size: contain;
-    background-color: transparent;
-  }
-  
+/* Hide all controls except the play button */
+audio::-webkit-media-controls-start-playback-button {
+  display: block !important;
+  width: 100%;
+  height: 100%;
+}
+
+/* Hide the default controls panel */
+audio::-webkit-media-controls-panel {
+  display: none !important;
+}
+
+/* Hide the default background of the controls */
+audio::-webkit-media-controls {
+  background: transparent !important;
+  width: 30px; /* Adjust the width and height as needed */
+  height: 30px;
+}
+
+/* Hide the timeline */
+audio::-webkit-media-controls-timeline {
+  display: none !important;
+}

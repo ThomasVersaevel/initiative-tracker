@@ -252,14 +252,13 @@ function App() {
         }
       }
     };
-  
+
     document.addEventListener("paste", handlePaste);
-  
+
     return () => {
       document.removeEventListener("paste", handlePaste);
     };
   }, [highlightedRow, setUploadedImages]);
-  
 
   return (
     <div className={`App ${theme}`}>
@@ -408,7 +407,10 @@ function App() {
                   alt=""
                 ></img>
               </button>
-              <label className="upload-img-button" htmlFor="stationary-file-upload">
+              <label
+                className="upload-img-button"
+                htmlFor="stationary-file-upload"
+              >
                 <img
                   className="button-img"
                   src="/images/image-icon.png"
@@ -432,7 +434,11 @@ function App() {
               : " " + gridRows[highlightedRow].charactername}
           </label>
         </div>
-        <div>
+        <div className="soundboard-container">
+          <Soundboard></Soundboard>
+          <Soundboard></Soundboard>
+          <Soundboard></Soundboard>
+          <Soundboard></Soundboard>
           <Soundboard></Soundboard>
         </div>
         {/*<div className="footer-text">A website by Thomas and Sharon</div>*/}

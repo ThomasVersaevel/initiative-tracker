@@ -313,3 +313,13 @@ input[type="file"]::file-selector-button:hover {
   color: var(--buttonText);
   border-color: var(--border);
 }
+
+.soundboard-container {
+  position: relative;
+  float: right;
+  color: var(--mainText);
+  margin-right: 0vw;
+  height: 5vh;
+  display: flex;
+  align-items: center;
+}

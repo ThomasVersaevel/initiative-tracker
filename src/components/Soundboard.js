@@ -1,9 +1,10 @@
 import React, { useState, useRef } from "react";
 import "./Soundboard.css";
 
-
 export const Soundboard = () => {
   const [audioFile, setAudioFile] = useState(null);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const audioRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const handleFileChange = (event) => {
@@ -19,8 +20,26 @@ export const Soundboard = () => {
     fileInputRef.current.click();
   };
 
+  const playAudioOnce = () => {
+    setAudioPlaying(true);
+    audioRef.current.play();
+  };
+
+  const handleAudioEnded = () => {
+    setAudioPlaying(false);
+    audioRef.current.currentTime = 0; // Reset audio to the beginning
+  };
+
   return (
     <div>
+      {!audioFile && (
+        <button
+          className="btn btn-secondary bot"
+          onClick={handleUploadButtonClick}
+        >
+          +<img className="button-img" src="images/speaker.png" alt="Speaker" />
+        </button>
+      )}
       <input
         type="file"
         accept=".mp3"
@@ -28,16 +47,16 @@ export const Soundboard = () => {
         style={{ display: "none" }}
         ref={fileInputRef}
       />
-      <button className="btn btn-secondary bot" onClick={handleUploadButtonClick}>
-        <img className="button-img" src="images/speaker.png" alt="Speaker" />
-        Upload MP3
-      </button>
       {audioFile && (
         <div className="audio-player">
-          <audio controls>
-            <source src={audioFile} type="audio/mpeg" />
-            Your browser does not support the audio element.
-          </audio>
+          <audio ref={audioRef} src={audioFile} onEnded={handleAudioEnded} />
+          <button className="btn btn-secondary bot" onClick={playAudioOnce}>
+            <img
+              className="button-img"
+              src="images/speakerplaying.png"
+              alt="Speaker"
+            />
+          </button>
         </div>
       )}
     </div>
