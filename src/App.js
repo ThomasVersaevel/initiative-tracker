@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
+import { Soundboard } from "./components/Soundboard";
 
 function App() {
   const [turn, setTurn] = useState(1);
@@ -103,6 +104,10 @@ function App() {
   };
 
   const onDeleteRow = (id) => {
+    if (gridRows.length === 1) {
+      // Skip deletion if there's only one row left
+      return;
+    }
     setGridRows((prevGridRows) => prevGridRows.filter((row) => row.id !== id));
   };
 
@@ -247,14 +252,13 @@ function App() {
         }
       }
     };
-  
+
     document.addEventListener("paste", handlePaste);
-  
+
     return () => {
       document.removeEventListener("paste", handlePaste);
     };
   }, [highlightedRow, setUploadedImages]);
-  
 
   return (
     <div className={`App ${theme}`}>
@@ -403,7 +407,10 @@ function App() {
                   alt=""
                 ></img>
               </button>
-              <label className="upload-img-button" htmlFor="stationary-file-upload">
+              <label
+                className="upload-img-button"
+                htmlFor="stationary-file-upload"
+              >
                 <img
                   className="button-img"
                   src="/images/image-icon.png"
@@ -427,7 +434,13 @@ function App() {
               : " " + gridRows[highlightedRow].charactername}
           </label>
         </div>
-        <div className="footer-text">A website by Thomas and Sharon</div>
+        <div className="soundboard-container">
+          <Soundboard></Soundboard>
+          <Soundboard></Soundboard>
+          <Soundboard></Soundboard>
+          <Soundboard></Soundboard>
+          <Soundboard></Soundboard>
+        </div>
         <div className="upload-container-right">
           <label className="btn btn-secondary bot" htmlFor="stationary-upload">
             {"Fixed "}

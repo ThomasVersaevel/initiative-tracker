@@ -1,6 +1,8 @@
-drag and drop gridrows
+- Add drag and drop for gridrows
+- Add soundboard in footer
 - Add carousel for all uploaded grid images (buttons in footer)
 - Add combat cheat sheet hover button
 
 optional:
 favorite character button that saves a cookie with gridrow info
+Also save images and sounds in cookie

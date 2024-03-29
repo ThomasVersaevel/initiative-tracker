@@ -1,0 +1,21 @@
+.button-margin {
+  margin-right: 1vw;
+}
+
+.sound-button {
+  background-color: var(--button);
+  color: var(--buttonText);
+  border: 1px solid var(--border);
+  border-color: var(--border);
+  border-radius: 0.5rem;
+  min-width: 100%;
+}
+
+.empty {
+  background-color: var(--main) !important;
+  color: var(--buttonText);
+  border: 1px solid var(--border);
+  border-color: var(--border);
+  border-radius: 0.5rem;
+  min-width: 100%;
+}
