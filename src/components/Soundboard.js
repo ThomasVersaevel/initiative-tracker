@@ -1,4 +1,6 @@
 import React, { useState, useRef } from "react";
+import "./Soundboard.css";
+
 
 export const Soundboard = () => {
   const [audioFile, setAudioFile] = useState(null);
@@ -26,12 +28,12 @@ export const Soundboard = () => {
         style={{ display: "none" }}
         ref={fileInputRef}
       />
-      <button className="btn btn-secondary bot"  onClick={handleUploadButtonClick}>
+      <button className="btn btn-secondary bot" onClick={handleUploadButtonClick}>
         <img className="button-img" src="images/speaker.png" alt="Speaker" />
         Upload MP3
       </button>
       {audioFile && (
-        <div>
+        <div className="audio-player">
           <audio controls>
             <source src={audioFile} type="audio/mpeg" />
             Your browser does not support the audio element.
