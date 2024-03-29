@@ -3,7 +3,6 @@ import "./Soundboard.css";
 
 export const Soundboard = () => {
   const [audioFile, setAudioFile] = useState(null);
-  const [audioPlaying, setAudioPlaying] = useState(false);
   const audioRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -21,24 +20,26 @@ export const Soundboard = () => {
   };
 
   const playAudioOnce = () => {
-    setAudioPlaying(true);
     audioRef.current.play();
   };
 
   const handleAudioEnded = () => {
-    setAudioPlaying(false);
     audioRef.current.currentTime = 0; // Reset audio to the beginning
   };
 
   return (
-    <div>
+    <div className="root">
       {!audioFile && (
-        <button
-          className="btn btn-secondary bot"
-          onClick={handleUploadButtonClick}
-        >
-          +<img className="button-img" src="images/speaker.png" alt="Speaker" />
-        </button>
+        <div className="button-margin">
+          <button className="empty" onClick={handleUploadButtonClick}>
+            +
+            <img
+              className="button-img"
+              src="images/speaker.png"
+              alt="Speaker"
+            />
+          </button>
+        </div>
       )}
       <input
         type="file"
@@ -48,9 +49,9 @@ export const Soundboard = () => {
         ref={fileInputRef}
       />
       {audioFile && (
-        <div className="audio-player">
+        <div className="button-margin">
           <audio ref={audioRef} src={audioFile} onEnded={handleAudioEnded} />
-          <button className="btn btn-secondary bot" onClick={playAudioOnce}>
+          <button className="sound-button" onClick={playAudioOnce}>
             <img
               className="button-img"
               src="images/speakerplaying.png"

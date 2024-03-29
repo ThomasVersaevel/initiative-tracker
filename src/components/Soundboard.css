@@ -1,23 +1,21 @@
-/* Hide all controls except the play button */
-audio::-webkit-media-controls-start-playback-button {
-  display: block !important;
-  width: 100%;
-  height: 100%;
+.button-margin {
+  margin-right: 1vw;
 }
 
-/* Hide the default controls panel */
-audio::-webkit-media-controls-panel {
-  display: none !important;
+.sound-button {
+  background-color: var(--button);
+  color: var(--buttonText);
+  border: 1px solid var(--border);
+  border-color: var(--border);
+  border-radius: 0.5rem;
+  min-width: 100%;
 }
 
-/* Hide the default background of the controls */
-audio::-webkit-media-controls {
-  background: transparent !important;
-  width: 30px; /* Adjust the width and height as needed */
-  height: 30px;
-}
-
-/* Hide the timeline */
-audio::-webkit-media-controls-timeline {
-  display: none !important;
+.empty {
+  background-color: var(--main) !important;
+  color: var(--buttonText);
+  border: 1px solid var(--border);
+  border-color: var(--border);
+  border-radius: 0.5rem;
+  min-width: 100%;
 }
