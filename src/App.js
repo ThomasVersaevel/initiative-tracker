@@ -104,6 +104,10 @@ function App() {
   };
 
   const onDeleteRow = (id) => {
+    if (gridRows.length === 1) {
+      // Skip deletion if there's only one row left
+      return;
+    }
     setGridRows((prevGridRows) => prevGridRows.filter((row) => row.id !== id));
   };
 

@@ -26,8 +26,8 @@ export const Soundboard = () => {
         style={{ display: "none" }}
         ref={fileInputRef}
       />
-      <button onClick={handleUploadButtonClick}>
-        <img src="images/speaker.png" alt="Speaker" />
+      <button className="btn btn-secondary bot"  onClick={handleUploadButtonClick}>
+        <img className="button-img" src="images/speaker.png" alt="Speaker" />
         Upload MP3
       </button>
       {audioFile && (
