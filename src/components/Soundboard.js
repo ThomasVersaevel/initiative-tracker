@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import "./Soundboard.css";
+import { AudioCookieHandler } from "./AudioCookieHandler";
 
 export const Soundboard = () => {
   const [audioFile, setAudioFile] = useState(null);
@@ -60,6 +61,7 @@ export const Soundboard = () => {
           </button>
         </div>
       )}
+      <AudioCookieHandler audioFile={audioFile} setAudioFile={setAudioFile} />
     </div>
   );
 };
