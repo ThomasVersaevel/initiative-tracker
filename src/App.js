@@ -429,9 +429,9 @@ function App() {
               src="/images/image-icon.png"
               alt=""
             ></img>
-            {(gridRows[highlightedRow].charactername ?? '') === ''
-              ? " Add"
-              : " " + gridRows[highlightedRow].charactername ?? ''}
+            {gridRows[highlightedRow].charactername.length > 0
+              ? gridRows[highlightedRow].charactername
+              : " Add"}
           </label>
         </div>
         <div className="soundboard-container">
