@@ -2,22 +2,28 @@ import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
 import { Soundboard } from "./components/Soundboard";
+import Cookies from "js-cookie";
 
 function App() {
   const [turn, setTurn] = useState(1);
-  const [gridRows, setGridRows] = useState([
-    {
-      initiative: 0,
-      charactername: "",
-      speed: "",
-      hp: "",
-      ac: "",
-      spell: "",
-      condition: "",
-      timer: 0,
-      id: 0,
-    },
-  ]);
+  const [gridRows, setGridRows] = useState(() => {
+    const savedRows = Cookies.get("gridRows");
+    return savedRows
+      ? JSON.parse(savedRows)
+      : [
+          {
+            initiative: 0,
+            charactername: "",
+            speed: "",
+            hp: "",
+            ac: "",
+            spell: "",
+            condition: "",
+            timer: 0,
+            id: 0,
+          },
+        ];
+  });
   const [rowCount, setRowCount] = useState(1);
   const [highlightedRow, setHighlightedRow] = useState(0);
   const [theme, setTheme] = useState("default");
@@ -49,18 +55,16 @@ function App() {
         timer: 0,
         id: i,
       });
+      setGridRows(initialGridRows);
     }
     setGridRows(initialGridRows);
   };
 
   const updateValues = (id, name, value) => {
     setGridRows((prevGridRows) =>
-      prevGridRows.map((row) => {
-        if (row.id === id) {
-          return { ...row, [name]: value };
-        }
-        return row;
-      })
+      prevGridRows.map((row) =>
+        row.id === id ? { ...row, [name]: value } : row
+      )
     );
   };
 
@@ -221,6 +225,10 @@ function App() {
       setSelectedStationary(null);
     }
   };
+
+  useEffect(() => {
+    Cookies.set("gridRows", JSON.stringify(gridRows), { expires: 18 });
+  }, [gridRows]);
 
   useEffect(() => {
     handleStationaryUpload();
