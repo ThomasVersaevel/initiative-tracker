@@ -431,7 +431,7 @@ function App() {
             ></img>
             {gridRows[highlightedRow].charactername === ""
               ? " Add"
-              : " " + gridRows[highlightedRow].charactername}
+              : " " + gridRows[highlightedRow].charactername ?? ''}
           </label>
         </div>
         <div className="soundboard-container">
