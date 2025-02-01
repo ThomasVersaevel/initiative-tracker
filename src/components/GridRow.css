@@ -14,22 +14,6 @@
   --delete: #000000;
 }
 
-.App.sharon {
-  --tableHeader: #db397f;
-  --button: #db397f;
-  --buttonHover: #de4c8e;
-  --buttonActive: #e45998;
-  --highlightedRow: #fd99c4;
-  --row: #e65c97;
-  --main: #f494c7;
-  --header: #d5558d;
-  --titleText: #680932;
-  --mainText: white;
-  --buttonText: white;
-  --border: #800e3f;
-  --delete: #000000;
-}
-
 .App.green {
   --tableHeader: #18392b;
   --button: #14452f;
