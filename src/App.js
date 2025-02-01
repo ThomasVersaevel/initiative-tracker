@@ -429,7 +429,7 @@ function App() {
               src="/images/image-icon.png"
               alt=""
             ></img>
-            {gridRows[highlightedRow].charactername === ""
+            {(gridRows[highlightedRow].charactername ?? '') === ''
               ? " Add"
               : " " + gridRows[highlightedRow].charactername ?? ''}
           </label>
