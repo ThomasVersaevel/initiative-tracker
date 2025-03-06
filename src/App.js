@@ -8,21 +8,26 @@ function App() {
   const [turn, setTurn] = useState(1);
   const [gridRows, setGridRows] = useState(() => {
     const savedRows = Cookies.get("gridRows");
-    return savedRows
-      ? JSON.parse(savedRows)
-      : [
-          {
-            initiative: 0,
-            charactername: "",
-            speed: "",
-            hp: "",
-            ac: "",
-            spell: "",
-            condition: "",
-            timer: 0,
-            id: 0,
-          },
-        ];
+    if (savedRows) {
+      const parsedRows = JSON.parse(savedRows);
+      return parsedRows.map((row, index) => ({
+        ...row,
+        id: index, // Ensure IDs start from 0 and increment properly
+      }));
+    }
+    return [
+      {
+        initiative: 0,
+        charactername: "",
+        speed: "",
+        hp: "",
+        ac: "",
+        spell: "",
+        condition: "",
+        timer: 0,
+        id: 0,
+      },
+    ];
   });
   const [rowCount, setRowCount] = useState(1);
   const [highlightedRow, setHighlightedRow] = useState(0);
@@ -78,6 +83,9 @@ function App() {
   };
 
   const addRow = () => {
+    // Find the max ID currently in gridRows and increment it
+    const nextId = gridRows.length > 0 ? Math.max(...gridRows.map(row => row.id)) + 1 : 0;
+    
     setGridRows([
       ...gridRows,
       {
@@ -89,12 +97,10 @@ function App() {
         spell: "",
         condition: "",
         timer: 0,
-        id: rowCount,
+        id: nextId, // Ensure new rows get a unique ID
       },
     ]);
-    setRowCount(rowCount + 1);
   };
-
   const sortDescending = () => {
     const sortedGridRows = [...gridRows].map((row) => ({ ...row }));
     sortedGridRows.sort((a, b) => {

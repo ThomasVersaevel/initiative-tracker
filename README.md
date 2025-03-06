@@ -11,3 +11,4 @@ Popup requesting saving throw on conditions that require one.
 Previous button to go back one row.
 Dynamically add and delete rows.
 Multiple color themes.
+Remembers setup from last session
