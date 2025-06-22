@@ -113,17 +113,8 @@ export function GridRow({
           onChange={handleInputChange}
           autoComplete="off"
         />
-        {(hovered || values.group) && (
+        {(hovered || values.legendary) && (
           <div>
-            <label className="checkbox group">
-              <input
-                type="checkbox"
-                name="group"
-                checked={values.group || false}
-                onChange={handleInputChange}
-              />
-              Group
-            </label>
             <label className="checkbox legendary">
               <input
                 type="checkbox"

@@ -24,7 +24,6 @@ function App() {
       {
         initiative: 0,
         charactername: "",
-        group: false,
         legendary: false,
         speed: "",
         hp: "",
@@ -51,7 +50,6 @@ function App() {
       initialGridRows.push({
         initiative: 0,
         charactername: "",
-        group: false,
         legendary: false,
         speed: "",
         hp: "",
@@ -93,7 +91,6 @@ function App() {
       {
         initiative: 0,
         charactername: "",
-        group: false,
         legendary: false,
         speed: "",
         hp: "",

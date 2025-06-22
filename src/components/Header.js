@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import "./Header.css";
 
 const themes = [
@@ -10,8 +9,6 @@ const themes = [
 ];
 
 export function Header({ onSelectTheme, showSpeed, showSpell, setShowSpeed, setShowSpell }) {
-
-
   return (
     <div className="App-header">
       <div className="options-container">

@@ -13,7 +13,6 @@
   --border: black;
   --delete: #000000;
   --legendary: #ffc31f;
-  --group: #202020;
 }
 
 .App.green {
@@ -161,12 +160,10 @@ input::-webkit-inner-spin-button {
   background-color: var(--highlightedRow);
 }
 
-.grid .row:not(.top-row):hover .hover-group,
 .grid .row:not(.top-row):hover .hover-legendary {
   display: block;
 }
 
-.hover-group,
 .hover-legendary {
   display: none;
 }
@@ -181,9 +178,6 @@ input::-webkit-inner-spin-button {
   user-select: none;
 }
 
-.group {
-  color: var(--group);
-}
 .legendary {
   color: var(--legendary) !important;
 }
