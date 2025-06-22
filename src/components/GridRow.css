@@ -12,6 +12,7 @@
   --buttonText: white;
   --border: black;
   --delete: #000000;
+  --legendary: #ffc31f;
 }
 
 .App.green {
@@ -157,4 +158,26 @@ input::-webkit-inner-spin-button {
 
 .option:hover {
   background-color: var(--highlightedRow);
+}
+
+.grid .row:not(.top-row):hover .hover-legendary {
+  display: block;
+}
+
+.hover-legendary {
+  display: none;
+}
+
+.checkbox {
+  display: flex;
+  align-items: left;
+  gap: 0.5rem;
+  margin-left: 0.4rem;
+  color: var(--btn-text);
+  font-size: var(--font-size-tiny);
+  user-select: none;
+}
+
+.legendary {
+  color: var(--legendary) !important;
 }

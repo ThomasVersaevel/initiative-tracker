@@ -3,9 +3,14 @@ import "./App.css";
 import { GridRow } from "./components/GridRow";
 import { Soundboard } from "./components/Soundboard";
 import Cookies from "js-cookie";
+import { Header } from "./components/Header";
 
 function App() {
   const [turn, setTurn] = useState(1);
+  // Optional Gridrow columns
+  const [showSpeed, setShowSpeed] = useState(true);
+  const [showSpell, setShowSpell] = useState(true);
+
   const [gridRows, setGridRows] = useState(() => {
     const savedRows = Cookies.get("gridRows");
     if (savedRows) {
@@ -19,6 +24,7 @@ function App() {
       {
         initiative: 0,
         charactername: "",
+        legendary: false,
         speed: "",
         hp: "",
         ac: "",
@@ -37,14 +43,6 @@ function App() {
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadedStationary, setUploadedStationary] = useState([]);
 
-  const themes = [
-    { label: "Default", value: "default" },
-    { label: "Green", value: "green" },
-    { label: "Prisma", value: "prisma" },
-    { label: "Dark", value: "dark" },
-    { label: "Berry", value: "berry" },
-  ];
-
   const createRows = () => {
     const initialRowCount = parseInt(rowCount);
     const initialGridRows = [];
@@ -52,6 +50,7 @@ function App() {
       initialGridRows.push({
         initiative: 0,
         charactername: "",
+        legendary: false,
         speed: "",
         hp: "",
         ac: "",
@@ -84,13 +83,15 @@ function App() {
 
   const addRow = () => {
     // Find the max ID currently in gridRows and increment it
-    const nextId = gridRows.length > 0 ? Math.max(...gridRows.map(row => row.id)) + 1 : 0;
-    
+    const nextId =
+      gridRows.length > 0 ? Math.max(...gridRows.map((row) => row.id)) + 1 : 0;
+
     setGridRows([
       ...gridRows,
       {
         initiative: 0,
         charactername: "",
+        legendary: false,
         speed: "",
         hp: "",
         ac: "",
@@ -172,10 +173,6 @@ function App() {
       });
       setGridRows(updatedGridRows);
     }
-  };
-
-  const onSelectTheme = (selectedTheme) => {
-    setTheme(selectedTheme);
   };
 
   const handleUpload = () => {
@@ -271,30 +268,20 @@ function App() {
     return () => {
       document.removeEventListener("paste", handlePaste);
     };
-  }, [highlightedRow, setUploadedImages]);
+  }, [highlightedRow, setUploadedImages]);  
 
   return (
     <div className={`App ${theme}`}>
-      <header className="App-header">
-        <div className="title">
-          <h1>Take Initiative</h1>
-        </div>
-        <div className="class-selector">
-          <select
-            className="form-control select"
-            onChange={(e) => onSelectTheme(e.target.value)}
-          >
-            {themes.map((option, index) => (
-              <option className="option" key={index} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </header>
+      <Header
+        onSelectTheme={setTheme}
+        showSpeed={showSpeed}
+        setShowSpeed={setShowSpeed}
+        showSpell={showSpell}
+        setShowSpell={setShowSpell}
+      ></Header>
       <div className="App-body">
         <div className="row mb-3">
-          <div className="col-1">
+          <div className="col-1 turn-container">
             <input
               className="form-control create-row-field"
               type="number"
@@ -302,7 +289,7 @@ function App() {
               onChange={(e) => setRowCount(parseInt(e.target.value))}
             />
           </div>
-          <div className="col-2 next-button">
+          <div className="col-2 next-button turn-container">
             <button className="btn btn-secondary bot" onClick={createRows}>
               <div className="next-button"> Create Rows </div>
             </button>
@@ -329,16 +316,55 @@ function App() {
               </button>
             </div>
           </div>
+          {gridRows.some((row) => row.legendary) && (
+            <div className="col-3 input-container">
+              <div className="legendary-container">
+                <span>Legendary Actions:</span>
+                <div className="checkboxes">
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="legendary-container">
+                <span>Legendary Resistances:</span>
+                <div className="checkboxes">
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="col-1"></div>
         </div>
         <div className="grid">
           <div className="row top-row">
             <div className="col-1 cell">Initiative</div>
             <div className="col-3 cell">Player Name</div>
-            <div className="col-1 cell">Speed</div>
+            {showSpeed && <div className="col-1 cell">Speed</div>}
             <div className="col-1 cell">HP</div>
             <div className="col-1 cell">AC</div>
-            <div className="col-1 cell">Spell Save</div>
+            {showSpell && <div className="col-1 cell">Spell Save</div>}
             <div className="col-2 cell">Condition</div>
             <div className="col-1 cell">Timer</div>
             <div className="col-1 cell"></div>{" "}
@@ -353,6 +379,8 @@ function App() {
                 updateValues={updateValues}
                 onDeleteRow={onDeleteRow}
                 theme={theme}
+                showSpeed={showSpeed}
+                showSpellSave={showSpell}
                 uploadedImages={uploadedImages}
               />
             </div>
