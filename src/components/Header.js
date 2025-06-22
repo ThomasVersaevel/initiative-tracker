@@ -9,40 +9,34 @@ const themes = [
   { label: "Berry", value: "berry" },
 ];
 
-export function Header({ onSelectTheme, }) {
-  const [showSpeed, setShowSpeed] = useState(true);
-  const [showSpell, setShowSpell] = useState(true);
+export function Header({ onSelectTheme, showSpeed, showSpell, setShowSpeed, setShowSpell }) {
+
 
   return (
     <div className="App-header">
+      <div className="options-container">
+        <label className="form-check-label">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            checked={showSpeed}
+            onChange={() => setShowSpeed(!showSpeed)}
+          />
+          Show Speed
+        </label>
+
+        <label className="form-check-label">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            checked={showSpell}
+            onChange={() => setShowSpell(!showSpell)}
+          />
+          Show Spell Save
+        </label>
+      </div>
       <div className="title">
         <h1>Take Initiative</h1>
-      </div>
-      <div className="options-container">
-        <div className="form-check form-switch">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            id="toggleSpeed"
-            checked={showSpeed}
-            onChange={() => setShowSpeed((prev) => !prev)}
-          />
-          <label className="form-check-label" htmlFor="toggleSpeed">
-            Show Speed
-          </label>
-        </div>
-        <div className="form-check form-switch">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            id="toggleSpeed"
-            checked={showSpell}
-            onChange={() => setShowSpell((prev) => !prev)}
-          />
-          <label className="form-check-label" htmlFor="toggleSpeed">
-            Show Speed
-          </label>
-        </div>
       </div>
 
       <div className="class-selector">

@@ -7,6 +7,10 @@ import { Header } from "./components/Header";
 
 function App() {
   const [turn, setTurn] = useState(1);
+  // Optional Gridrow columns
+  const [showSpeed, setShowSpeed] = useState(true);
+  const [showSpell, setShowSpell] = useState(true);
+
   const [gridRows, setGridRows] = useState(() => {
     const savedRows = Cookies.get("gridRows");
     if (savedRows) {
@@ -20,6 +24,8 @@ function App() {
       {
         initiative: 0,
         charactername: "",
+        group: false,
+        legendary: false,
         speed: "",
         hp: "",
         ac: "",
@@ -45,6 +51,8 @@ function App() {
       initialGridRows.push({
         initiative: 0,
         charactername: "",
+        group: false,
+        legendary: false,
         speed: "",
         hp: "",
         ac: "",
@@ -85,6 +93,8 @@ function App() {
       {
         initiative: 0,
         charactername: "",
+        group: false,
+        legendary: false,
         speed: "",
         hp: "",
         ac: "",
@@ -166,10 +176,6 @@ function App() {
       });
       setGridRows(updatedGridRows);
     }
-  };
-
-  const onSelectTheme = (selectedTheme) => {
-    setTheme(selectedTheme);
   };
 
   const handleUpload = () => {
@@ -265,14 +271,20 @@ function App() {
     return () => {
       document.removeEventListener("paste", handlePaste);
     };
-  }, [highlightedRow, setUploadedImages]);
+  }, [highlightedRow, setUploadedImages]);  
 
   return (
     <div className={`App ${theme}`}>
-      <Header onSelectTheme={onSelectTheme}></Header>
+      <Header
+        onSelectTheme={setTheme}
+        showSpeed={showSpeed}
+        setShowSpeed={setShowSpeed}
+        showSpell={showSpell}
+        setShowSpell={setShowSpell}
+      ></Header>
       <div className="App-body">
         <div className="row mb-3">
-          <div className="col-1">
+          <div className="col-1 turn-container">
             <input
               className="form-control create-row-field"
               type="number"
@@ -280,7 +292,7 @@ function App() {
               onChange={(e) => setRowCount(parseInt(e.target.value))}
             />
           </div>
-          <div className="col-2 next-button">
+          <div className="col-2 next-button turn-container">
             <button className="btn btn-secondary bot" onClick={createRows}>
               <div className="next-button"> Create Rows </div>
             </button>
@@ -307,16 +319,55 @@ function App() {
               </button>
             </div>
           </div>
+          {gridRows.some((row) => row.legendary) && (
+            <div className="col-3 input-container">
+              <div className="legendary-container">
+                <span>Legendary Actions:</span>
+                <div className="checkboxes">
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="legendary-container">
+                <span>Legendary Resistances:</span>
+                <div className="checkboxes">
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                  <label className="custom-checkbox">
+                    <input type="checkbox" />
+                    <span className="checkmark"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="col-1"></div>
         </div>
         <div className="grid">
           <div className="row top-row">
             <div className="col-1 cell">Initiative</div>
             <div className="col-3 cell">Player Name</div>
-            <div className="col-1 cell">Speed</div>
+            {showSpeed && <div className="col-1 cell">Speed</div>}
             <div className="col-1 cell">HP</div>
             <div className="col-1 cell">AC</div>
-            <div className="col-1 cell">Spell Save</div>
+            {showSpell && <div className="col-1 cell">Spell Save</div>}
             <div className="col-2 cell">Condition</div>
             <div className="col-1 cell">Timer</div>
             <div className="col-1 cell"></div>{" "}
@@ -331,6 +382,8 @@ function App() {
                 updateValues={updateValues}
                 onDeleteRow={onDeleteRow}
                 theme={theme}
+                showSpeed={showSpeed}
+                showSpellSave={showSpell}
                 uploadedImages={uploadedImages}
               />
             </div>

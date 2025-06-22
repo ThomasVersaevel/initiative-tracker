@@ -3,6 +3,7 @@
 } */
 
 :root {
+  --font-size-tiny: 0.6vw;
   --font-size: 1.2vw;
   --font-size-large: 1.4vw;
 }
@@ -26,7 +27,6 @@
   margin-top: 5vh;
   margin-bottom: 5vh;
   position: relative;
-  float: right;
   display: inline-block;
 }
 
@@ -236,12 +236,6 @@ input[type="file"]::file-selector-button:hover {
   align-items: center;
 }
 
-.title {
-  margin-left: 43%;
-  color: var(--titleText);
-  text-align: center;
-}
-
 .class-selector {
   width: 10%;
   margin-right: 20px;
@@ -265,9 +259,6 @@ input[type="file"]::file-selector-button:hover {
   color: var(--link);
 }
 
-.input-container {
-  margin-bottom: 20px;
-}
 
 .top-row {
   border-top: 3px solid var(--border);
@@ -313,4 +304,84 @@ input[type="file"]::file-selector-button:hover {
   color: var(--mainText);
   display: flex;
   margin: auto;
+}
+
+/* Legendary actions/resistances */
+.input-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mainText);
+  border-color: var(--border);
+  background-color: var(--tableHeader);
+  text-align: center;
+  font-size: var(--font-size);
+  border: 1px solid black;
+  border-radius: 0.5rem;
+}
+
+.legendary-container {
+  font-size: var(--font-size-tiny);
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+  flex-direction: column;
+}
+
+.legendary-container span {
+  margin-bottom: 0.3vw; /* space between label and checkboxes */
+}
+
+.checkboxes {
+  display: flex;
+  gap: 0.5vw; /* space between checkboxes */
+}
+
+.custom-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.custom-checkbox .checkmark {
+  width: 1vw;
+  height: 1vw;
+  background-color: var(--mainText); /* unchecked color */
+  border-radius: 0.3vw;
+  display: inline-block;
+  position: relative;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+/* When checked, change color */
+.custom-checkbox input[type="checkbox"]:checked + .checkmark {
+  background-color: var(--button);
+}
+
+.custom-checkbox .checkmark::after,
+.custom-checkbox .checkmark::before {
+  content: "";
+  position: absolute;
+  display: none;
+  top: 50%;
+  left: 50%;
+  width: 0.1vw;
+  height: 0.7vw;
+  background-color: var(--mainText);
+  transform-origin: center;
+  transform-style: preserve-3d;
+  display: none;
+}
+
+.custom-checkbox .checkmark::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.custom-checkbox .checkmark::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Show the X when checked */
+.custom-checkbox input[type="checkbox"]:checked + .checkmark::before,
+.custom-checkbox input[type="checkbox"]:checked + .checkmark::after {
+  display: block;
 }

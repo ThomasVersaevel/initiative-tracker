@@ -39,18 +39,23 @@ export function GridRow({
   onDeleteRow,
   highlighted,
   theme,
+  showSpeed,
+  showSpellSave,
 }) {
   const [values, setValues] = useState(initialValues);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [prevHighlighted, setPrevHighlighted] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value, type, checked } = event.target;
+    const newValue = type === "checkbox" ? checked : value;
+
     setValues((prevValues) => ({
       ...prevValues,
       [name]: value,
     }));
-    updateValues(id, name, value);
+    updateValues(id, name, newValue);
   };
 
   useEffect(() => {
@@ -58,7 +63,12 @@ export function GridRow({
   }, [initialValues]);
 
   useEffect(() => {
-    if (highlighted && values.condition !== "" && !isPopupOpen && !prevHighlighted) {
+    if (
+      highlighted &&
+      values.condition !== "" &&
+      !isPopupOpen &&
+      !prevHighlighted
+    ) {
       if (savingThrowConditions.some((item) => item === values.condition)) {
         setIsPopupOpen(true);
       }
@@ -89,24 +99,54 @@ export function GridRow({
           onChange={handleInputChange}
         />
       </div>
-      <div className="col-3 cell">
+      <div
+        className="col-3 cell"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         <input
-          className="form-control grid-row-input"
+          className={`form-control grid-row-input ${
+            values.legendary ? "legendary" : ""
+          }`}
           name="charactername"
           value={values.charactername}
           onChange={handleInputChange}
           autoComplete="off"
         />
+        {(hovered || values.group) && (
+          <div>
+            <label className="checkbox group">
+              <input
+                type="checkbox"
+                name="group"
+                checked={values.group || false}
+                onChange={handleInputChange}
+              />
+              Group
+            </label>
+            <label className="checkbox legendary">
+              <input
+                type="checkbox"
+                name="legendary"
+                checked={values.legendary || false}
+                onChange={handleInputChange}
+              />
+              Legendary
+            </label>
+          </div>
+        )}
       </div>
-      <div className="col-1 cell">
-        <input
-          className="form-control grid-row-input"
-          name="speed"
-          type="number"
-          value={values.speed}
-          onChange={handleInputChange}
-        />
-      </div>
+      {showSpeed && (
+        <div className="col-1 cell">
+          <input
+            className="form-control grid-row-input"
+            name="speed"
+            type="number"
+            value={values.speed}
+            onChange={handleInputChange}
+          />
+        </div>
+      )}
       <div className="col-1 cell">
         <input
           className="form-control grid-row-input"
@@ -125,15 +165,17 @@ export function GridRow({
           onChange={handleInputChange}
         />
       </div>
-      <div className="col-1 cell">
-        <input
-          className="form-control grid-row-input"
-          name="spell"
-          type="number"
-          value={values.spell}
-          onChange={handleInputChange}
-        />
-      </div>
+      {showSpellSave && (
+        <div className="col-1 cell">
+          <input
+            className="form-control grid-row-input"
+            name="spell"
+            type="number"
+            value={values.spell}
+            onChange={handleInputChange}
+          />
+        </div>
+      )}
       <div className="col-2 cell">
         <select
           className="form-control grid-row-input"
@@ -165,9 +207,7 @@ export function GridRow({
           Delete
         </button>
       </div>
-      {isPopupOpen && (
-        <Popup isOpen={isPopupOpen} onClose={closePopup}></Popup>
-      )}
+      {isPopupOpen && <Popup isOpen={isPopupOpen} onClose={closePopup}></Popup>}
     </div>
   );
 }
