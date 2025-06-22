@@ -3,6 +3,7 @@ import "./App.css";
 import { GridRow } from "./components/GridRow";
 import { Soundboard } from "./components/Soundboard";
 import Cookies from "js-cookie";
+import { Header } from "./components/Header";
 
 function App() {
   const [turn, setTurn] = useState(1);
@@ -36,14 +37,6 @@ function App() {
   const [selectedStationary, setSelectedStationary] = useState(null);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadedStationary, setUploadedStationary] = useState([]);
-
-  const themes = [
-    { label: "Default", value: "default" },
-    { label: "Green", value: "green" },
-    { label: "Prisma", value: "prisma" },
-    { label: "Dark", value: "dark" },
-    { label: "Berry", value: "berry" },
-  ];
 
   const createRows = () => {
     const initialRowCount = parseInt(rowCount);
@@ -84,8 +77,9 @@ function App() {
 
   const addRow = () => {
     // Find the max ID currently in gridRows and increment it
-    const nextId = gridRows.length > 0 ? Math.max(...gridRows.map(row => row.id)) + 1 : 0;
-    
+    const nextId =
+      gridRows.length > 0 ? Math.max(...gridRows.map((row) => row.id)) + 1 : 0;
+
     setGridRows([
       ...gridRows,
       {
@@ -275,23 +269,7 @@ function App() {
 
   return (
     <div className={`App ${theme}`}>
-      <header className="App-header">
-        <div className="title">
-          <h1>Take Initiative</h1>
-        </div>
-        <div className="class-selector">
-          <select
-            className="form-control select"
-            onChange={(e) => onSelectTheme(e.target.value)}
-          >
-            {themes.map((option, index) => (
-              <option className="option" key={index} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-      </header>
+      <Header onSelectTheme={onSelectTheme}></Header>
       <div className="App-body">
         <div className="row mb-3">
           <div className="col-1">

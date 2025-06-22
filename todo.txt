@@ -1,6 +1,7 @@
-
+- Grouped initiative AC's and HP's
+- Legendary monster toggle, with legendary action points and resistances
+- Preset soundboard
 - Add carousel for all uploaded grid images (buttons in footer)
-- Add combat cheat sheet hover button
 
 optional:
 favorite character button that saves a cookie with gridrow info
