@@ -1,5 +1,4 @@
-- Add drag and drop for gridrows
-- Add soundboard in footer
+
 - Add carousel for all uploaded grid images (buttons in footer)
 - Add combat cheat sheet hover button
 

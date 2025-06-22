@@ -1,7 +1,7 @@
 # initiative-tracker
 An initiative tracker web-app for DnD DMs
 
-Features:
+### Features:
 Set initiative, player name, movement (ft.), HP, AC, spell save DC, condition and condition timer
 
 Move through rounds and keep round number.
@@ -12,3 +12,7 @@ Previous button to go back one row.
 Dynamically add and delete rows.
 Multiple color themes.
 Remembers setup from last session
+
+### development
+
+Start dev server by running `npm start`  (port 3000)
