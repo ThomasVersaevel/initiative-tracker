@@ -8,8 +8,10 @@ import { Header } from "./components/Header";
 function App() {
   const [turn, setTurn] = useState(1);
   // Optional Gridrow columns
-  const [showSpeed, setShowSpeed] = useState(true);
-  const [showSpell, setShowSpell] = useState(true);
+  const [showSpeed, setShowSpeed] = useState(Cookies.get("showSpeed") | false);
+  const [showSpellSave, setShowSpell] = useState(
+    Cookies.get("ShowSpellSave") | false
+  );
 
   const [gridRows, setGridRows] = useState(() => {
     const savedRows = Cookies.get("gridRows");
@@ -231,7 +233,9 @@ function App() {
 
   useEffect(() => {
     Cookies.set("gridRows", JSON.stringify(gridRows), { expires: 18 });
-  }, [gridRows]);
+    Cookies.set("showSpeed", showSpeed, { expires: 18 });
+    Cookies.set("showSpellSave", showSpellSave, { expires: 18 });
+  }, [gridRows, showSpeed, showSpellSave]);
 
   useEffect(() => {
     handleStationaryUpload();
@@ -268,7 +272,7 @@ function App() {
     return () => {
       document.removeEventListener("paste", handlePaste);
     };
-  }, [highlightedRow, setUploadedImages]);  
+  }, [highlightedRow, setUploadedImages]);
 
   return (
     <div className={`App ${theme}`}>
@@ -276,7 +280,7 @@ function App() {
         onSelectTheme={setTheme}
         showSpeed={showSpeed}
         setShowSpeed={setShowSpeed}
-        showSpell={showSpell}
+        showSpell={showSpellSave}
         setShowSpell={setShowSpell}
       ></Header>
       <div className="App-body">
@@ -357,14 +361,18 @@ function App() {
           )}
           <div className="col-1"></div>
         </div>
-        <div className="grid">
+        <div
+          className={`grid ${
+            !showSpeed && !showSpellSave ? "grid-10" : ""
+          }`}
+        >
           <div className="row top-row">
             <div className="col-1 cell">Initiative</div>
             <div className="col-3 cell">Player Name</div>
             {showSpeed && <div className="col-1 cell">Speed</div>}
             <div className="col-1 cell">HP</div>
             <div className="col-1 cell">AC</div>
-            {showSpell && <div className="col-1 cell">Spell Save</div>}
+            {showSpellSave && <div className="col-1 cell">Spell Save</div>}
             <div className="col-2 cell">Condition</div>
             <div className="col-1 cell">Timer</div>
             <div className="col-1 cell"></div>{" "}
@@ -380,7 +388,7 @@ function App() {
                 onDeleteRow={onDeleteRow}
                 theme={theme}
                 showSpeed={showSpeed}
-                showSpellSave={showSpell}
+                showSpellSave={showSpellSave}
                 uploadedImages={uploadedImages}
               />
             </div>
