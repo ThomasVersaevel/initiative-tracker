@@ -259,7 +259,6 @@ input[type="file"]::file-selector-button:hover {
   color: var(--link);
 }
 
-
 .top-row {
   border-top: 3px solid var(--border);
   border-bottom: 3px solid var(--border);
