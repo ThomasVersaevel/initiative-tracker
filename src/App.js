@@ -8,9 +8,9 @@ import { Header } from "./components/Header";
 function App() {
   const [turn, setTurn] = useState(1);
   // Optional Gridrow columns
-  const [showSpeed, setShowSpeed] = useState(Cookies.get("showSpeed") | false);
+  const [showSpeed, setShowSpeed] = useState(Cookies.get("showSpeed") | true);
   const [showSpellSave, setShowSpell] = useState(
-    Cookies.get("ShowSpellSave") | false
+    Cookies.get("ShowSpellSave") | true
   );
 
   const [gridRows, setGridRows] = useState(() => {
