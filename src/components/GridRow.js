@@ -235,6 +235,18 @@ export function GridRow({
           </div>
         </>
       )}
+      {/* <div>
+        <div className="col-1 cell">
+          <input
+            className="form-control grid-row-input"
+            name="d20"
+            type="number"
+            value={0}
+            onChange={handleInputChange}
+            autoComplete="off"
+          />
+        </div>
+      </div> */}
       <div className="col-1 cell delete">
         <button className="btn btn-danger" onClick={() => onDeleteRow(id)}>
           Delete
