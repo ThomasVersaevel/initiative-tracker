@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./GridRow.css";
 import { Popup } from "./Popup";
 
-import DisplayResults from "@3d-dice/dice-ui/src/displayResults";
-import DiceParser from "@3d-dice/dice-parser-interface";
-import Dice from "./components/DiceBox";
-import D20Roller from "./D20Roller";
+import DiceBox from "@3d-dice/dice-box";
 
 const condition = [
   "blinded",
@@ -37,24 +34,6 @@ const savingThrowConditions = [
   "unconscious",
 ];
 
-// create Dice Roll Parser to handle complex notations
-const DRP = new DiceParser();
-
-// create display overlay for final results
-const DiceResults = new DisplayResults("#dice-box");
-
-// initialize the Dice Box outside of the component
-Dice.init().then(() => {
-  // clear dice on click anywhere on the screen
-  document.addEventListener("mousedown", () => {
-    const diceBoxCanvas = document.getElementById("dice-canvas");
-    if (window.getComputedStyle(diceBoxCanvas).display !== "none") {
-      Dice.hide().clear();
-      DiceResults.clear();
-    }
-  });
-});
-
 export function GridRow({
   id,
   initialValues,
@@ -71,6 +50,43 @@ export function GridRow({
   const [prevHighlighted, setPrevHighlighted] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [d20Roll, setD20Roll] = useState("");
+  const [diceBox, setDiceBox] = useState(null);
+
+  useEffect(() => {
+    const targetId = `dice-box-${id}`;
+    createNewDiceBox(targetId);
+  }, [id]);
+
+  const createNewDiceBox = async (targetId) => {
+    const box = await new DiceBox(`#${targetId}`, {
+      id: `dice-canvas-${id}`,
+      assetPath: "/assets/dice-box/",
+      startingHeight: 8,
+      throwForce: 6,
+      spinForce: 5,
+      lightIntensity: 0.9,
+    });
+
+    box.init().then(() => {
+      setDiceBox(box);
+    });
+  };
+
+  useEffect(() => {
+    if (highlighted && diceBox) {
+      diceBox.roll("1d20").then((results) => {
+        setD20Roll(results[0].value);
+      });
+    }
+  }, [highlighted, diceBox]);
+
+  const rollAgain = () => {
+    if (diceBox) {
+      diceBox.roll("1d20").then((results) => {
+        setD20Roll(results[0].value);
+      });
+    }
+  };
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -136,29 +152,6 @@ export function GridRow({
 
     setPrevHighlighted(highlighted);
   }, [highlighted, values.condition, isPopupOpen, prevHighlighted]);
-
-  // Dice libarary functions
-  Dice.onRollComplete = (results) => {
-    console.log(results);
-
-    // handle any rerolls
-    const rerolls = DRP.handleRerolls(results);
-    if (rerolls.length) {
-      rerolls.forEach((roll) => Dice.add(roll, roll.groupId));
-      return rerolls;
-    }
-    // if no rerolls needed then parse the final results
-    const finalResults = DRP.parseFinalResults(results);
-
-    // show the results
-    DiceResults.showResults(finalResults);
-  };
-
-  // trigger dice roll
-  const rollDice = (notation, group) => {
-    // trigger the dice roll using the parser
-    Dice.show().roll(DRP.parseNotation(notation));
-  };
 
   const closePopup = () => {
     setIsPopupOpen(false);
@@ -291,11 +284,7 @@ export function GridRow({
           value={d20Roll}
           readOnly
         />
-        <D20Roller
-          label="Roll D20"
-          notation="1d20"
-          onRoll={(notation) => rollDice(notation, "d20")}
-        />
+        <div id={`dice-box-${id}`}></div>
       </div>
       <div className="col-1 cell delete">
         <button className="btn btn-danger" onClick={() => onDeleteRow(id)}>
