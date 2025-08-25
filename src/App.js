@@ -278,12 +278,6 @@ function App() {
     };
   }, [highlightedRow, setUploadedImages]);
 
-  const totalCols =
-    12 -
-    (!showSpeed ? 1 : 0) -
-    (!showSpellSave ? 1 : 0) -
-    (!showCondition ? 3 : 0);
-
   return (
     <div className={`App ${theme}`}>
       <Header
@@ -374,10 +368,10 @@ function App() {
           <div className="col-1"></div>
         </div>
         {/* ====================== MAIN TABLE OF GRIDROWS ====================== */}
-        <div className={`grid grid-${totalCols}`}>
+        <div className={`grid grid-12`}>
           <div className="row top-row">
             <div className="col-1 cell">Initiative</div>
-            <div className="col-3 cell">Player Name</div>
+            <div className="col-2 cell">Player Name</div>
             {showSpeed && <div className="col-1 cell">Speed</div>}
             <div className="col-1 cell">HP</div>
             <div className="col-1 cell">AC</div>
@@ -388,6 +382,7 @@ function App() {
                 <div className="col-1 cell">Timer</div>
               </>
             )}
+            <div className="col-1 cell">Dice</div>{" "}
             <div className="col-1 cell"></div>{" "}
           </div>
           {gridRows.map((row, index) => (
