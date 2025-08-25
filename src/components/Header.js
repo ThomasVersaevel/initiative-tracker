@@ -8,7 +8,15 @@ const themes = [
   { label: "Berry", value: "berry" },
 ];
 
-export function Header({ onSelectTheme, showSpeed, showSpell, setShowSpeed, setShowSpell }) {
+export function Header({
+  onSelectTheme,
+  showSpeed,
+  showSpell,
+  setShowSpeed,
+  setShowSpell,
+  showCondition,
+  setShowCondition,
+}) {
   return (
     <div className="App-header">
       <div className="options-container">
@@ -30,6 +38,16 @@ export function Header({ onSelectTheme, showSpeed, showSpell, setShowSpeed, setS
             onChange={() => setShowSpell(!showSpell)}
           />
           Show Spell Save
+        </label>
+
+        <label className="form-check-label">
+          <input
+            type="checkbox"
+            className="form-check-input"
+            checked={showCondition}
+            onChange={() => setShowCondition(!showCondition)}
+          />
+          Show Condition
         </label>
       </div>
       <div className="title">

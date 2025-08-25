@@ -12,6 +12,9 @@ function App() {
   const [showSpellSave, setShowSpell] = useState(
     Cookies.get("ShowSpellSave") | true
   );
+  const [showCondition, setShowCondition] = useState(
+    Cookies.get("ShowCondition") | true
+  );
 
   const [gridRows, setGridRows] = useState(() => {
     const savedRows = Cookies.get("gridRows");
@@ -235,7 +238,8 @@ function App() {
     Cookies.set("gridRows", JSON.stringify(gridRows), { expires: 18 });
     Cookies.set("showSpeed", showSpeed, { expires: 18 });
     Cookies.set("showSpellSave", showSpellSave, { expires: 18 });
-  }, [gridRows, showSpeed, showSpellSave]);
+    Cookies.set("showCondition", showCondition, { expires: 18 });
+  }, [gridRows, showSpeed, showSpellSave, showCondition]);
 
   useEffect(() => {
     handleStationaryUpload();
@@ -282,6 +286,8 @@ function App() {
         setShowSpeed={setShowSpeed}
         showSpell={showSpellSave}
         setShowSpell={setShowSpell}
+        showCondition={showCondition}
+        setShowCondition={setShowCondition}
       ></Header>
       <div className="App-body">
         <div className="row mb-3">
@@ -362,9 +368,7 @@ function App() {
           <div className="col-1"></div>
         </div>
         <div
-          className={`grid ${
-            !showSpeed && !showSpellSave ? "grid-10" : ""
-          }`}
+          className={`grid ${!showSpeed && !showSpellSave ? "grid-10" : ""}`}
         >
           <div className="row top-row">
             <div className="col-1 cell">Initiative</div>
@@ -373,8 +377,12 @@ function App() {
             <div className="col-1 cell">HP</div>
             <div className="col-1 cell">AC</div>
             {showSpellSave && <div className="col-1 cell">Spell Save</div>}
-            <div className="col-2 cell">Condition</div>
-            <div className="col-1 cell">Timer</div>
+            {showCondition && (
+              <>
+                <div className="col-2 cell">Condition</div>
+                <div className="col-1 cell">Timer</div>
+              </>
+            )}
             <div className="col-1 cell"></div>{" "}
           </div>
           {gridRows.map((row, index) => (
@@ -389,6 +397,7 @@ function App() {
                 theme={theme}
                 showSpeed={showSpeed}
                 showSpellSave={showSpellSave}
+                showCondition={showCondition}
                 uploadedImages={uploadedImages}
               />
             </div>

@@ -41,6 +41,7 @@ export function GridRow({
   theme,
   showSpeed,
   showSpellSave,
+  showCondition,
 }) {
   const [values, setValues] = useState(initialValues);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -204,32 +205,36 @@ export function GridRow({
           />
         </div>
       )}
-      <div className="col-2 cell">
-        <select
-          className="form-control grid-row-input"
-          name="condition"
-          value={values.condition}
-          onChange={handleInputChange}
-        >
-          <option className="option" value="">
-            -
-          </option>
-          {condition.map((condition, index) => (
-            <option className="option" key={index} value={condition}>
-              {condition}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="col-1 cell">
-        <input
-          className="form-control grid-row-input"
-          name="timer"
-          type="number"
-          value={values.timer}
-          onChange={handleInputChange}
-        />
-      </div>
+      {showCondition && (
+        <>
+          <div className="col-2 cell">
+            <select
+              className="form-control grid-row-input"
+              name="condition"
+              value={values.condition}
+              onChange={handleInputChange}
+            >
+              <option className="option" value="">
+                -
+              </option>
+              {condition.map((condition, index) => (
+                <option className="option" key={index} value={condition}>
+                  {condition}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-1 cell">
+            <input
+              className="form-control grid-row-input"
+              name="timer"
+              type="number"
+              value={values.timer}
+              onChange={handleInputChange}
+            />
+          </div>
+        </>
+      )}
       <div className="col-1 cell delete">
         <button className="btn btn-danger" onClick={() => onDeleteRow(id)}>
           Delete
