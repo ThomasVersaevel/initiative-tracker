@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import "./GridRow.css";
 import { Popup } from "./Popup";
-
-import DiceBox from "@3d-dice/dice-box";
+import DiceRoller from "./DiceRoller";
 
 const condition = [
   "blinded",
@@ -50,43 +49,6 @@ export function GridRow({
   const [prevHighlighted, setPrevHighlighted] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [d20Roll, setD20Roll] = useState("");
-  const [diceBox, setDiceBox] = useState(null);
-
-  useEffect(() => {
-    const targetId = `dice-box-${id}`;
-    createNewDiceBox(targetId);
-  }, [id]);
-
-  const createNewDiceBox = async (targetId) => {
-    const box = await new DiceBox(`#${targetId}`, {
-      id: `dice-canvas-${id}`,
-      assetPath: "/assets/dice-box/",
-      startingHeight: 8,
-      throwForce: 6,
-      spinForce: 5,
-      lightIntensity: 0.9,
-    });
-
-    box.init().then(() => {
-      setDiceBox(box);
-    });
-  };
-
-  useEffect(() => {
-    if (highlighted && diceBox) {
-      diceBox.roll("1d20").then((results) => {
-        setD20Roll(results[0].value);
-      });
-    }
-  }, [highlighted, diceBox]);
-
-  const rollAgain = () => {
-    if (diceBox) {
-      diceBox.roll("1d20").then((results) => {
-        setD20Roll(results[0].value);
-      });
-    }
-  };
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -284,7 +246,7 @@ export function GridRow({
           value={d20Roll}
           readOnly
         />
-        <div id={`dice-box-${id}`}></div>
+        <DiceRoller onResult={(value) => setD20Roll(value)} />
       </div>
       <div className="col-1 cell delete">
         <button className="btn btn-danger" onClick={() => onDeleteRow(id)}>
