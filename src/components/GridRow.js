@@ -113,7 +113,14 @@ export function GridRow({
     }
 
     setPrevHighlighted(highlighted);
+    
   }, [highlighted, values.condition, isPopupOpen, prevHighlighted]);
+
+  useEffect(() => {
+    if (highlighted) {
+      setD20Roll(Math.floor(Math.random() * 20 + 1));
+    }
+  }, [highlighted]);
 
   const closePopup = () => {
     setIsPopupOpen(false);
@@ -246,7 +253,7 @@ export function GridRow({
           value={d20Roll}
           readOnly
         />
-        <DiceRoller onResult={(value) => setD20Roll(value)} />
+        {/* <DiceRoller onResult={(value) => setD20Roll(value)} /> */}
       </div>
       <div className="col-1 cell delete">
         <button className="btn btn-danger" onClick={() => onDeleteRow(id)}>
