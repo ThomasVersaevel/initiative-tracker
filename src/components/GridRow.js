@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./GridRow.css";
 import { Popup } from "./Popup";
+import DiceRoller from "./DiceRoller";
 
 const condition = [
   "blinded",
@@ -41,11 +42,13 @@ export function GridRow({
   theme,
   showSpeed,
   showSpellSave,
+  showCondition,
 }) {
   const [values, setValues] = useState(initialValues);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [prevHighlighted, setPrevHighlighted] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [d20Roll, setD20Roll] = useState("");
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -108,6 +111,7 @@ export function GridRow({
         setIsPopupOpen(true);
       }
     }
+
     setPrevHighlighted(highlighted);
   }, [highlighted, values.condition, isPopupOpen, prevHighlighted]);
 
@@ -135,7 +139,7 @@ export function GridRow({
         />
       </div>
       <div
-        className="col-3 cell"
+        className="col-2 cell"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -204,31 +208,45 @@ export function GridRow({
           />
         </div>
       )}
-      <div className="col-2 cell">
-        <select
-          className="form-control grid-row-input"
-          name="condition"
-          value={values.condition}
-          onChange={handleInputChange}
-        >
-          <option className="option" value="">
-            -
-          </option>
-          {condition.map((condition, index) => (
-            <option className="option" key={index} value={condition}>
-              {condition}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="col-1 cell">
+      {showCondition && (
+        <>
+          <div className="col-2 cell">
+            <select
+              className="form-control grid-row-input"
+              name="condition"
+              value={values.condition}
+              onChange={handleInputChange}
+            >
+              <option className="option" value="">
+                -
+              </option>
+              {condition.map((condition, index) => (
+                <option className="option" key={index} value={condition}>
+                  {condition}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-1 cell">
+            <input
+              className="form-control grid-row-input"
+              name="timer"
+              type="number"
+              value={values.timer}
+              onChange={handleInputChange}
+            />
+          </div>
+        </>
+      )}
+      <div className="col-1 cell d-flex align-items-center">
         <input
           className="form-control grid-row-input"
-          name="timer"
+          name="d20"
           type="number"
-          value={values.timer}
-          onChange={handleInputChange}
+          value={d20Roll}
+          readOnly
         />
+        <DiceRoller onResult={(value) => setD20Roll(value)} />
       </div>
       <div className="col-1 cell delete">
         <button className="btn btn-danger" onClick={() => onDeleteRow(id)}>
