@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./GridRow.css";
 import { Popup } from "./Popup";
 import DiceRoller from "./DiceRoller";
@@ -113,14 +113,17 @@ export function GridRow({
     }
 
     setPrevHighlighted(highlighted);
-    
   }, [highlighted, values.condition, isPopupOpen, prevHighlighted]);
+
+  const rollDice = useCallback(() => {
+    setD20Roll(Math.floor(Math.random() * 20 + 1));
+  }, []);
 
   useEffect(() => {
     if (highlighted) {
-      setD20Roll(Math.floor(Math.random() * 20 + 1));
+      rollDice();
     }
-  }, [highlighted]);
+  }, [highlighted, rollDice]);
 
   const closePopup = () => {
     setIsPopupOpen(false);
@@ -253,6 +256,9 @@ export function GridRow({
           value={d20Roll}
           readOnly
         />
+        <button className="btn btn-primary"
+          onClick={rollDice}
+        ></button>
         {/* <DiceRoller onResult={(value) => setD20Roll(value)} /> */}
       </div>
       <div className="col-1 cell delete">
