@@ -164,10 +164,6 @@
   margin-left: 10px;
 }
 
-.col-1 {
-  white-space: nowrap;
-}
-
 .row.top-row {
   background-color: var(--tableHeader);
 }
@@ -259,19 +255,37 @@ input[type="file"]::file-selector-button:hover {
   color: var(--link);
 }
 
+.combat-grid {
+  display: grid;
+  grid-auto-rows: minmax(2rem, auto); /* row height */
+  width: 100%;
+}
+
+.grid-header {
+  display: grid;
+  grid-template-columns:
+    10% /* Initiative */
+    20% /* Player Name */
+    10% /* Speed */
+    10% /* HP */
+    10% /* AC */
+    10% /* Spell Save */
+    13% /* Condition */
+    7% /* Timer */
+    5% /* Dice */
+    5%; /* Delete */
+  background: var(--tableHeader);
+}
+
+.cell {
+  padding: 3px;
+  align-items: center;
+  padding-left: 0.8rem;
+}
+
 .top-row {
   border-top: 3px solid var(--border);
   border-bottom: 3px solid var(--border);
-}
-
-.row.GridRow.cell {
-  border: 3px solid var(--border);
-}
-
-.max-hp {
-  margin-left: 6px;
-  color: rgb(194, 194, 194);
-  font-size: 0.9em;
 }
 
 .form-control.turn-counter {

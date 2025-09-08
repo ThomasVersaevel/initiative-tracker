@@ -33,7 +33,7 @@ const savingThrowConditions = [
   "unconscious",
 ];
 
-export function GridRow({
+export function TableRow({
   id,
   initialValues,
   updateValues,
@@ -139,15 +139,15 @@ export function GridRow({
 
   return (
     <div
-      className={`grid-row form-inline ${
+      className={`row form-inline ${
         values.condition === "surprised"
           ? "surprised"
           : highlighted
           ? "highlighted"
-          : ""
+          : "grid-row"
       } App ${theme}`}
     >
-      <div className="cell">
+      <div className="col-1 cell">
         <input
           className="form-control grid-row-input"
           name="initiative"
@@ -157,7 +157,7 @@ export function GridRow({
         />
       </div>
       <div
-        className="cell"
+        className="col-2 cell"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -184,9 +184,8 @@ export function GridRow({
           </div>
         )}
       </div>
-
       {showSpeed && (
-        <div className="cell">
+        <div className="col-1 cell">
           <input
             className="form-control grid-row-input"
             name="speed"
@@ -196,8 +195,7 @@ export function GridRow({
           />
         </div>
       )}
-
-      <div className="cell">
+      <div className="col-1 cell">
         <input
           className="form-control grid-row-input"
           name="hp"
@@ -209,8 +207,7 @@ export function GridRow({
         />
         {maxHp > 0 && <span className="max-hp">{maxHp}</span>}
       </div>
-
-      <div className="cell">
+      <div className="col-1 cell">
         <input
           className="form-control grid-row-input"
           name="ac"
@@ -219,9 +216,8 @@ export function GridRow({
           onChange={handleInputChange}
         />
       </div>
-
       {showSpellSave && (
-        <div className="cell">
+        <div className="col-1 cell">
           <input
             className="form-control grid-row-input"
             name="spell"
@@ -231,10 +227,9 @@ export function GridRow({
           />
         </div>
       )}
-
       {showCondition && (
         <>
-          <div className="cell">
+          <div className="col-2 cell">
             <select
               className="form-control grid-row-input"
               name="condition"
@@ -251,7 +246,7 @@ export function GridRow({
               ))}
             </select>
           </div>
-          <div className="cell">
+          <div className="col-1 cell">
             <input
               className="form-control grid-row-input"
               name="timer"
@@ -262,8 +257,7 @@ export function GridRow({
           </div>
         </>
       )}
-
-      <div className="cell d-flex align-items-center">
+      <div className="col-1 cell d-flex align-items-center">
         <input
           className="form-control grid-row-input"
           name="d20"
@@ -271,16 +265,14 @@ export function GridRow({
           value={d20Roll}
           readOnly
         />
-        {/* <button className="btn btn-primary" onClick={rollDice}></button> */}
+        <button className="btn btn-primary" onClick={rollDice}></button>
         {/* <DiceRoller onResult={(value) => setD20Roll(value)} /> */}
       </div>
-
-      <div className="cell delete">
+      <div className="col-1 cell delete">
         <button className="btn btn-danger" onClick={() => onDeleteRow(id)}>
           Delete
         </button>
       </div>
-
       {isPopupOpen && <Popup isOpen={isPopupOpen} onClose={closePopup}></Popup>}
     </div>
   );

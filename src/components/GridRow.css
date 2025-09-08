@@ -80,15 +80,34 @@
 }
 
 .grid-row {
+  display: grid;
+  grid-template-columns:
+    10% /* Initiative */
+    20% /* Player Name */
+    10% /* Speed */
+    10% /* HP */
+    10% /* AC */
+    10% /* Spell Save */
+    13% /* Condition */
+    7% /* Timer */
+    5% /* Dice */
+    5%; /* Delete */
   background-color: var(--row);
   color: var(--mainText);
   border-bottom: 3px solid var(--border);
+  width: 100%;
 }
 
 .highlighted {
   background-color: var(--highlightedRow);
   color: var(--mainText);
   border-bottom: 3px solid var(--border);
+}
+
+.max-hp {
+  margin-left: 6px;
+  color: rgb(194, 194, 194);
+  font-size: 0.9em;
 }
 
 .surprised {
@@ -123,13 +142,13 @@ input::-webkit-inner-spin-button {
 
 .cell {
   border-right: 3px solid var(--border);
-  display: flex;
   align-items: center;
 }
 
-.col-1.cell.delete {
+.cell.delete {
   text-align: center;
   justify-content: center;
+  padding: 3px;
 }
 
 .btn.btn-danger {

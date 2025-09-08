@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
+import { TableRow } from "./components/TableRow";
 import { Soundboard } from "./components/Soundboard";
 import Cookies from "js-cookie";
 import { Header } from "./components/Header";
@@ -368,23 +369,24 @@ function App() {
           <div className="col-1"></div>
         </div>
         {/* ====================== MAIN TABLE OF GRIDROWS ====================== */}
-        <div className={`grid grid-12`}>
-          <div className="row top-row">
-            <div className="col-1 cell">Initiative</div>
-            <div className="col-2 cell">Player Name</div>
-            {showSpeed && <div className="col-1 cell">Speed</div>}
-            <div className="col-1 cell">HP</div>
-            <div className="col-1 cell">AC</div>
-            {showSpellSave && <div className="col-1 cell">Spell Save</div>}
+        <div className="combat-grid">
+          <div className="grid-header top-row">
+            <div className="cell">Initiative</div>
+            <div className="cell">Player Name</div>
+            {showSpeed && <div className="cell">Speed</div>}
+            <div className="cell">HP</div>
+            <div className="cell">AC</div>
+            {showSpellSave && <div className="cell">Spell Save</div>}
             {showCondition && (
               <>
-                <div className="col-2 cell">Condition</div>
-                <div className="col-1 cell">Timer</div>
+                <div className="cell">Condition</div>
+                <div className="cell">Timer</div>
               </>
             )}
-            <div className="col-1 cell">Dice</div>{" "}
-            <div className="col-1 cell"></div>{" "}
+            <div className="cell">Dice</div>
+            <div className="cell"></div>
           </div>
+
           {gridRows.map((row, index) => (
             <div key={row.id}>
               <GridRow
