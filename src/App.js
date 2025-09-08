@@ -10,17 +10,18 @@ import { faDiceD20 } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const [turn, setTurn] = useState(1);
-  // Optional Gridrow columns
-  const [showSpeed, setShowSpeed] = useState(Cookies.get("showSpeed") | true);
+
+  const [showSpeed, setShowSpeed] = useState(
+    JSON.parse(Cookies.get("showSpeed") ?? "true")
+  );
   const [showSpellSave, setShowSpell] = useState(
-    Cookies.get("showSpellSave") | true
+    JSON.parse(Cookies.get("showSpellSave") ?? "true")
   );
   const [showCondition, setShowCondition] = useState(
-    Cookies.get("showCondition") | true
+    JSON.parse(Cookies.get("showCondition") ?? "true")
   );
-
   const [showDiceRoller, setShowDiceRoller] = useState(
-    Cookies.get("showDiceroller") | false
+    JSON.parse(Cookies.get("showDiceroller") ?? "false")
   );
 
   const [gridRows, setGridRows] = useState(() => {
@@ -243,10 +244,16 @@ function App() {
 
   useEffect(() => {
     Cookies.set("gridRows", JSON.stringify(gridRows), { expires: 18 });
-    Cookies.set("showSpeed", showSpeed, { expires: 18 });
-    Cookies.set("showSpellSave", showSpellSave, { expires: 18 });
-    Cookies.set("showCondition", showCondition, { expires: 18 });
-    Cookies.set("showDiceroller", showDiceRoller, { expires: 18 });
+    Cookies.set("showSpeed", JSON.stringify(showSpeed), { expires: 18 });
+    Cookies.set("showSpellSave", JSON.stringify(showSpellSave), {
+      expires: 18,
+    });
+    Cookies.set("showCondition", JSON.stringify(showCondition), {
+      expires: 18,
+    });
+    Cookies.set("showDiceroller", JSON.stringify(showDiceRoller), {
+      expires: 18,
+    });
   }, [gridRows, showSpeed, showSpellSave, showCondition, showDiceRoller]);
 
   const columnSizes = [
@@ -343,8 +350,7 @@ function App() {
             </>
           )}
         </button>
-        {((!showCondition && !showSpeed && !showSpellSave) ||
-          showDiceRoller) && <DiceRoller />}
+        {showDiceRoller && <DiceRoller />}
       </div>
 
       <div className="App-body">

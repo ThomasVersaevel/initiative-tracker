@@ -65,13 +65,9 @@ export function Header({
           </label>
         </div>
       )}
-
-      {/* Title */}
       <div className="title">
         <h1>Take Initiative</h1>
       </div>
-
-      {/* Theme selector */}
       <div className="class-selector">
         <select
           className="form-control select"

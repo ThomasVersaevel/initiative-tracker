@@ -1,7 +1,5 @@
 .title {
-  margin: auto;
   color: var(--titleText);
-  text-align: center;
 }
 
 .options-container {
@@ -11,14 +9,13 @@
   padding: 0.5rem;
 }
 
-/* Reset custom switch look */
 .form-check-input {
   appearance: checkbox;
   -webkit-appearance: checkbox;
   width: 1.2rem;
   height: 1.2rem;
   cursor: pointer;
-  accent-color: var(--btn-bg); /* optional: sets the check color on modern browsers */
+  accent-color: var(--btn-bg);
   border: 1px solid var(--btn-border);
   border-radius: 0.2rem;
   margin-right: 0.3rem;
