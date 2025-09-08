@@ -81,17 +81,6 @@
 
 .grid-row {
   display: grid;
-  grid-template-columns:
-    10% /* Initiative */
-    20% /* Player Name */
-    10% /* Speed */
-    10% /* HP */
-    10% /* AC */
-    10% /* Spell Save */
-    13% /* Condition */
-    7% /* Timer */
-    5% /* Dice */
-    5%; /* Delete */
   background-color: var(--row);
   color: var(--mainText);
   border-bottom: 3px solid var(--border);
@@ -125,6 +114,13 @@
   font-size: 1.4vw;
 }
 
+.d-flex {
+  display: flex;
+  flex: 1;
+  align-items: left;
+  justify-content: center;
+}
+
 .form-control.grid-row-input:focus {
   background-color: transparent;
   border: none;
@@ -141,6 +137,7 @@ input::-webkit-inner-spin-button {
 }
 
 .cell {
+  display: flex;
   border-right: 3px solid var(--border);
   align-items: center;
 }

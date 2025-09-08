@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
-import { TableRow } from "./components/TableRow";
 import { Soundboard } from "./components/Soundboard";
 import Cookies from "js-cookie";
 import { Header } from "./components/Header";
@@ -242,6 +241,34 @@ function App() {
     Cookies.set("showCondition", showCondition, { expires: 18 });
   }, [gridRows, showSpeed, showSpellSave, showCondition]);
 
+  const columnSizes = [
+    "1fr", // Initiative
+    "2fr", // Player Name
+    showSpeed ? "0.8fr" : null,
+    "1.2fr", // HP
+    "0.8fr", // AC
+    showSpellSave ? "1fr" : null,
+    ...(showCondition ? ["1.3fr", "0.7fr"] : []),
+    "0.5fr", // Dice
+    "0.7fr", // Delete
+  ]
+    .filter(Boolean)
+    .join(" "); // remove nulls for hidden columns
+
+  const totalWidth = [
+    10, // Initiative
+    20, // Player Name
+    showSpeed ? 8 : 0,
+    12, // HP
+    8, // AC
+    showSpellSave ? 10 : 0,
+    ...(showCondition ? [13, 7] : []),
+    5, // Dice
+    7, // Delete
+  ].reduce((a, b) => a + b, 0); // sum of visible column widths
+
+  console.log(columnSizes);
+
   useEffect(() => {
     handleStationaryUpload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -369,8 +396,11 @@ function App() {
           <div className="col-1"></div>
         </div>
         {/* ====================== MAIN TABLE OF GRIDROWS ====================== */}
-        <div className="combat-grid">
-          <div className="grid-header top-row">
+        <div className="combat-grid" style={{ width: `${totalWidth}%` }}>
+          <div
+            className="grid-header top-row"
+            style={{ display: "grid", gridTemplateColumns: columnSizes }}
+          >
             <div className="cell">Initiative</div>
             <div className="cell">Player Name</div>
             {showSpeed && <div className="cell">Speed</div>}
@@ -390,6 +420,7 @@ function App() {
           {gridRows.map((row, index) => (
             <div key={row.id}>
               <GridRow
+                columnSizes={columnSizes}
                 highlighted={index === highlightedRow}
                 key={row.id}
                 id={row.id}

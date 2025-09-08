@@ -34,6 +34,7 @@ const savingThrowConditions = [
 ];
 
 export function GridRow({
+  columnSizes,
   id,
   initialValues,
   updateValues,
@@ -146,6 +147,7 @@ export function GridRow({
           ? "highlighted"
           : ""
       } App ${theme}`}
+      style={{ display: "grid", gridTemplateColumns: columnSizes }}
     >
       <div className="cell">
         <input
@@ -171,17 +173,16 @@ export function GridRow({
           autoComplete="off"
         />
         {(hovered || values.legendary) && (
-          <div>
-            <label className="checkbox legendary">
-              <input
-                type="checkbox"
-                name="legendary"
-                checked={values.legendary || false}
-                onChange={handleInputChange}
-              />
-              Legendary
-            </label>
-          </div>
+          <label className="checkbox legendary">
+            <input
+              type="checkbox"
+              name="legendary"
+              checked={values.legendary || false}
+              onChange={handleInputChange}
+              className="me-1"
+            />
+            Legendary
+          </label>
         )}
       </div>
 
