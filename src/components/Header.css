@@ -34,3 +34,26 @@
   font-size: 1rem;
   user-select: none;
 }
+
+.hamburger {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: var(--mainText);
+}
+
+.hamburger-menu {
+  position: absolute;
+  top: 3vw; /* adjust for your header height */
+  left: 1vw;
+  background-color: var(--header);
+  border: 1px solid var(--border);
+  border-radius: 0.5vw;
+  padding: 1vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5vw;
+  z-index: 10;
+}

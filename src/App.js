@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
 import { Soundboard } from "./components/Soundboard";
+import { DiceRoller } from "./components/DiceRoller";
 import Cookies from "js-cookie";
 import { Header } from "./components/Header";
 
@@ -14,6 +15,10 @@ function App() {
   );
   const [showCondition, setShowCondition] = useState(
     Cookies.get("ShowCondition") | true
+  );
+
+  const [showDiceRoller, setShowDiceRoller] = useState(
+    Cookies.get("ShowCondition") | false
   );
 
   const [gridRows, setGridRows] = useState(() => {
@@ -317,6 +322,18 @@ function App() {
         showCondition={showCondition}
         setShowCondition={setShowCondition}
       ></Header>
+
+      <div className={`diceroller-panel ${showDiceRoller ? "open" : ""}`}>
+        <button
+          className="btn btn-secondary toggle-diceroller"
+          onClick={() => setShowDiceRoller(!showDiceRoller)}
+        >
+          {showDiceRoller ? ">" : "<"}
+        </button>
+        {((!showCondition && !showSpeed && !showSpellSave) ||
+          showDiceRoller) && <DiceRoller />}
+      </div>
+
       <div className="App-body">
         <div className="row mb-3">
           <div className="col-1 turn-container">
