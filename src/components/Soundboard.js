@@ -11,7 +11,8 @@ export const Soundboard = () => {
     { name: "Arrow", src: "/assets/sounds/arrow.mp3" },
     { name: "Magic", src: "/assets/sounds/magic.mp3" },
     { name: "Sword", src: "/assets/sounds/sword.mp3" },
-    { name: "Sword miss", src: "/assets/sounds/swordmis.mp3" },
+    { name: "Miss", src: "/assets/sounds/swordmis.mp3" },
+    { name: "Door", src: "/assets/sounds/door.mp3" },
   ];
 
   const handlePlay = (src) => {
@@ -36,12 +37,17 @@ export const Soundboard = () => {
   };
 
   return (
-    <div className="soundboard-root">
-      <div className="d-flex flex-wrap">
+    <div className="soundboard-root d-flex">
+      <img
+        className="button-img"
+        src="images/speakerplaying.png"
+        alt="Speaker"
+      />
+      <div className="soundboard-grid">
         {sounds.map((sound) => (
-          <div key={sound.src} className="mb-2">
+          <div key={sound.src} className="soundboard-item">
             <button
-              className="btn btn-secondary sound-button button-margin"
+              className="btn btn-secondary sound-button"
               onClick={() => handlePlay(sound.src)}
             >
               {sound.name}
@@ -54,7 +60,7 @@ export const Soundboard = () => {
         ))}
       </div>
 
-      <div className="volume-control ms-3">
+      <div className="volume-control">
         <input
           type="range"
           min="0"
