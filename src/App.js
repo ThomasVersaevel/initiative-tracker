@@ -488,16 +488,12 @@ function App() {
               alt=""
             ></img>
             {gridRows[highlightedRow].charactername.length > 0
-              ? gridRows[highlightedRow].charactername
+              ? " " + gridRows[highlightedRow].charactername
               : " Add"}
           </label>
         </div>
         <div className="soundboard-container">
-          <Soundboard></Soundboard>
-          <Soundboard></Soundboard>
-          <Soundboard></Soundboard>
-          <Soundboard></Soundboard>
-          <Soundboard></Soundboard>
+          <Soundboard />
         </div>
         <div className="upload-container-right">
           <label className="btn btn-secondary bot" htmlFor="stationary-upload">
