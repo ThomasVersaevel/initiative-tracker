@@ -1,21 +1,26 @@
+
 .button-margin {
-  margin-right: 1vw;
+  margin-right: 1rem;
 }
 
 .sound-button {
   background-color: var(--button);
   color: var(--buttonText);
-  border: 1px solid var(--border);
   border-color: var(--border);
-  border-radius: 0.5rem;
+  font-size: small !important;
   min-width: 100%;
 }
 
-.empty {
-  background-color: var(--main) !important;
-  color: var(--buttonText);
-  border: 1px solid var(--border);
-  border-color: var(--border);
-  border-radius: 0.5rem;
-  min-width: 100%;
+.d-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.soundboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  grid-gap: 4px;
+  margin: 4px 1rem 4px 1rem;
 }

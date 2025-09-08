@@ -1,65 +1,76 @@
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 import "./Soundboard.css";
 
 export const Soundboard = () => {
-  const [audioFile, setAudioFile] = useState(null);
-  const audioRef = useRef(null);
-  const fileInputRef = useRef(null);
+  const [volume, setVolume] = useState(0.1);
+  const audioRefs = useRef({});
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type === "audio/mpeg") {
-      setAudioFile(URL.createObjectURL(file));
-    } else {
-      alert("Please select a valid MP3 file.");
+  // Preset sounds
+  const sounds = [
+    { name: "Hakim", src: "/assets/sounds/hakim.mp3" },
+    { name: "Arrow", src: "/assets/sounds/arrow.mp3" },
+    { name: "Magic", src: "/assets/sounds/magic.mp3" },
+    { name: "Sword", src: "/assets/sounds/sword.mp3" },
+    { name: "Miss", src: "/assets/sounds/swordmis.mp3" },
+    { name: "Door", src: "/assets/sounds/door.mp3" },
+  ];
+
+  const handlePlay = (src) => {
+    const audio = audioRefs.current[src];
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0; // restart
+      audio.volume = volume; // apply current global volume
+      audio.playbackRate = Math.random() * 0.8 + 0.6;
+      audio.play();
     }
   };
 
-  const handleUploadButtonClick = () => {
-    fileInputRef.current.click();
-  };
+  const handleVolumeChange = (event) => {
+    const newVolume = parseFloat(event.target.value);
+    setVolume(newVolume);
 
-  const playAudioOnce = () => {
-    audioRef.current.play();
-  };
-
-  const handleAudioEnded = () => {
-    audioRef.current.currentTime = 0; // Reset audio to the beginning
+    // update all audio players immediately
+    Object.values(audioRefs.current).forEach((audio) => {
+      if (audio) audio.volume = newVolume;
+    });
   };
 
   return (
-    <div className="root">
-      {!audioFile && (
-        <div className="button-margin">
-          <button className="empty" onClick={handleUploadButtonClick}>
-            +
-            <img
-              className="button-img"
-              src="images/speaker.png"
-              alt="Speaker"
-            />
-          </button>
-        </div>
-      )}
-      <input
-        type="file"
-        accept=".mp3"
-        onChange={handleFileChange}
-        style={{ display: "none" }}
-        ref={fileInputRef}
+    <div className="soundboard-root d-flex">
+      <img
+        className="button-img"
+        src="images/speakerplaying.png"
+        alt="Speaker"
       />
-      {audioFile && (
-        <div className="button-margin">
-          <audio ref={audioRef} src={audioFile} onEnded={handleAudioEnded} />
-          <button className="sound-button" onClick={playAudioOnce}>
-            <img
-              className="button-img"
-              src="images/speakerplaying.png"
-              alt="Speaker"
+      <div className="soundboard-grid">
+        {sounds.map((sound) => (
+          <div key={sound.src} className="soundboard-item">
+            <button
+              className="btn btn-secondary sound-button"
+              onClick={() => handlePlay(sound.src)}
+            >
+              {sound.name}
+            </button>
+            <audio
+              ref={(el) => (audioRefs.current[sound.src] = el)}
+              src={sound.src}
             />
-          </button>
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
+
+      <div className="volume-control">
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          value={volume}
+          onChange={handleVolumeChange}
+          className="volume-slider"
+        />
+      </div>
     </div>
   );
 };
