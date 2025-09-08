@@ -6,11 +6,11 @@
   --font-size-tiny: 0.6vw;
   --font-size: 1.2vw;
   --font-size-large: 1.4vw;
+  background-color: var(--main);
 }
 
 .App {
   text-align: center;
-  overflow: hidden;
 }
 
 .image-container {
@@ -237,15 +237,11 @@ input[type="file"]::file-selector-button:hover {
 
 .App-body {
   background-color: var(--main);
-  min-height: 100vh;
   top: 6vh;
   color: var(--mainText);
-  padding-left: 5%;
-  padding-right: 5%;
+  padding: 2rem 3rem 10rem 3rem;
   font-size: var(--font-size-large);
   text-align: left;
-  padding-top: 2%;
-  overflow-y: scroll;
   overflow-y: hidden;
 }
 
@@ -427,7 +423,6 @@ input[type="file"]::file-selector-button:hover {
   transition: right 0.4s ease-in-out;
   z-index: 999; /* stays above other content */
   padding: 1rem;
-  overflow-y: auto; /* scroll if DiceRoller grows */
   border: 3px solid var(--border);
   border-radius: 0.5rem;
 }
