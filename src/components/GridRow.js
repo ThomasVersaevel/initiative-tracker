@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import "./GridRow.css";
 import { Popup } from "./Popup";
-import DiceRoller from "./DiceRoller";
 
 const condition = [
   "blinded",
@@ -273,7 +272,6 @@ export function GridRow({
           readOnly
         />
         {/* <button className="btn btn-primary" onClick={rollDice}></button> */}
-        {/* <DiceRoller onResult={(value) => setD20Roll(value)} /> */}
       </div>
 
       <div className="cell delete">
