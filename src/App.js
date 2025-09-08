@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
 import { Soundboard } from "./components/Soundboard";
+import { DiceRoller } from "./components/DiceRoller";
 import Cookies from "js-cookie";
 import { Header } from "./components/Header";
 
@@ -14,6 +15,10 @@ function App() {
   );
   const [showCondition, setShowCondition] = useState(
     Cookies.get("ShowCondition") | true
+  );
+
+  const [showDiceRoller, setShowDiceRoller] = useState(
+    Cookies.get("ShowCondition") | false
   );
 
   const [gridRows, setGridRows] = useState(() => {
@@ -241,6 +246,34 @@ function App() {
     Cookies.set("showCondition", showCondition, { expires: 18 });
   }, [gridRows, showSpeed, showSpellSave, showCondition]);
 
+  const columnSizes = [
+    "1fr", // Initiative
+    "2fr", // Player Name
+    showSpeed ? "0.8fr" : null,
+    "1.2fr", // HP
+    "0.8fr", // AC
+    showSpellSave ? "1fr" : null,
+    ...(showCondition ? ["1.3fr", "0.7fr"] : []),
+    "0.5fr", // Dice
+    "0.7fr", // Delete
+  ]
+    .filter(Boolean)
+    .join(" "); // remove nulls for hidden columns
+
+  const totalWidth = [
+    10, // Initiative
+    20, // Player Name
+    showSpeed ? 8 : 0,
+    12, // HP
+    8, // AC
+    showSpellSave ? 10 : 0,
+    ...(showCondition ? [13, 7] : []),
+    5, // Dice
+    7, // Delete
+  ].reduce((a, b) => a + b, 0); // sum of visible column widths
+
+  console.log(columnSizes);
+
   useEffect(() => {
     handleStationaryUpload();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -289,6 +322,18 @@ function App() {
         showCondition={showCondition}
         setShowCondition={setShowCondition}
       ></Header>
+
+      <div className={`diceroller-panel ${showDiceRoller ? "open" : ""}`}>
+        <button
+          className="btn btn-secondary toggle-diceroller"
+          onClick={() => setShowDiceRoller(!showDiceRoller)}
+        >
+          {showDiceRoller ? ">" : "<"}
+        </button>
+        {((!showCondition && !showSpeed && !showSpellSave) ||
+          showDiceRoller) && <DiceRoller />}
+      </div>
+
       <div className="App-body">
         <div className="row mb-3">
           <div className="col-1 turn-container">
@@ -368,26 +413,31 @@ function App() {
           <div className="col-1"></div>
         </div>
         {/* ====================== MAIN TABLE OF GRIDROWS ====================== */}
-        <div className={`grid grid-12`}>
-          <div className="row top-row">
-            <div className="col-1 cell">Initiative</div>
-            <div className="col-2 cell">Player Name</div>
-            {showSpeed && <div className="col-1 cell">Speed</div>}
-            <div className="col-1 cell">HP</div>
-            <div className="col-1 cell">AC</div>
-            {showSpellSave && <div className="col-1 cell">Spell Save</div>}
+        <div className="combat-grid" style={{ width: `${totalWidth}%` }}>
+          <div
+            className="grid-header top-row"
+            style={{ display: "grid", gridTemplateColumns: columnSizes }}
+          >
+            <div className="cell">Initiative</div>
+            <div className="cell">Player Name</div>
+            {showSpeed && <div className="cell">Speed</div>}
+            <div className="cell">HP</div>
+            <div className="cell">AC</div>
+            {showSpellSave && <div className="cell">Spell Save</div>}
             {showCondition && (
               <>
-                <div className="col-2 cell">Condition</div>
-                <div className="col-1 cell">Timer</div>
+                <div className="cell">Condition</div>
+                <div className="cell">Timer</div>
               </>
             )}
-            <div className="col-1 cell">Dice</div>{" "}
-            <div className="col-1 cell"></div>{" "}
+            <div className="cell">Dice</div>
+            <div className="cell"></div>
           </div>
+
           {gridRows.map((row, index) => (
             <div key={row.id}>
               <GridRow
+                columnSizes={columnSizes}
                 highlighted={index === highlightedRow}
                 key={row.id}
                 id={row.id}

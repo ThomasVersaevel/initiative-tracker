@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import "./GridRow.css";
 import { Popup } from "./Popup";
-import DiceRoller from "./DiceRoller";
 
 const condition = [
   "blinded",
@@ -34,6 +33,7 @@ const savingThrowConditions = [
 ];
 
 export function GridRow({
+  columnSizes,
   id,
   initialValues,
   updateValues,
@@ -139,15 +139,16 @@ export function GridRow({
 
   return (
     <div
-      className={`row form-inline ${
+      className={`grid-row form-inline ${
         values.condition === "surprised"
           ? "surprised"
           : highlighted
           ? "highlighted"
-          : "grid-row"
+          : ""
       } App ${theme}`}
+      style={{ display: "grid", gridTemplateColumns: columnSizes }}
     >
-      <div className="col-1 cell">
+      <div className="cell">
         <input
           className="form-control grid-row-input"
           name="initiative"
@@ -157,7 +158,7 @@ export function GridRow({
         />
       </div>
       <div
-        className="col-2 cell"
+        className="cell"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -171,21 +172,21 @@ export function GridRow({
           autoComplete="off"
         />
         {(hovered || values.legendary) && (
-          <div>
-            <label className="checkbox legendary">
-              <input
-                type="checkbox"
-                name="legendary"
-                checked={values.legendary || false}
-                onChange={handleInputChange}
-              />
-              Legendary
-            </label>
-          </div>
+          <label className="checkbox legendary">
+            <input
+              type="checkbox"
+              name="legendary"
+              checked={values.legendary || false}
+              onChange={handleInputChange}
+              className="me-1"
+            />
+            Legendary
+          </label>
         )}
       </div>
+
       {showSpeed && (
-        <div className="col-1 cell">
+        <div className="cell">
           <input
             className="form-control grid-row-input"
             name="speed"
@@ -195,7 +196,8 @@ export function GridRow({
           />
         </div>
       )}
-      <div className="col-1 cell">
+
+      <div className="cell">
         <input
           className="form-control grid-row-input"
           name="hp"
@@ -207,7 +209,8 @@ export function GridRow({
         />
         {maxHp > 0 && <span className="max-hp">{maxHp}</span>}
       </div>
-      <div className="col-1 cell">
+
+      <div className="cell">
         <input
           className="form-control grid-row-input"
           name="ac"
@@ -216,8 +219,9 @@ export function GridRow({
           onChange={handleInputChange}
         />
       </div>
+
       {showSpellSave && (
-        <div className="col-1 cell">
+        <div className="cell">
           <input
             className="form-control grid-row-input"
             name="spell"
@@ -227,9 +231,10 @@ export function GridRow({
           />
         </div>
       )}
+
       {showCondition && (
         <>
-          <div className="col-2 cell">
+          <div className="cell">
             <select
               className="form-control grid-row-input"
               name="condition"
@@ -246,7 +251,7 @@ export function GridRow({
               ))}
             </select>
           </div>
-          <div className="col-1 cell">
+          <div className="cell">
             <input
               className="form-control grid-row-input"
               name="timer"
@@ -257,7 +262,8 @@ export function GridRow({
           </div>
         </>
       )}
-      <div className="col-1 cell d-flex align-items-center">
+
+      <div className="cell d-flex align-items-center">
         <input
           className="form-control grid-row-input"
           name="d20"
@@ -265,14 +271,15 @@ export function GridRow({
           value={d20Roll}
           readOnly
         />
-        <button className="btn btn-primary" onClick={rollDice}></button>
-        {/* <DiceRoller onResult={(value) => setD20Roll(value)} /> */}
+        {/* <button className="btn btn-primary" onClick={rollDice}></button> */}
       </div>
-      <div className="col-1 cell delete">
+
+      <div className="cell delete">
         <button className="btn btn-danger" onClick={() => onDeleteRow(id)}>
           Delete
         </button>
       </div>
+
       {isPopupOpen && <Popup isOpen={isPopupOpen} onClose={closePopup}></Popup>}
     </div>
   );
