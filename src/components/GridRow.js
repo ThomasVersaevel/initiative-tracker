@@ -45,6 +45,7 @@ export function GridRow({
   showCondition,
 }) {
   const [values, setValues] = useState(initialValues);
+  const [maxHp, setMaxHp] = useState(initialValues.hp || 0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [prevHighlighted, setPrevHighlighted] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -53,10 +54,17 @@ export function GridRow({
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
     const newValue = type === "checkbox" ? checked : value;
-    setValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
+    setValues((prevValues) => {
+      const updated = { ...prevValues, [name]: value };
+      if (name === "hp") {
+        const numeric = parseInt(newValue, 10);
+        if (!isNaN(numeric) && numeric > maxHp) {
+          setMaxHp(numeric);
+        }
+      }
+      return updated;
+    });
+
     updateValues(id, name, newValue);
   };
 
@@ -197,6 +205,7 @@ export function GridRow({
           onBlur={onLoseFocusHpField}
           onKeyDown={(e) => handleKeyDown(e)}
         />
+        {maxHp > 0 && <span className="max-hp">{maxHp}</span>}
       </div>
       <div className="col-1 cell">
         <input
@@ -256,9 +265,7 @@ export function GridRow({
           value={d20Roll}
           readOnly
         />
-        <button className="btn btn-primary"
-          onClick={rollDice}
-        ></button>
+        <button className="btn btn-primary" onClick={rollDice}></button>
         {/* <DiceRoller onResult={(value) => setD20Roll(value)} /> */}
       </div>
       <div className="col-1 cell delete">
