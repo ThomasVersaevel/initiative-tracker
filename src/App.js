@@ -5,20 +5,22 @@ import { Soundboard } from "./components/Soundboard";
 import { DiceRoller } from "./components/DiceRoller";
 import Cookies from "js-cookie";
 import { Header } from "./components/Header";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDiceD20 } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const [turn, setTurn] = useState(1);
   // Optional Gridrow columns
   const [showSpeed, setShowSpeed] = useState(Cookies.get("showSpeed") | true);
   const [showSpellSave, setShowSpell] = useState(
-    Cookies.get("ShowSpellSave") | true
+    Cookies.get("showSpellSave") | true
   );
   const [showCondition, setShowCondition] = useState(
-    Cookies.get("ShowCondition") | true
+    Cookies.get("showCondition") | true
   );
 
   const [showDiceRoller, setShowDiceRoller] = useState(
-    Cookies.get("ShowCondition") | false
+    Cookies.get("showDiceroller") | false
   );
 
   const [gridRows, setGridRows] = useState(() => {
@@ -244,7 +246,8 @@ function App() {
     Cookies.set("showSpeed", showSpeed, { expires: 18 });
     Cookies.set("showSpellSave", showSpellSave, { expires: 18 });
     Cookies.set("showCondition", showCondition, { expires: 18 });
-  }, [gridRows, showSpeed, showSpellSave, showCondition]);
+    Cookies.set("showDiceroller", showDiceRoller, { expires: 18 });
+  }, [gridRows, showSpeed, showSpellSave, showCondition, showDiceRoller]);
 
   const columnSizes = [
     "1fr", // Initiative
@@ -328,7 +331,17 @@ function App() {
           className="btn btn-secondary toggle-diceroller"
           onClick={() => setShowDiceRoller(!showDiceRoller)}
         >
-          {showDiceRoller ? ">" : "<"}
+          {showDiceRoller ? (
+            <>
+              <FontAwesomeIcon icon={"arrow-alt-left"} />
+              <FontAwesomeIcon icon={faDiceD20} />
+            </>
+          ) : (
+            <>
+              <FontAwesomeIcon icon={"arrow-alt-right"} />
+              <FontAwesomeIcon icon={faDiceD20} />
+            </>
+          )}
         </button>
         {((!showCondition && !showSpeed && !showSpellSave) ||
           showDiceRoller) && <DiceRoller />}

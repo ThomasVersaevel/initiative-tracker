@@ -15,11 +15,12 @@ export function DiceRoller({ onResult }) {
       const box = new DiceBox("#dice-box", {
         id: "dice-canvas",
         assetPath: "/assets/dice-box/",
-        scale: 6, // adjust up/down to control dice size
+        themeColor: "#2bbfff",
+        scale: 6, 
         startingHeight: 4,
-        throwForce: 6,
+        throwForce: 4,
         spinForce: 5,
-        lightIntensity: 0.9,
+        lightIntensity: 1.0,
       });
 
       box.init().then(() => {
@@ -30,6 +31,16 @@ export function DiceRoller({ onResult }) {
 
   const rollDice = () => {
     if (!diceBoxRef.current || rolling) return;
+
+    // Validate notation
+    const match = notation.match(/^(\d+)d\d+$/i); // captures the number before "d"
+    if (match) {
+      const numDice = parseInt(match[1], 10);
+      if (numDice > 500) {
+        alert("You cannot roll more than 500 dice at once!");
+        return;
+      }
+    }
     setRolling(true);
 
     diceBoxRef.current
@@ -44,17 +55,9 @@ export function DiceRoller({ onResult }) {
 
   return (
     <div
-      className="dice-roller"
-      style={{
-        width: "100%",
-        height: "100%",
-        border: "3px solid var(--border)",
-        background: "var(--row)",
-        padding: "1rem",
-        flexDirection: "column",
-      }}
+      className="diceroller-container"
     >
-      <div className="diceroller">
+      <div className="diceroller-controls">
         <input
           type="text"
           value={notation}
@@ -63,7 +66,7 @@ export function DiceRoller({ onResult }) {
           placeholder="1d20"
         />
         <button
-          className="btn btn-primary"
+          className="btn btn-primary diceroller-button"
           onClick={rollDice}
           disabled={rolling}
         >

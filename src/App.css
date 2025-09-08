@@ -387,6 +387,15 @@ input[type="file"]::file-selector-button:hover {
   display: block;
 }
 
+.diceroller-container {
+  width: 100%;
+  height: 100%;
+  border: 3px solid var(--border);
+  background: var(--row);
+  padding: 1rem;
+  flex-direction: column;
+}
+
 .diceroller-input {
   display: inline-block;
   flex: 15;
@@ -398,10 +407,15 @@ input[type="file"]::file-selector-button:hover {
   margin-left: 0.5rem;
 }
 
-.diceroller {
+.diceroller-controls {
   display: flex;
   align-items: center;
   margin-bottom: 1rem;
+}
+
+.diceroller-button {
+  background-color: var(--tableHeader) !important;
+  border-color: var(--border) !important;
 }
 
 .diceroller-panel {
@@ -426,9 +440,19 @@ input[type="file"]::file-selector-button:hover {
 
 .toggle-diceroller {
   position: fixed;
-  top: 13%;
-  right: 1rem;
+  top: 10%;
+  right: 0%;
   z-index: 1;
+  background-color: var(--tableHeader) !important;
+  border: 1px solid var(--border) !important;
+}
+
+.toggle-diceroller:hover {
+  background-color: var(--row) !important;
+}
+
+.toggle-diceroller:active {
+  background-color: var(--buttonHover) !important;
 }
 
 #dice-box {
