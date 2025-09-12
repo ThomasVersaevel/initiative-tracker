@@ -3,7 +3,7 @@ import "./Header.css";
 
 const themes = [
   { label: "Default", value: "default" },
-  { label: "Green", value: "green" },
+  { label: "Forrest", value: "green" },
   { label: "Prisma", value: "prisma" },
   { label: "Dark", value: "dark" },
   { label: "Berry", value: "berry" },
@@ -22,15 +22,13 @@ export function Header({
 
   return (
     <div className="App-header">
-      {/* Hamburger button */}
       <button
         className="hamburger"
         onClick={() => setMenuOpen((prev) => !prev)}
         aria-label="Toggle menu"
       >
-        ☰
+        <span>☰</span>
       </button>
-
       {/* Dropdown menu */}
       {menuOpen && (
         <div className="hamburger-menu">
@@ -68,6 +66,7 @@ export function Header({
       <div className="title">
         <h1>Take Initiative</h1>
       </div>
+      {/* Theme selector */}
       <div className="class-selector">
         <select
           className="form-control select"

@@ -62,7 +62,7 @@ export function DiceRoller({ onResult }) {
           type="text"
           value={notation}
           onChange={(e) => setNotation(e.target.value)}
-          className="form-control diceroller-input"
+          className="form-control dicefield diceroller-input"
           placeholder="1d20"
         />
         <button
@@ -77,7 +77,7 @@ export function DiceRoller({ onResult }) {
           readOnly
           value={result}
           placeholder=""
-          className="form-control diceroller-output"
+          className="form-control dicefield diceroller-output"
         ></input>
       </div>
       <div id="dice-box" ref={containerRef} />

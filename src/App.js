@@ -34,7 +34,7 @@ function App() {
       const parsedRows = JSON.parse(savedRows);
       return parsedRows.map((row, index) => ({
         ...row,
-        id: index, // Ensure IDs start from 0 and increment properly
+        id: index,
       }));
     }
     return [
@@ -42,8 +42,9 @@ function App() {
         initiative: 0,
         charactername: "",
         legendary: false,
+        group: false,
         speed: "",
-        hp: "",
+        hp: 0,
         ac: "",
         spell: "",
         condition: "",
@@ -52,34 +53,12 @@ function App() {
       },
     ];
   });
-  const [rowCount, setRowCount] = useState(1);
   const [highlightedRow, setHighlightedRow] = useState(0);
   const [theme, setTheme] = useState("default");
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedStationary, setSelectedStationary] = useState(null);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadedStationary, setUploadedStationary] = useState([]);
-
-  const createRows = () => {
-    const initialRowCount = parseInt(rowCount);
-    const initialGridRows = [];
-    for (let i = 1; i <= initialRowCount; i++) {
-      initialGridRows.push({
-        initiative: 0,
-        charactername: "",
-        legendary: false,
-        speed: "",
-        hp: "",
-        ac: "",
-        spell: "",
-        condition: "",
-        timer: 0,
-        id: i,
-      });
-      setGridRows(initialGridRows);
-    }
-    setGridRows(initialGridRows);
-  };
 
   const updateValues = (id, name, value) => {
     setGridRows((prevGridRows) =>
@@ -90,7 +69,6 @@ function App() {
   };
 
   const clearInitiativeInputs = () => {
-    // Clear initiative inputs of each grid row in the state
     const updatedGridRows = gridRows.map((row) => ({
       ...row,
       initiative: 0,
@@ -99,7 +77,6 @@ function App() {
   };
 
   const addRow = () => {
-    // Find the max ID currently in gridRows and increment it
     const nextId =
       gridRows.length > 0 ? Math.max(...gridRows.map((row) => row.id)) + 1 : 0;
 
@@ -109,13 +86,14 @@ function App() {
         initiative: 0,
         charactername: "",
         legendary: false,
+        group: false,
         speed: "",
-        hp: "",
+        hp: 0,
         ac: "",
         spell: "",
         condition: "",
         timer: 0,
-        id: nextId, // Ensure new rows get a unique ID
+        id: nextId,
       },
     ]);
   };
@@ -263,9 +241,9 @@ function App() {
   const columnSizes = [
     "1fr", // Initiative
     "2fr", // Player Name
-    showSpeed ? "0.8fr" : null,
     "1.2fr", // HP
     "0.8fr", // AC
+    showSpeed ? "0.8fr" : null,
     showSpellSave ? "1fr" : null,
     ...(showCondition ? ["1.3fr", "0.7fr"] : []),
     "0.5fr", // Dice
@@ -277,16 +255,14 @@ function App() {
   const totalWidth = [
     10, // Initiative
     20, // Player Name
-    showSpeed ? 8 : 0,
     12, // HP
     8, // AC
+    showSpeed ? 8 : 0,
     showSpellSave ? 10 : 0,
     ...(showCondition ? [13, 7] : []),
     5, // Dice
     7, // Delete
   ].reduce((a, b) => a + b, 0); // sum of visible column widths
-
-  console.log(columnSizes);
 
   useEffect(() => {
     handleStationaryUpload();
@@ -336,7 +312,6 @@ function App() {
         showCondition={showCondition}
         setShowCondition={setShowCondition}
       ></Header>
-
       <div className={`diceroller-panel ${showDiceRoller ? "open" : ""}`}>
         <button
           className="btn btn-secondary toggle-diceroller"
@@ -359,20 +334,6 @@ function App() {
 
       <div className="App-body">
         <div className="row mb-3">
-          <div className="col-1 turn-container">
-            <input
-              className="form-control create-row-field"
-              type="number"
-              value={rowCount}
-              onChange={(e) => setRowCount(parseInt(e.target.value))}
-            />
-          </div>
-          <div className="col-2 next-button turn-container">
-            <button className="btn btn-secondary bot" onClick={createRows}>
-              <div className="next-button"> Create Rows </div>
-            </button>
-          </div>
-          <div className="col-2"></div>
           <div className="col-4 turn-container">
             <input
               className="form-control turn-counter"
@@ -380,17 +341,17 @@ function App() {
               readOnly
             />
             <div className="margin-left-10px">
-              <button className="btn btn-secondary bot" onClick={nextTurn}>
-                <div className="next-button">Next</div>
-              </button>
-            </div>
-            <div className="margin-left-10px">
               <button
                 className="btn btn-secondary bot"
                 onClick={prevTurn}
                 disabled={turn === 1 && highlightedRow === 0}
               >
                 <div className="next-button">Prev</div>
+              </button>
+            </div>
+            <div className="margin-left-10px">
+              <button className="btn btn-secondary bot" onClick={nextTurn}>
+                <div className="next-button">Next</div>
               </button>
             </div>
           </div>
@@ -443,9 +404,9 @@ function App() {
           >
             <div className="cell">Initiative</div>
             <div className="cell">Player Name</div>
-            {showSpeed && <div className="cell">Speed</div>}
             <div className="cell">HP</div>
             <div className="cell">AC</div>
+            {showSpeed && <div className="cell">Speed</div>}
             {showSpellSave && <div className="cell">Spell Save</div>}
             {showCondition && (
               <>
