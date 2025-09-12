@@ -6,7 +6,11 @@ import { DiceRoller } from "./components/DiceRoller";
 import Cookies from "js-cookie";
 import { Header } from "./components/Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDiceD20 } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faArrowRight,
+  faDiceD20,
+} from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const [turn, setTurn] = useState(1);
@@ -338,15 +342,15 @@ function App() {
           className="btn btn-secondary toggle-diceroller"
           onClick={() => setShowDiceRoller(!showDiceRoller)}
         >
-          {showDiceRoller ? (
+          {!showDiceRoller ? (
             <>
-              <FontAwesomeIcon icon={"arrow-alt-left"} />
+              <FontAwesomeIcon icon={faArrowLeft} />
               <FontAwesomeIcon icon={faDiceD20} />
             </>
           ) : (
             <>
-              <FontAwesomeIcon icon={"arrow-alt-right"} />
               <FontAwesomeIcon icon={faDiceD20} />
+              <FontAwesomeIcon icon={faArrowRight} />
             </>
           )}
         </button>
