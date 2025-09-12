@@ -44,7 +44,13 @@ export function GridRow({
   showSpellSave,
   showCondition,
 }) {
-  const [values, setValues] = useState(initialValues);
+  const [values, setValues] = useState({
+    ...initialValues,
+    hp: initialValues.group
+      ? initialValues.hp || [0, 0, 0]
+      : initialValues.hp || 0,
+  });
+
   const [maxHp, setMaxHp] = useState(initialValues.hp || 0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [prevHighlighted, setPrevHighlighted] = useState(false);
@@ -171,18 +177,78 @@ export function GridRow({
           onChange={handleInputChange}
           autoComplete="off"
         />
-        {(hovered || values.legendary) && (
-          <label className="checkbox legendary">
-            <input
-              type="checkbox"
-              name="legendary"
-              checked={values.legendary || false}
-              onChange={handleInputChange}
-              className="me-1"
-            />
-            Legendary
-          </label>
+        {(hovered || values.group) && (
+          <div>
+            <label className="checkbox group">
+              <input
+                type="checkbox"
+                name="group"
+                checked={values.group || false}
+                onChange={handleInputChange}
+              />
+              Group
+            </label>
+            <label className="checkbox legendary">
+              <input
+                type="checkbox"
+                name="legendary"
+                checked={values.legendary || false}
+                onChange={handleInputChange}
+              />
+              Legendary
+            </label>
+          </div>
         )}
+      </div>
+
+      <div className={`cell ${Array.isArray(values.hp) ? "no-padding" : ""}`}>
+        {values.group ? (
+          (Array.isArray(values.hp)
+            ? values.hp
+            : [values.hp, values.hp, values.hp]
+          ).map((hpValue, idx) => (
+            <input
+              key={idx}
+              className="form-control grid-row-input"
+              name={`hp[${idx}]`}
+              type="text"
+              value={hpValue}
+              onChange={(e) => {
+                const newHp = [
+                  ...(Array.isArray(values.hp)
+                    ? values.hp
+                    : [values.hp, values.hp, values.hp]),
+                ];
+                newHp[idx] = e.target.value;
+                setValues((prev) => ({ ...prev, hp: newHp }));
+                updateValues(id, "hp", newHp);
+              }}
+            />
+          ))
+        ) : (
+          <input
+            className="form-control grid-row-input"
+            name="hp"
+            type="text"
+            value={values.hp}
+            onChange={handleInputChange}
+            onBlur={onLoseFocusHpField}
+            onKeyDown={(e) => handleKeyDown(e)}
+          />
+        )}
+        {Array.isArray(values.hp)
+          ? null
+          : maxHp > 0 && <span className="max-hp">{maxHp}</span>}
+      </div>
+
+      <div className="cell">
+        <input
+          className="form-control grid-row-input"
+          name="ac"
+          type="text"
+          value={values.ac}
+          onChange={handleInputChange}
+        />
       </div>
 
       {showSpeed && (
@@ -196,29 +262,6 @@ export function GridRow({
           />
         </div>
       )}
-
-      <div className="cell">
-        <input
-          className="form-control grid-row-input"
-          name="hp"
-          type="text"
-          value={values.hp}
-          onChange={handleInputChange}
-          onBlur={onLoseFocusHpField}
-          onKeyDown={(e) => handleKeyDown(e)}
-        />
-        {maxHp > 0 && <span className="max-hp">{maxHp}</span>}
-      </div>
-
-      <div className="cell">
-        <input
-          className="form-control grid-row-input"
-          name="ac"
-          type="text"
-          value={values.ac}
-          onChange={handleInputChange}
-        />
-      </div>
 
       {showSpellSave && (
         <div className="cell">
@@ -275,7 +318,7 @@ export function GridRow({
       </div>
 
       <div className="cell delete">
-        <button className="btn btn-danger" onClick={() => onDeleteRow(id)}>
+        <button className="btn btn-danger shrink" onClick={() => onDeleteRow(id)}>
           Delete
         </button>
       </div>

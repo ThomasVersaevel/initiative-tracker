@@ -1,6 +1,9 @@
-
 .button-margin {
   margin-right: 1rem;
+}
+
+.soundboard-root {
+  margin: auto;
 }
 
 .sound-button {
@@ -8,7 +11,7 @@
   color: var(--buttonText);
   border-color: var(--border);
   font-size: small !important;
-  min-width: 100%;
+  min-width: 4vw;
 }
 
 .d-flex {
@@ -23,4 +26,19 @@
   grid-template-columns: repeat(3, 1fr); /* 3 columns */
   grid-gap: 4px;
   margin: 4px 1rem 4px 1rem;
+}
+
+.sound-name {
+  display: inline-block;
+  max-width: 4vw;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.volume-icon {
+  font-size: 1.5rem;
+  color: var(--buttonText);
+  margin: 0 1rem;
 }

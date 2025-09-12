@@ -1,84 +1,3 @@
-:root {
-  --tableHeader: #144a84;
-  --button: #009adc;
-  --buttonHover: #0097d8;
-  --buttonActive: #0287c0;
-  --highlightedRow: #2e91fa;
-  --row: #1a62ae;
-  --main: #373c46;
-  --header: #282c34;
-  --titleText: #ffffff;
-  --mainText: white;
-  --buttonText: white;
-  --border: black;
-  --delete: #000000;
-  --legendary: #ffc31f;
-}
-
-.App.green {
-  --tableHeader: #18392b;
-  --button: #14452f;
-  --buttonHover: #0f5132;
-  --buttonActive: #105a37;
-  --highlightedRow: #0a5c36;
-  --row: #14452f;
-  --main: #0d633b;
-  --header: #084629;
-  --titleText: #022314;
-  --mainText: white;
-  --buttonText: black;
-  --border: #022314;
-  --delete: #000000;
-}
-
-.App.prisma {
-  --tableHeader: #6f54a1;
-  --button: #6f54a1;
-  --buttonHover: #6884c0;
-  --buttonActive: #7089c1;
-  --highlightedRow: #c7eedb;
-  --row: #88d0c4;
-  --main: #ccbff7;
-  --header: #790f6b;
-  --titleText: #35032f;
-  --mainText: black;
-  --buttonText: black;
-  --border: #790f6b;
-  --delete: #000000;
-}
-
-.App.dark {
-  --tableHeader: #0a0e19;
-  --button: #0a0e19;
-  --buttonHover: #212538;
-  --buttonActive: #43485b;
-  --highlightedRow: #24313d;
-  --row: #141d26;
-  --main: #03080e;
-  --header: black;
-  --titleText: #9396a7;
-  --mainText: #9396a7;
-  --buttonText: #9396a7;
-  --border: #060d15;
-  --delete: #000000;
-}
-
-.App.berry {
-  --tableHeader: #2f0101;
-  --button: #c5001e;
-  --buttonHover: #db0424;
-  --buttonActive: #ee0528;
-  --highlightedRow: #8f0a0c;
-  --row: #780002;
-  --main: #6b052a;
-  --header: #190f18;
-  --titleText: #c5001e;
-  --mainText: #ff8e8e;
-  --buttonText: #ff8e8e;
-  --border: #200201;
-  --delete: #000000;
-}
-
 .grid-row {
   display: grid;
   background-color: var(--row);
@@ -96,11 +15,12 @@
 .max-hp {
   margin-left: 6px;
   color: rgb(194, 194, 194);
-  font-size: 0.9em;
+  font-size: 0.7em;
+  font-style: italic;
 }
 
 .surprised {
-  background-color: grey;
+  background-color: rgb(194, 194, 194);
   color: var(--mainText);
   border-bottom: 3px solid var(--border);
   font-style: italic;
@@ -148,9 +68,20 @@ input::-webkit-inner-spin-button {
   padding: 3px;
 }
 
+.cell.no-padding {
+  padding: 0;
+}
+
+.shrink {
+  width: 4vw !important;
+  font-size: 0.8vw !important;
+  padding: 0.4vw !important;
+}
+
 .btn.btn-danger {
   background-color: var(--tableHeader);
   border-color: var(--border);
+  color: var(--btn-text);
 }
 
 .btn.btn-danger:hover {
@@ -196,4 +127,8 @@ input::-webkit-inner-spin-button {
 
 .legendary {
   color: var(--legendary) !important;
+}
+
+.group {
+  color: var(--btn-text) !important;
 }

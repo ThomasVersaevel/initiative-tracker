@@ -27,7 +27,7 @@
 
 .form-check-label {
   margin-left: 0.4rem;
-  color: var(--btn-text);
+  color: var(--buttonText);
   font-size: 1rem;
   user-select: none;
 }
@@ -40,6 +40,11 @@
   cursor: pointer;
   color: var(--mainText);
   margin-left: 0.3rem;
+  width: 3rem;
+  height: 3rem;
+  display: flex;      /* make it a flex container */
+  align-items: center; /* vertical center */
+  justify-content: center; /* horizontal center */
 }
 
 .hamburger-menu {

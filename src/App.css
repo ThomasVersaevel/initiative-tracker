@@ -3,6 +3,89 @@
 } */
 
 :root {
+  --tableHeader: #144a84;
+  --button: #009adc;
+  --buttonHover: #0097d8;
+  --buttonActive: #0287c0;
+  --highlightedRow: #2e91fa;
+  --row: #1a62ae;
+  --main: #373c46;
+  --mainLight: #bec8df;
+  --header: #282c34;
+  --titleText: #ffffff;
+  --mainText: white;
+  --buttonText: white;
+  --border: black;
+  --delete: #000000;
+  --legendary: #ffc31f;
+}
+
+.App.green {
+  --tableHeader: #18392b;
+  --button: #14452f;
+  --buttonHover: #0f5132;
+  --buttonActive: #105a37;
+  --highlightedRow: #0a5c36;
+  --row: #14452f;
+  --main: #0d633b;
+  --mainLight: #19a564;
+  --header: #084629;
+  --titleText: #8b500b;
+  --mainText: rgb(77, 243, 104);
+  --buttonText: #8b500b;
+  --border: #632e0b;
+  --delete: #000000;
+}
+
+.App.prisma {
+  --tableHeader: #6f54a1;
+  --button: #6f54a1;
+  --buttonHover: #6884c0;
+  --buttonActive: #7089c1;
+  --highlightedRow: #c7eedb;
+  --row: #88d0c4;
+  --main: #ccbff7;
+  --header: #790f6b;
+  --titleText: #35032f;
+  --mainText: black;
+  --buttonText: black;
+  --border: #790f6b;
+  --delete: #000000;
+}
+
+.App.dark {
+  --tableHeader: #0a0e19;
+  --button: #0a0e19;
+  --buttonHover: #212538;
+  --buttonActive: #43485b;
+  --highlightedRow: #24313d;
+  --row: #141d26;
+  --main: #03080e;
+  --header: black;
+  --titleText: #9396a7;
+  --mainText: #9396a7;
+  --buttonText: #9396a7;
+  --border: #060d15;
+  --delete: #000000;
+}
+
+.App.berry {
+  --tableHeader: #2f0101;
+  --button: #c5001e;
+  --buttonHover: #db0424;
+  --buttonActive: #ee0528;
+  --highlightedRow: #8f0a0c;
+  --row: #780002;
+  --main: #6b052a;
+  --header: #190f18;
+  --titleText: #c5001e;
+  --mainText: #ff8e8e;
+  --buttonText: #ff8e8e;
+  --border: #200201;
+  --delete: #000000;
+}
+
+:root {
   --font-size-tiny: 0.6vw;
   --font-size: 1.2vw;
   --font-size-large: 1.4vw;
@@ -11,6 +94,11 @@
 
 .App {
   text-align: center;
+}
+
+.dicefield {
+  background: var(--mainLight) !important;
+  border: 1px solid var(--border) !important;
 }
 
 .image-container {
@@ -114,6 +202,7 @@
   background-color: var(--tableHeader);
   text-align: center;
   font-size: var(--font-size);
+  width: 30%;
 }
 
 .form-control.turn-counter:focus {
@@ -170,12 +259,15 @@
 
 .App-header {
   background-color: var(--header);
+  position: fixed;
   display: flex;
-  justify-content: space-between;
+  width: 100%;
   align-items: center;
-  min-height: 7vh;
+  justify-content: space-between;
+  max-height: 7vh;
   font-size: calc(10px + 2vmin);
   color: var(--mainText);
+  z-index: 10;
 }
 
 .App-footer {
@@ -237,12 +329,13 @@ input[type="file"]::file-selector-button:hover {
 
 .App-body {
   background-color: var(--main);
-  top: 6vh;
   color: var(--mainText);
   padding: 2rem 3rem 10rem 3rem;
   font-size: var(--font-size-large);
   text-align: left;
   overflow-y: hidden;
+  min-height: 93vh;
+  padding-top: 8vh;
 }
 
 .App-link {
@@ -268,10 +361,6 @@ input[type="file"]::file-selector-button:hover {
 .top-row {
   border-top: 3px solid var(--border);
   border-bottom: 3px solid var(--border);
-}
-
-.form-control.turn-counter {
-  width: 30%;
 }
 
 .btn.btn.btn-secondary {
@@ -399,6 +488,7 @@ input[type="file"]::file-selector-button:hover {
 .diceroller-output {
   flex: 1;
   margin-left: 0.5rem;
+  text-align: center;
 }
 
 .diceroller-controls {
