@@ -47,14 +47,14 @@
   margin-left: 0.3rem;
   width: 3rem;
   height: 3rem;
-  display: flex; /* make it a flex container */
-  align-items: center; /* vertical center */
-  justify-content: center; /* horizontal center */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hamburger-menu {
   position: absolute;
-  top: 3vw; /* adjust for your header height */
+  top: 3vw;
   left: 0.3rem;
   background-color: var(--header);
   border: 1px solid var(--border);

@@ -323,7 +323,7 @@ input[type="file"]::file-selector-button:hover {
 
 .App-body {
   background-color: var(--main);
-  /* background: url("../public/images/fantasyWallpaper.jpg") no-repeat center
+  /* background: url("../public/images/forestWallpaper2.jpg") no-repeat center
     center fixed; */
   background-size: cover;
   color: var(--mainText);

@@ -3,7 +3,7 @@ import "./Header.css";
 
 const themes = [
   { label: "Default", value: "default" },
-  { label: "Forrest", value: "green" },
+  { label: "Forest", value: "green" },
   { label: "Prisma", value: "prisma" },
   { label: "Dark", value: "dark" },
   { label: "Berry", value: "berry" },
