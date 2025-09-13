@@ -2,10 +2,6 @@
   margin-right: 1rem;
 }
 
-.soundboard-root {
-  margin: auto;
-}
-
 .sound-button {
   background-color: var(--button);
   color: var(--buttonText);
@@ -41,4 +37,53 @@
   font-size: 1.5rem;
   color: var(--buttonText);
   margin: 0 1rem;
+}
+
+.volume-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin-left: 1rem;
+  margin: auto;
+}
+
+.volume-slider {
+  writing-mode: bt-lr;
+  appearance: slider-vertical;
+  width: 1.4rem;
+  height: 7vh;
+}
+
+.volume-slider::-webkit-slider-runnable-track {
+  background: var(--mainLight);   /* theme track color */
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  height: 100%;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  appearance: none;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.volume-slider::-moz-range-thumb {
+  background-color: var(--buttonText);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 0.7rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+  background: var(--buttonHover);
+}
+
+.volume-slider::-webkit-slider-thumb:active {
+  background: var(--buttonActive);
 }

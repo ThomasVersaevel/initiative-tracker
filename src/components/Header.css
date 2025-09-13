@@ -21,6 +21,11 @@
   margin-right: 0.3rem;
 }
 
+.class-selector {
+  width: 10vw;
+  margin-right: 0.3rem;
+}
+
 .form-check-input:checked {
   background-color: var(--btn-bg-active);
 }
@@ -42,7 +47,7 @@
   margin-left: 0.3rem;
   width: 3rem;
   height: 3rem;
-  display: flex;      /* make it a flex container */
+  display: flex; /* make it a flex container */
   align-items: center; /* vertical center */
   justify-content: center; /* horizontal center */
 }

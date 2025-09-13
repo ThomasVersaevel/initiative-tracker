@@ -308,7 +308,6 @@ input[type="file"]::file-selector-button:hover {
   margin-left: 5vw;
   display: flex;
   align-items: center;
-  width: 20vw;
 }
 
 .upload-container-right {
@@ -322,13 +321,11 @@ input[type="file"]::file-selector-button:hover {
   align-items: center;
 }
 
-.class-selector {
-  width: 10%;
-  margin-right: 20px;
-}
-
 .App-body {
   background-color: var(--main);
+  /* background: url("../public/images/fantasyWallpaper.jpg") no-repeat center
+    center fixed; */
+  background-size: cover;
   color: var(--mainText);
   padding: 2rem 3rem 10rem 3rem;
   font-size: var(--font-size-large);
@@ -365,10 +362,6 @@ input[type="file"]::file-selector-button:hover {
 
 .btn.btn.btn-secondary {
   font-size: var(--font-size);
-}
-
-.btn.btn-secondary.bot.image {
-  min-width: 10%;
 }
 
 .btn.btn-secondary.bot {

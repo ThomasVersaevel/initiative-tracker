@@ -52,7 +52,7 @@ export const Soundboard = () => {
   };
 
   return (
-    <div className="soundboard-root d-flex">
+    <div className="d-flex">
       <FontAwesomeIcon icon={faVolumeHigh} className="volume-icon" />
       <div className="soundboard-grid">
         {sounds.map((sound) => (

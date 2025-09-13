@@ -437,7 +437,7 @@ function App() {
             </div>
           ))}
         </div>
-        <div className="row mt-2">
+        <div className="row mt-3">
           <div className="col-1">
             <button className="btn btn-secondary bot" onClick={addRow}>
               +Row
@@ -515,7 +515,7 @@ function App() {
       </div>
       <div className="App-footer">
         <div className="upload-container">
-          <label className="btn btn-secondary bot image" htmlFor="file-upload">
+          <label className="btn btn-secondary bot" htmlFor="file-upload">
             <img
               className="button-img"
               src="/images/image-icon.png"
