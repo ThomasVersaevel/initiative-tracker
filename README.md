@@ -1,8 +1,8 @@
 # initiative-tracker
-An initiative tracker web-app for game masters.
+An initiative tracker web-app for TTRPG game masters.
 
 ### Features:
-Set initiative, player name, movement (ft.), HP, AC, spell save DC, condition and condition timer
+Set initiative, player name, movement speed, HP, AC, spell save DC, condition and condition timer
 
 Move through rounds and keep round number.
 Automatically reduce condition timer each round.

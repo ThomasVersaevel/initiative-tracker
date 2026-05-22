@@ -16,13 +16,13 @@ function App() {
   const [turn, setTurn] = useState(1);
 
   const [showSpeed, setShowSpeed] = useState(
-    JSON.parse(Cookies.get("showSpeed") ?? "true")
+    JSON.parse(Cookies.get("showSpeed") ?? "false")
   );
   const [showSpellSave, setShowSpell] = useState(
-    JSON.parse(Cookies.get("showSpellSave") ?? "true")
+    JSON.parse(Cookies.get("showSpellSave") ?? "false")
   );
   const [showCondition, setShowCondition] = useState(
-    JSON.parse(Cookies.get("showCondition") ?? "true")
+    JSON.parse(Cookies.get("showCondition") ?? "false")
   );
   const [showDiceRoller, setShowDiceRoller] = useState(
     JSON.parse(Cookies.get("showDiceroller") ?? "false")
@@ -50,6 +50,7 @@ function App() {
         condition: "",
         timer: 0,
         id: 0,
+        isGroup: false,
       },
     ];
   });

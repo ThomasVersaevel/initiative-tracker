@@ -15,7 +15,7 @@
 .max-hp {
   margin-left: 6px;
   color: rgb(194, 194, 194);
-  font-size: 0.7em;
+  font-size: var(--font-size-small);
   font-style: italic;
 }
 
@@ -31,7 +31,11 @@
   border: none;
   box-shadow: none;
   color: var(--mainText);
-  font-size: 1.4vw;
+  font-size: var(--font-size-medium);
+}
+
+.no-padding {
+  padding: 0 !important;
 }
 
 .d-flex {
@@ -46,7 +50,7 @@
   border: none;
   box-shadow: none;
   color: var(--mainText);
-  font-size: 1.4vw;
+  font-size: var(--font-size-medium);
 }
 
 /* removes arrow spinner in number fields */
@@ -74,7 +78,7 @@ input::-webkit-inner-spin-button {
 
 .shrink {
   width: 4vw !important;
-  font-size: 0.8vw !important;
+  font-size: var(--font-size-small) !important;
   padding: 0.4vw !important;
 }
 

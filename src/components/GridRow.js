@@ -67,6 +67,18 @@ export function GridRow({
         if (!isNaN(numeric) && numeric > maxHp) {
           setMaxHp(numeric);
         }
+      } else if (name === "group") {
+        if (newValue) {
+          updated.hp = [
+            prevValues.hp || 0,
+            prevValues.hp || 0,
+            prevValues.hp || 0,
+          ];
+          setMaxHp(prevValues.hp || 0);
+        } else {
+          updated.hp = prevValues.hp ? prevValues.hp[0] : 0;
+          setMaxHp(prevValues.hp ? prevValues.hp[0] : 0);
+        }
       }
       return updated;
     });
@@ -110,6 +122,17 @@ export function GridRow({
     }
   };
 
+  const handleKeyDownGroup = (event) => {
+    if (event.key === "Enter") {
+      const currentHp = parseInt(values.hp) || 0;
+      const newHp = currentHp;
+      setValues((prevValues) => ({
+        ...prevValues,
+        hp: newHp,
+      }));
+    }
+  };
+
   useEffect(() => {
     setValues(initialValues);
   }, [initialValues]);
@@ -149,8 +172,8 @@ export function GridRow({
         values.condition === "surprised"
           ? "surprised"
           : highlighted
-          ? "highlighted"
-          : ""
+            ? "highlighted"
+            : ""
       } App ${theme}`}
       style={{ display: "grid", gridTemplateColumns: columnSizes }}
     >
@@ -207,23 +230,26 @@ export function GridRow({
             ? values.hp
             : [values.hp, values.hp, values.hp]
           ).map((hpValue, idx) => (
-            <input
-              key={idx}
-              className="form-control grid-row-input"
-              name={`hp[${idx}]`}
-              type="text"
-              value={hpValue}
-              onChange={(e) => {
-                const newHp = [
-                  ...(Array.isArray(values.hp)
-                    ? values.hp
-                    : [values.hp, values.hp, values.hp]),
-                ];
-                newHp[idx] = e.target.value;
-                setValues((prev) => ({ ...prev, hp: newHp }));
-                updateValues(id, "hp", newHp);
-              }}
-            />
+            <div style={{ paddingLeft: "5px" }}>
+              <input
+                key={idx}
+                className="form-control grid-row-input no-padding"
+                name={`hp[${idx}]`}
+                type="text"
+                value={hpValue}
+                onChange={(e) => {
+                  const newHp = [
+                    ...(Array.isArray(values.hp)
+                      ? values.hp
+                      : [values.hp, values.hp, values.hp]),
+                  ];
+                  newHp[idx] = e.target.value;
+                  setValues((prev) => ({ ...prev, hp: newHp }));
+                  updateValues(id, "hp", newHp);
+                }}
+                onKeyDown={(e) => handleKeyDown(e)}
+              />
+            </div>
           ))
         ) : (
           <input
@@ -233,7 +259,7 @@ export function GridRow({
             value={values.hp}
             onChange={handleInputChange}
             onBlur={onLoseFocusHpField}
-            onKeyDown={(e) => handleKeyDown(e)}
+            onKeyDown={(e) => handleKeyDownGroup(e)}
           />
         )}
         {Array.isArray(values.hp)
@@ -248,6 +274,7 @@ export function GridRow({
           type="text"
           value={values.ac}
           onChange={handleInputChange}
+          max={999}
         />
       </div>
 
@@ -259,6 +286,7 @@ export function GridRow({
             type="text"
             value={values.speed}
             onChange={handleInputChange}
+            max={999}
           />
         </div>
       )}
@@ -318,7 +346,10 @@ export function GridRow({
       </div>
 
       <div className="cell delete">
-        <button className="btn btn-danger shrink" onClick={() => onDeleteRow(id)}>
+        <button
+          className="btn btn-danger shrink"
+          onClick={() => onDeleteRow(id)}
+        >
           Delete
         </button>
       </div>
