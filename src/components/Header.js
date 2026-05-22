@@ -73,22 +73,22 @@ export function Header({
             </label>
           </div>
         )}
-        <div className="title">
-          <h1>Take Initiative</h1>
-        </div>
-        {/* Theme selector */}
-        <div className="class-selector">
-          <select
-            className="form-control select"
-            onChange={(e) => onSelectTheme(e.target.value)}
-          >
-            {themes.map((option, index) => (
-              <option className="option" key={index} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
+      </div>
+      <div className="title">
+        <h1>Take Initiative</h1>
+      </div>
+      {/* Theme selector */}
+      <div className="class-selector">
+        <select
+          className="form-control select"
+          onChange={(e) => onSelectTheme(e.target.value)}
+        >
+          {themes.map((option, index) => (
+            <option className="option" key={index} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   );

@@ -35,7 +35,23 @@
 }
 
 .no-padding {
-  padding: 0 !important;
+  padding: 5px !important;
+}
+
+.d20-transparent {
+  background-image: url("../../public/images/d20_outline.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+
+  text-align: center;
+  background-color: transparent;
+  border: none;
+
+  height: 60px;
+
+  font-size: 1rem !important;
+  font-weight: bold;
 }
 
 .d-flex {

@@ -46,96 +46,77 @@ export function GridRow({
 }) {
   const [values, setValues] = useState({
     ...initialValues,
-    hp: initialValues.group
-      ? initialValues.hp || [0, 0, 0]
-      : initialValues.hp || 0,
+    hp: initialValues.hp ?? 0,
+    hpGroup: initialValues.hpGroup ?? [0, 0, 0, 0],
+    isGroup: initialValues.isGroup ?? false,
   });
 
-  const [maxHp, setMaxHp] = useState(initialValues.hp || 0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [prevHighlighted, setPrevHighlighted] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [d20Roll, setD20Roll] = useState("");
+  const [maxHp, setMaxHp] = useState(0);
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
+
     const newValue = type === "checkbox" ? checked : value;
-    setValues((prevValues) => {
-      const updated = { ...prevValues, [name]: value };
-      if (name === "hp") {
-        const numeric = parseInt(newValue, 10);
-        if (!isNaN(numeric) && numeric > maxHp) {
-          setMaxHp(numeric);
-        }
-      } else if (name === "group") {
-        if (newValue) {
-          updated.hp = [
-            prevValues.hp || 0,
-            prevValues.hp || 0,
-            prevValues.hp || 0,
-          ];
-          setMaxHp(prevValues.hp || 0);
-        } else {
-          updated.hp = prevValues.hp ? prevValues.hp[0] : 0;
-          setMaxHp(prevValues.hp ? prevValues.hp[0] : 0);
-        }
-      }
-      return updated;
-    });
+
+    setValues((prev) => ({
+      ...prev,
+      [name]: newValue,
+    }));
 
     updateValues(id, name, newValue);
   };
 
-  const onLoseFocusHpField = (event) => {
-    const { value } = event.target;
+  const applyHpMath = (rawValue) => {
+    const currentHp = parseInt(values.hp, 10);
+    const trimmed = String(rawValue).trim();
 
-    // If a minus sign is present, subtract the substring after the minus from the current hp when enter is pressed
-    if (value.includes("-")) {
-      const currentHp = parseInt(values.hp) || 0;
-      const newHp = currentHp - parseInt(value.split("-")[1]);
-      if (isNaN(newHp)) {
-        // Check here if input is valid afterwards.
-        return;
-      }
-      setValues((prevValues) => ({
-        ...prevValues,
-        hp: newHp,
-      }));
+    let newHp = currentHp;
+    if (trimmed.includes("-")) {
+      const amount = currentHp - parseInt(trimmed.split("-")[1], 10);
+      if (!isNaN(amount)) newHp = amount;
+    } else if (trimmed.includes("+")) {
+      const amount = currentHp + parseInt(trimmed.split("+")[1], 10);
+      if (!isNaN(amount)) newHp = amount;
+    } else {
+      const direct = parseInt(trimmed, 10);
+      if (!isNaN(direct)) newHp = direct;
     }
-    if (value.includes("+")) {
-      const currentHp = parseInt(values.hp) || 0;
-      const newHp = currentHp + parseInt(value.split("+")[1]);
-      if (isNaN(newHp)) {
-        // Check here if input is valid afterwards.
-        return;
-      }
-      setValues((prevValues) => ({
-        ...prevValues,
-        hp: newHp,
-      }));
-    }
+    return newHp;
   };
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      onLoseFocusHpField(event);
-    }
-  };
+      const newHp = applyHpMath(event.target.value);
 
-  const handleKeyDownGroup = (event) => {
-    if (event.key === "Enter") {
-      const currentHp = parseInt(values.hp) || 0;
-      const newHp = currentHp;
-      setValues((prevValues) => ({
-        ...prevValues,
+      setValues((prev) => ({
+        ...prev,
         hp: newHp,
       }));
+
+      updateValues(id, "hp", newHp);
+
+      if (newHp > maxHp) {
+        setMaxHp(newHp);
+      }
+
+      event.target.blur();
     }
   };
 
-  useEffect(() => {
-    setValues(initialValues);
-  }, [initialValues]);
+  const handleGroupToggle = (checked) => {
+    setValues((prev) => ({
+      ...prev,
+      isGroup: checked,
+      hp: checked ? 0 : (prev.hpGroup?.[0] ?? 0),
+      hpGroup: checked ? prev.hpGroup : [prev.hp, prev.hp, prev.hp, prev.hp],
+    }));
+
+    updateValues(id, "isGroup", checked);
+  };
 
   useEffect(() => {
     if (
@@ -155,6 +136,15 @@ export function GridRow({
   const rollDice = useCallback(() => {
     setD20Roll(Math.floor(Math.random() * 20 + 1));
   }, []);
+
+  useEffect(() => {
+    setValues({
+      ...initialValues,
+      hp: initialValues.hp ?? 0,
+      hpGroup: initialValues.hpGroup ?? [0, 0, 0, 0],
+      isGroup: initialValues.isGroup ?? false,
+    });
+  }, [initialValues]);
 
   useEffect(() => {
     if (highlighted) {
@@ -200,14 +190,14 @@ export function GridRow({
           onChange={handleInputChange}
           autoComplete="off"
         />
-        {(hovered || values.group) && (
+        {(hovered || values.isGroup) && (
           <div>
             <label className="checkbox group">
               <input
                 type="checkbox"
-                name="group"
-                checked={values.group || false}
-                onChange={handleInputChange}
+                name="isGroup"
+                checked={values.isGroup || false}
+                onChange={(e) => handleGroupToggle(e.target.checked)}
               />
               Group
             </label>
@@ -224,32 +214,26 @@ export function GridRow({
         )}
       </div>
 
-      <div className={`cell ${Array.isArray(values.hp) ? "no-padding" : ""}`}>
-        {values.group ? (
-          (Array.isArray(values.hp)
-            ? values.hp
-            : [values.hp, values.hp, values.hp]
-          ).map((hpValue, idx) => (
-            <div style={{ paddingLeft: "5px" }}>
-              <input
-                key={idx}
-                className="form-control grid-row-input no-padding"
-                name={`hp[${idx}]`}
-                type="text"
-                value={hpValue}
-                onChange={(e) => {
-                  const newHp = [
-                    ...(Array.isArray(values.hp)
-                      ? values.hp
-                      : [values.hp, values.hp, values.hp]),
-                  ];
-                  newHp[idx] = e.target.value;
-                  setValues((prev) => ({ ...prev, hp: newHp }));
-                  updateValues(id, "hp", newHp);
-                }}
-                onKeyDown={(e) => handleKeyDown(e)}
-              />
-            </div>
+      <div className="cell no-padding">
+        {values.isGroup ? (
+          values.hpGroup.map((hpValue, idx) => (
+            <input
+              key={idx}
+              className="form-control grid-row-input no-padding"
+              type="number"
+              value={hpValue}
+              onChange={(e) => {
+                const newHpGroup = [...values.hpGroup];
+                newHpGroup[idx] = parseInt(e.target.value || 0, 10);
+
+                setValues((prev) => ({
+                  ...prev,
+                  hpGroup: newHpGroup,
+                }));
+
+                updateValues(id, "hpGroup", newHpGroup);
+              }}
+            />
           ))
         ) : (
           <input
@@ -257,14 +241,31 @@ export function GridRow({
             name="hp"
             type="text"
             value={values.hp}
-            onChange={handleInputChange}
-            onBlur={onLoseFocusHpField}
-            onKeyDown={(e) => handleKeyDownGroup(e)}
+            onKeyDown={(e) => handleKeyDown(e)}
+            onChange={(e) => {
+              setValues((prev) => ({
+                ...prev,
+                hp: e.target.value,
+              }));
+            }}
+            onBlur={(e) => {
+              const newHp = applyHpMath(e.target.value);
+
+              setValues((prev) => ({
+                ...prev,
+                hp: newHp,
+              }));
+
+              updateValues(id, "hp", newHp);
+
+              if (newHp > maxHp) setMaxHp(newHp);
+            }}
           />
         )}
-        {Array.isArray(values.hp)
-          ? null
-          : maxHp > 0 && <span className="max-hp">{maxHp}</span>}
+
+        {!values.isGroup && maxHp > 0 && (
+          <span className="max-hp">{maxHp}</span>
+        )}
       </div>
 
       <div className="cell">
@@ -336,13 +337,12 @@ export function GridRow({
 
       <div className="cell d-flex align-items-center">
         <input
-          className="form-control grid-row-input"
+          className="form-control grid-row-input d20-transparent"
           name="d20"
           type="number"
           value={d20Roll}
           readOnly
         />
-        {/* <button className="btn btn-primary" onClick={rollDice}></button> */}
       </div>
 
       <div className="cell delete">
