@@ -43,6 +43,7 @@ export function GridRow({
   showSpeed,
   showSpellSave,
   showCondition,
+  rowIndex,
 }) {
   const [values, setValues] = useState({
     ...initialValues,
@@ -137,6 +138,35 @@ export function GridRow({
     setD20Roll(Math.floor(Math.random() * 20 + 1));
   }, []);
 
+  const handleNavigation = (event) => {
+    const key = event.key;
+
+    if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(key)) {
+      return;
+    }
+
+    event.preventDefault();
+
+    const current = event.target;
+
+    const row = parseInt(current.dataset.row, 10);
+    const col = parseInt(current.dataset.col, 10);
+
+    let nextRow = row;
+    let nextCol = col;
+
+    if (key === "ArrowUp") nextRow--;
+    if (key === "ArrowDown") nextRow++;
+    if (key === "ArrowLeft") nextCol--;
+    if (key === "ArrowRight") nextCol++;
+
+    const next = document.querySelector(
+      `[data-row="${nextRow}"][data-col="${nextCol}"]`,
+    );
+
+    next?.focus();
+  };
+
   useEffect(() => {
     setValues({
       ...initialValues,
@@ -169,6 +199,9 @@ export function GridRow({
     >
       <div className="cell">
         <input
+          data-row={rowIndex}
+          data-col={0}
+          onKeyDown={handleNavigation}
           className="form-control grid-row-input"
           name="initiative"
           type="number"
@@ -182,6 +215,9 @@ export function GridRow({
         onMouseLeave={() => setHovered(false)}
       >
         <input
+          data-row={rowIndex}
+          data-col={1}
+          onKeyDown={handleNavigation}
           className={`form-control grid-row-input ${
             values.legendary ? "legendary" : ""
           }`}
@@ -218,6 +254,9 @@ export function GridRow({
         {values.isGroup ? (
           values.hpGroup.map((hpValue, idx) => (
             <input
+              data-row={rowIndex}
+              data-col={2}
+              onKeyDown={handleNavigation}
               key={idx}
               className="form-control grid-row-input no-padding"
               type="number"
@@ -237,11 +276,16 @@ export function GridRow({
           ))
         ) : (
           <input
+            data-row={rowIndex}
+            data-col={2}
             className="form-control grid-row-input"
             name="hp"
             type="text"
             value={values.hp}
-            onKeyDown={(e) => handleKeyDown(e)}
+            onKeyDown={(e) => {
+              handleNavigation(e);
+              handleKeyDown(e);
+            }}
             onChange={(e) => {
               setValues((prev) => ({
                 ...prev,
@@ -270,6 +314,9 @@ export function GridRow({
 
       <div className="cell">
         <input
+          data-row={rowIndex}
+          data-col={3}
+          onKeyDown={handleNavigation}
           className="form-control grid-row-input"
           name="ac"
           type="text"
@@ -282,6 +329,9 @@ export function GridRow({
       {showSpeed && (
         <div className="cell">
           <input
+            data-row={rowIndex}
+            data-col={4}
+            onKeyDown={handleNavigation}
             className="form-control grid-row-input"
             name="speed"
             type="text"
@@ -295,6 +345,9 @@ export function GridRow({
       {showSpellSave && (
         <div className="cell">
           <input
+            data-row={rowIndex}
+            data-col={5}
+            onKeyDown={handleNavigation}
             className="form-control grid-row-input"
             name="spell"
             type="number"
@@ -308,6 +361,9 @@ export function GridRow({
         <>
           <div className="cell">
             <select
+              data-row={rowIndex}
+              data-col={6}
+              onKeyDown={handleNavigation}
               className="form-control grid-row-input"
               name="condition"
               value={values.condition}
@@ -325,6 +381,9 @@ export function GridRow({
           </div>
           <div className="cell">
             <input
+              data-row={rowIndex}
+              data-col={7}
+              onKeyDown={handleNavigation}
               className="form-control grid-row-input"
               name="timer"
               type="number"
@@ -347,6 +406,9 @@ export function GridRow({
 
       <div className="cell delete">
         <button
+          data-row={rowIndex}
+          data-col={8}
+          onKeyDown={handleNavigation}
           className="btn btn-danger shrink"
           onClick={() => onDeleteRow(id)}
         >

@@ -25,8 +25,8 @@
   --button: #14452f;
   --buttonHover: #0f5132;
   --buttonActive: #105a37;
-  --highlightedRow: #0a5c36;
-  --row: #14452f;
+  --highlightedRow: #68401d;
+  --row: #452c14;
   --main: #0d633b;
   --mainLight: #19a564;
   --header: #084629;
@@ -37,22 +37,6 @@
   --delete: #000000;
 }
 
-.App.prisma {
-  --tableHeader: #6f54a1;
-  --button: #6f54a1;
-  --buttonHover: #6884c0;
-  --buttonActive: #7089c1;
-  --highlightedRow: #c7eedb;
-  --row: #88d0c4;
-  --main: #ccbff7;
-  --header: #790f6b;
-  --titleText: #35032f;
-  --mainText: black;
-  --buttonText: black;
-  --border: #790f6b;
-  --delete: #000000;
-}
-
 .App.dark {
   --tableHeader: #0a0e19;
   --button: #0a0e19;
@@ -60,11 +44,11 @@
   --buttonActive: #43485b;
   --highlightedRow: #24313d;
   --row: #141d26;
-  --main: #03080e;
+  --main: #0c1d35;
   --header: black;
-  --titleText: #9396a7;
-  --mainText: #9396a7;
-  --buttonText: #9396a7;
+  --titleText: #888b99;
+  --mainText: #828594;
+  --buttonText: #747585;
   --border: #060d15;
   --delete: #000000;
 }

@@ -350,6 +350,7 @@ function App() {
                 showSpellSave={showSpellSave}
                 showCondition={showCondition}
                 uploadedImages={uploadedImages}
+                rowIndex={index}
               />
             </div>
           ))}
