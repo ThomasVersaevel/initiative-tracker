@@ -258,7 +258,7 @@ export function GridRow({
               data-col={2}
               onKeyDown={handleNavigation}
               key={idx}
-              className="form-control grid-row-input no-padding"
+              className="form-control grid-row-input text-medium no-padding"
               type="number"
               value={hpValue}
               onChange={(e) => {

@@ -113,30 +113,6 @@ function App() {
     setGridRows((prevGridRows) => prevGridRows.filter((row) => row.id !== id));
   };
 
-  const nextTurn = () => {
-    setHighlightedRow((prevHighlightedRow) => {
-      const nextRow =
-        prevHighlightedRow < gridRows.length - 1 ? prevHighlightedRow + 1 : 0;
-      if (nextRow === 0) {
-        setTurn(turn + 1);
-        decreaseTimer();
-      }
-      return nextRow;
-    });
-  };
-
-  const prevTurn = () => {
-    setHighlightedRow((prevHighlightedRow) => {
-      const nextRow =
-        prevHighlightedRow > 0 ? prevHighlightedRow - 1 : gridRows.length - 1;
-      if (nextRow === gridRows.length - 1) {
-        setTurn(turn - 1);
-        increaseTimer();
-      }
-      return nextRow;
-    });
-  };
-
   const sortUploadedImages = (gridRows, uploadedImages) => {
     const sortedUploadedImages = gridRows.map((row) => {
       const image = uploadedImages[row.id];
@@ -159,7 +135,7 @@ function App() {
     [setSelectedStationary],
   );
 
-  const decreaseTimer = () => {
+  const decreaseTimer = useCallback(() => {
     if (gridRows.some((row) => row.timer > 0)) {
       const updatedGridRows = gridRows.map((row) => {
         if (row.timer > 0) {
@@ -172,9 +148,9 @@ function App() {
       });
       setGridRows(updatedGridRows);
     }
-  };
+  }, [gridRows]);
 
-  const increaseTimer = () => {
+  const increaseTimer = useCallback(() => {
     if (gridRows.some((row) => row.condition !== "")) {
       const updatedGridRows = gridRows.map((row) => {
         if (row.condition !== "") {
@@ -187,7 +163,64 @@ function App() {
       });
       setGridRows(updatedGridRows);
     }
-  };
+  }, [gridRows]);
+
+  const nextTurn = useCallback(() => {
+    setHighlightedRow((prevHighlightedRow) => {
+      const nextRow =
+        prevHighlightedRow < gridRows.length - 1 ? prevHighlightedRow + 1 : 0;
+      if (nextRow === 0) {
+        setTurn(turn + 1);
+        decreaseTimer();
+      }
+      return nextRow;
+    });
+  }, [decreaseTimer, gridRows.length, turn]);
+
+  const prevTurn = useCallback(() => {
+    setHighlightedRow((prevHighlightedRow) => {
+      const nextRow =
+        prevHighlightedRow > 0 ? prevHighlightedRow - 1 : gridRows.length - 1;
+      if (nextRow === gridRows.length - 1) {
+        setTurn(turn - 1);
+        increaseTimer();
+      }
+      return nextRow;
+    });
+  }, [increaseTimer, gridRows.length, turn]);
+
+  // Spacebar for next row
+  useEffect(() => {
+    const handleKeyboardNav = (event) => {
+      const active = document.activeElement;
+
+      const typing =
+        active?.tagName === "INPUT" ||
+        active?.tagName === "TEXTAREA" ||
+        active?.tagName === "SELECT" ||
+        active?.isContentEditable;
+
+      if (typing) {
+        return;
+      }
+
+      if (event.code === "Space") {
+        event.preventDefault();
+        nextTurn();
+      }
+
+      if (event.code === "Backspace") {
+        event.preventDefault();
+        prevTurn();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyboardNav);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyboardNav);
+    };
+  }, [nextTurn, prevTurn]);
 
   useEffect(() => {
     Cookies.set("gridRows", JSON.stringify(gridRows), { expires: 18 });
@@ -301,12 +334,20 @@ function App() {
                 onClick={prevTurn}
                 disabled={turn === 1 && highlightedRow === 0}
               >
-                <div className="next-button">Prev</div>
+                <div className="next-button" title="Previous turn (Backspace)">
+                  Prev
+                </div>
               </button>
             </div>
             <div className="margin-left-10px">
-              <button className="btn btn-secondary bot" onClick={nextTurn}>
-                <div className="next-button">Next</div>
+              <button
+                className="btn btn-secondary bot"
+                onClick={nextTurn}
+                title={"Next turn (Spacebar)"}
+              >
+                <div className="next-button" title="Next turn (Spacebar)">
+                  Next
+                </div>
               </button>
             </div>
           </div>
