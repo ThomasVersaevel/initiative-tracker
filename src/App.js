@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
 import { Soundboard } from "./components/Soundboard";
@@ -11,47 +11,58 @@ import {
   faArrowRight,
   faDiceD20,
 } from "@fortawesome/free-solid-svg-icons";
+import { ImageHandler } from "./components/ImageHandler";
+import { LegendaryTracker } from "./components/LegendaryTracker";
 
 function App() {
   const [turn, setTurn] = useState(1);
 
   const [showSpeed, setShowSpeed] = useState(
-    JSON.parse(Cookies.get("showSpeed") ?? "true")
+    JSON.parse(Cookies.get("showSpeed") ?? "false"),
   );
   const [showSpellSave, setShowSpell] = useState(
-    JSON.parse(Cookies.get("showSpellSave") ?? "true")
+    JSON.parse(Cookies.get("showSpellSave") ?? "false"),
   );
   const [showCondition, setShowCondition] = useState(
-    JSON.parse(Cookies.get("showCondition") ?? "true")
+    JSON.parse(Cookies.get("showCondition") ?? "false"),
   );
   const [showDiceRoller, setShowDiceRoller] = useState(
-    JSON.parse(Cookies.get("showDiceroller") ?? "false")
+    JSON.parse(Cookies.get("showDiceroller") ?? "false"),
   );
+
+  const createRow = (id = 0) => ({
+    initiative: 0,
+    charactername: "",
+    legendary: false,
+    group: false,
+    speed: "",
+    hp: 0,
+    hpGroup: [0, 0, 0, 0],
+    ac: "",
+    spell: "",
+    condition: "",
+    timer: 0,
+    id,
+    isGroup: false,
+  });
 
   const [gridRows, setGridRows] = useState(() => {
     const savedRows = Cookies.get("gridRows");
+
     if (savedRows) {
       const parsedRows = JSON.parse(savedRows);
+
       return parsedRows.map((row, index) => ({
+        ...createRow(index),
         ...row,
         id: index,
+        hpGroup: row.hpGroup ?? [0, 0, 0, 0],
+        hp: row.hp ?? 0,
+        isGroup: row.isGroup ?? false,
       }));
     }
-    return [
-      {
-        initiative: 0,
-        charactername: "",
-        legendary: false,
-        group: false,
-        speed: "",
-        hp: 0,
-        ac: "",
-        spell: "",
-        condition: "",
-        timer: 0,
-        id: 0,
-      },
-    ];
+
+    return [createRow(0)];
   });
   const [highlightedRow, setHighlightedRow] = useState(0);
   const [theme, setTheme] = useState("default");
@@ -63,8 +74,8 @@ function App() {
   const updateValues = (id, name, value) => {
     setGridRows((prevGridRows) =>
       prevGridRows.map((row) =>
-        row.id === id ? { ...row, [name]: value } : row
-      )
+        row.id === id ? { ...row, [name]: value } : row,
+      ),
     );
   };
 
@@ -80,23 +91,9 @@ function App() {
     const nextId =
       gridRows.length > 0 ? Math.max(...gridRows.map((row) => row.id)) + 1 : 0;
 
-    setGridRows([
-      ...gridRows,
-      {
-        initiative: 0,
-        charactername: "",
-        legendary: false,
-        group: false,
-        speed: "",
-        hp: 0,
-        ac: "",
-        spell: "",
-        condition: "",
-        timer: 0,
-        id: nextId,
-      },
-    ]);
+    setGridRows([...gridRows, createRow(nextId)]);
   };
+
   const sortDescending = () => {
     const sortedGridRows = [...gridRows].map((row) => ({ ...row }));
     sortedGridRows.sort((a, b) => {
@@ -116,84 +113,6 @@ function App() {
     setGridRows((prevGridRows) => prevGridRows.filter((row) => row.id !== id));
   };
 
-  const nextTurn = () => {
-    setHighlightedRow((prevHighlightedRow) => {
-      const nextRow =
-        prevHighlightedRow < gridRows.length - 1 ? prevHighlightedRow + 1 : 0;
-      if (nextRow === 0) {
-        setTurn(turn + 1);
-        decreaseTimer();
-      }
-      return nextRow;
-    });
-  };
-
-  const prevTurn = () => {
-    setHighlightedRow((prevHighlightedRow) => {
-      const nextRow =
-        prevHighlightedRow > 0 ? prevHighlightedRow - 1 : gridRows.length - 1;
-      if (nextRow === gridRows.length - 1) {
-        setTurn(turn - 1);
-        increaseTimer();
-      }
-      return nextRow;
-    });
-  };
-
-  const decreaseTimer = () => {
-    if (gridRows.some((row) => row.timer > 0)) {
-      const updatedGridRows = gridRows.map((row) => {
-        if (row.timer > 0) {
-          return {
-            ...row,
-            timer: Math.max(row.timer - 1, 0),
-          };
-        }
-        return row;
-      });
-      setGridRows(updatedGridRows);
-    }
-  };
-
-  const increaseTimer = () => {
-    if (gridRows.some((row) => row.condition !== "")) {
-      const updatedGridRows = gridRows.map((row) => {
-        if (row.condition !== "") {
-          return {
-            ...row,
-            timer: Math.max(row.timer + 1, 0),
-          };
-        }
-        return row;
-      });
-      setGridRows(updatedGridRows);
-    }
-  };
-
-  const handleUpload = () => {
-    if (selectedFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUploadedImages((prevImages) => {
-          const tempImages = [...prevImages];
-          tempImages[highlightedRow] = reader.result;
-          return tempImages;
-        });
-      };
-      reader.readAsDataURL(selectedFile);
-    }
-  };
-
-  const handleStationaryUpload = () => {
-    if (selectedStationary) {
-      const reader2 = new FileReader();
-      reader2.onloadend = () => {
-        setUploadedStationary(reader2.result);
-      };
-      reader2.readAsDataURL(selectedStationary);
-    }
-  };
-
   const sortUploadedImages = (gridRows, uploadedImages) => {
     const sortedUploadedImages = gridRows.map((row) => {
       const image = uploadedImages[row.id];
@@ -206,23 +125,102 @@ function App() {
     (e) => {
       setSelectedFile(e.target.files[0]);
     },
-    [setSelectedFile]
+    [setSelectedFile],
   );
 
   const uploadStationaryImage = useCallback(
     (e) => {
       setSelectedStationary(e.target.files[0]);
     },
-    [setSelectedStationary]
+    [setSelectedStationary],
   );
 
-  const deleteImage = (nr) => {
-    if (nr === 1) {
-      setSelectedFile(null);
-    } else {
-      setSelectedStationary(null);
+  const decreaseTimer = useCallback(() => {
+    if (gridRows.some((row) => row.timer > 0)) {
+      const updatedGridRows = gridRows.map((row) => {
+        if (row.timer > 0) {
+          return {
+            ...row,
+            timer: Math.max(row.timer - 1, 0),
+          };
+        }
+        return row;
+      });
+      setGridRows(updatedGridRows);
     }
-  };
+  }, [gridRows]);
+
+  const increaseTimer = useCallback(() => {
+    if (gridRows.some((row) => row.condition !== "")) {
+      const updatedGridRows = gridRows.map((row) => {
+        if (row.condition !== "") {
+          return {
+            ...row,
+            timer: Math.max(row.timer + 1, 0),
+          };
+        }
+        return row;
+      });
+      setGridRows(updatedGridRows);
+    }
+  }, [gridRows]);
+
+  const nextTurn = useCallback(() => {
+    setHighlightedRow((prevHighlightedRow) => {
+      const nextRow =
+        prevHighlightedRow < gridRows.length - 1 ? prevHighlightedRow + 1 : 0;
+      if (nextRow === 0) {
+        setTurn(turn + 1);
+        decreaseTimer();
+      }
+      return nextRow;
+    });
+  }, [decreaseTimer, gridRows.length, turn]);
+
+  const prevTurn = useCallback(() => {
+    setHighlightedRow((prevHighlightedRow) => {
+      const nextRow =
+        prevHighlightedRow > 0 ? prevHighlightedRow - 1 : gridRows.length - 1;
+      if (nextRow === gridRows.length - 1) {
+        setTurn(turn - 1);
+        increaseTimer();
+      }
+      return nextRow;
+    });
+  }, [increaseTimer, gridRows.length, turn]);
+
+  // Spacebar for next row
+  useEffect(() => {
+    const handleKeyboardNav = (event) => {
+      const active = document.activeElement;
+
+      const typing =
+        active?.tagName === "INPUT" ||
+        active?.tagName === "TEXTAREA" ||
+        active?.tagName === "SELECT" ||
+        active?.isContentEditable;
+
+      if (typing) {
+        return;
+      }
+
+      if (event.code === "Space") {
+        event.preventDefault();
+        nextTurn();
+      }
+
+      if (event.code === "Backspace") {
+        event.preventDefault();
+        prevTurn();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyboardNav);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyboardNav);
+    };
+  }, [nextTurn, prevTurn]);
 
   useEffect(() => {
     Cookies.set("gridRows", JSON.stringify(gridRows), { expires: 18 });
@@ -263,16 +261,6 @@ function App() {
     5, // Dice
     7, // Delete
   ].reduce((a, b) => a + b, 0); // sum of visible column widths
-
-  useEffect(() => {
-    handleStationaryUpload();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStationary]);
-
-  useEffect(() => {
-    handleUpload();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedFile]);
 
   useEffect(() => {
     const handlePaste = (event) => {
@@ -346,54 +334,24 @@ function App() {
                 onClick={prevTurn}
                 disabled={turn === 1 && highlightedRow === 0}
               >
-                <div className="next-button">Prev</div>
+                <div className="next-button" title="Previous turn (Backspace)">
+                  Prev
+                </div>
               </button>
             </div>
             <div className="margin-left-10px">
-              <button className="btn btn-secondary bot" onClick={nextTurn}>
-                <div className="next-button">Next</div>
+              <button
+                className="btn btn-secondary bot"
+                onClick={nextTurn}
+                title={"Next turn (Spacebar)"}
+              >
+                <div className="next-button" title="Next turn (Spacebar)">
+                  Next
+                </div>
               </button>
             </div>
           </div>
-          {gridRows.some((row) => row.legendary) && (
-            <div className="col-3 input-container">
-              <div className="legendary-container">
-                <span>Legendary Actions:</span>
-                <div className="checkboxes">
-                  <label className="custom-checkbox">
-                    <input type="checkbox" />
-                    <span className="checkmark"></span>
-                  </label>
-                  <label className="custom-checkbox">
-                    <input type="checkbox" />
-                    <span className="checkmark"></span>
-                  </label>
-                  <label className="custom-checkbox">
-                    <input type="checkbox" />
-                    <span className="checkmark"></span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="legendary-container">
-                <span>Legendary Resistances:</span>
-                <div className="checkboxes">
-                  <label className="custom-checkbox">
-                    <input type="checkbox" />
-                    <span className="checkmark"></span>
-                  </label>
-                  <label className="custom-checkbox">
-                    <input type="checkbox" />
-                    <span className="checkmark"></span>
-                  </label>
-                  <label className="custom-checkbox">
-                    <input type="checkbox" />
-                    <span className="checkmark"></span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          )}
+          {gridRows.some((row) => row.legendary) && <LegendaryTracker />}
           <div className="col-1"></div>
         </div>
         {/* ====================== MAIN TABLE OF GRIDROWS ====================== */}
@@ -433,6 +391,7 @@ function App() {
                 showSpellSave={showSpellSave}
                 showCondition={showCondition}
                 uploadedImages={uploadedImages}
+                rowIndex={index}
               />
             </div>
           ))}
@@ -440,7 +399,7 @@ function App() {
         <div className="row mt-3">
           <div className="col-1">
             <button className="btn btn-secondary bot" onClick={addRow}>
-              +Row
+              Add Row
             </button>
           </div>
           <div className="col-1">
@@ -457,61 +416,17 @@ function App() {
             </button>
           </div>
         </div>
-        {selectedFile !== null && (
-          <div className="image-container">
-            <img
-              className="uploaded-image"
-              src={uploadedImages[highlightedRow]}
-              alt={""}
-            />
-            <div className="img-buttons">
-              <button
-                className="delete-img-button"
-                onClick={() => deleteImage(1)}
-              >
-                <img
-                  className="button-img"
-                  src="/images/trash-icon.png"
-                  alt=""
-                ></img>
-              </button>
-              <label className="upload-img-button" htmlFor="file-upload">
-                <img
-                  className="button-img"
-                  src="/images/image-icon.png"
-                  alt=""
-                ></img>
-              </label>
-            </div>
-          </div>
-        )}
-        {selectedStationary !== null && (
-          <div className="stationary-container">
-            <img className="uploaded-image" src={uploadedStationary} alt={""} />
-            <div className="img-buttons">
-              <button
-                className="delete-img-button"
-                onClick={() => deleteImage(2)}
-              >
-                <img
-                  className="button-img"
-                  src="/images/trash-icon.png"
-                  alt=""
-                ></img>
-              </button>
-              <label
-                className="upload-img-button"
-                htmlFor="stationary-file-upload"
-              >
-                <img
-                  className="button-img"
-                  src="/images/image-icon.png"
-                  alt=""
-                ></img>
-              </label>
-            </div>
-          </div>
-        )}
+        <ImageHandler
+          highlightedRow={highlightedRow}
+          selectedFile={selectedFile}
+          setSelectedFile={setSelectedFile}
+          selectedStationary={selectedStationary}
+          setSelectedStationary={setSelectedStationary}
+          setUploadedImages={setUploadedImages}
+          uploadedImages={uploadedImages}
+          setUploadedStationary={setUploadedStationary}
+          uploadedStationary={uploadedStationary}
+        />
       </div>
       <div className="App-footer">
         <div className="upload-container">
