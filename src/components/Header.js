@@ -22,6 +22,9 @@ export function Header({
   const [characterName, setCharacterName] = useState("");
   const [characterAC, setCharacterAC] = useState("");
   const [characterHP, setCharacterHP] = useState("");
+  const [pcStats, setPcStats] = useState(() => {
+    return JSON.parse(localStorage.getItem("pcStats") || "{}");
+  });
 
   const menuRef = useRef(null);
 
@@ -38,13 +41,31 @@ export function Header({
   };
 
   const saveCharacterStats = (character) => {
-    const existing = JSON.parse(localStorage.getItem("pcStats") || "{}");
+    const updated = {
+      ...pcStats,
+      [character.name.toLowerCase()]: character,
+    };
 
-    const key = character.name.toLowerCase();
+    setPcStats(updated);
+    localStorage.setItem("pcStats", JSON.stringify(updated));
+  };
 
-    existing[key] = character;
+  const editCharacterStats = (name) => {
+    const updated = { ...pcStats };
+    setCharacterName(updated[name].name);
+    setCharacterAC(updated[name].ac);
+    setCharacterHP(updated[name].hp);
+    delete updated[name];
 
-    localStorage.setItem("pcStats", JSON.stringify(existing));
+    localStorage.setItem("pcStats", JSON.stringify(updated));
+  };
+
+  const deleteCharacterStats = (name) => {
+    const updated = { ...pcStats };
+    delete updated[name];
+
+    setPcStats(updated);
+    localStorage.setItem("pcStats", JSON.stringify(updated));
   };
 
   return (
@@ -94,7 +115,7 @@ export function Header({
             <button
               className="menu-btn"
               onClick={() => {
-                  console.log("opening modal");
+                console.log("opening modal");
                 setMenuOpen(false);
                 setShowModal(true);
               }}
@@ -123,54 +144,88 @@ export function Header({
       </div>
 
       {showModal && (
-        <div className="modal">
-          <h2>Add Character Stats</h2>
+        <div className="character-modal">
+          <div className="modal-left">
+            <h4>Add Character</h4>
+            Name:
+            <input
+              className="modal-input"
+              type="text"
+              value={characterName}
+              onChange={(e) => setCharacterName(e.target.value)}
+            />
+            AC:
+            <input
+              className="modal-input"
+              type="number"
+              value={characterAC}
+              onChange={(e) => setCharacterAC(e.target.value)}
+            />
+            HP:
+            <input
+              className="modal-input"
+              type="number"
+              value={characterHP}
+              onChange={(e) => setCharacterHP(e.target.value)}
+            />
+            <div className="modal-buttons">
+              <button
+                className="modal-btn"
+                onClick={() => {
+                  clearCharacterInputs();
+                  setShowModal(false);
+                }}
+              >
+                Cancel
+              </button>
 
-          <input
-            type="text"
-            placeholder="Character Name"
-            value={characterName}
-            onChange={(e) => setCharacterName(e.target.value)}
-          />
+              <button
+                className="modal-btn"
+                onClick={() => {
+                  saveCharacterStats({
+                    name: characterName,
+                    ac: Number(characterAC),
+                    hp: Number(characterHP),
+                  });
+                  clearCharacterInputs();
+                  setShowModal(false);
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
 
-          <input
-            type="number"
-            placeholder="AC"
-            value={characterAC}
-            onChange={(e) => setCharacterAC(e.target.value)}
-          />
+          <div className="modal-right">
+            <h4>Saved Characters</h4>
 
-          <input
-            type="number"
-            placeholder="HP"
-            value={characterHP}
-            onChange={(e) => setCharacterHP(e.target.value)}
-          />
+            {Object.entries(pcStats).map(([name]) => (
+              <div key={name} className="character-entry">
+                <span>{name.charAt(0).toUpperCase() + name.slice(1)}</span>
 
-          <button
-            className="btn btn-secondary"
-            onClick={() => {
-              clearCharacterInputs();
-              setShowModal(false);
-            }}
-          >
-            Cancel
-          </button>
-
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              saveCharacterStats({
-                name: characterName,
-                ac: Number(characterAC),
-                hp: Number(characterHP),
-              });
-              clearCharacterInputs();
-              setShowModal(false);
-            }}
-          >
-            Save
-          </button>
+                <button
+                  className="delete-img-button"
+                  onClick={() => editCharacterStats(name)}
+                >
+                  <img
+                    className="button-img"
+                    src="/images/edit-icon.svg"
+                    alt=""
+                  ></img>
+                </button>
+                <button
+                  className="delete-img-button"
+                  onClick={() => deleteCharacterStats(name)}
+                >
+                  <img
+                    className="button-img"
+                    src="/images/trash-icon.png"
+                    alt=""
+                  ></img>
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

@@ -89,18 +89,89 @@
   border-color: var(--border);
 }
 
-.modal {
+.character-modal {
   position: fixed;
   z-index: 1000;
-  top: 50%;
-  left: 50%;
-  width: 65%;
-  height: 50%;
-  background-color: var(--primary);
+  top: 36%;
+  left: 80%;
+  width: 25%;
+  padding: 10px;
+  background-color: var(--header);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
-  align-items: center;
   transform: translate(-50%, -50%);
   z-index: 1000;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  font-size: var(--font-size-medium);
+}
+
+.modal-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.modal-right {
+  flex: 1;
+  border-left: 1px solid var(--border);
+  padding-left: 20px;
+  overflow-y: auto;
+  text-align: right;
+  flex-direction: column;
+  align-items: right;
+}
+
+.modal-input {
+  border: 3px solid var(--border);
+  background-color: var(--button);
+  color: var(--mainText);
+  align-items: center;
+  font-size: var(--font-size);
+  width: 80%;
+}
+
+.modal-input:focus {
+  background-color: var(--buttonHover);
+  border: 3px solid var(--border);
+  box-shadow: none;
+  font-size: var(--font-size);
+}
+
+.modal-buttons {
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-btn {
+  background-color: var(--button);
+  color: var(--buttonText);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  font-size: var(--font-size-medium);
+  cursor: pointer;
+}
+
+.character-entry {
+  display: flex;
+  margin-left: auto;
+  justify-content: space-between;
+  align-items: center;
+  width: 60%;
+  padding: 6px 0;
+}
+
+.delete-character {
+  width: 24px;
+  height: 24px;
+
+  border: none;
+
+  cursor: pointer;
 }
