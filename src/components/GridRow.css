@@ -1,4 +1,5 @@
 .grid-row {
+  position: relative;
   display: grid;
   background-color: var(--row);
   color: var(--mainText);
@@ -81,6 +82,7 @@ input::-webkit-inner-spin-button {
 }
 
 .cell {
+  position: relative;
   display: flex;
   border-right: 3px solid var(--border);
   align-items: center;
@@ -156,3 +158,48 @@ input::-webkit-inner-spin-button {
 .group {
   color: var(--btn-text) !important;
 }
+
+.name-popup {
+  position: absolute;
+  top: 90%;
+  left: 5%;
+  width: 200px;
+  background-color: var(--tableHeader);
+  z-index: 1000;
+  font-size: var(--font-size-small);
+  text-align: left;
+  border-radius: 6px;
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.name-popup-btn {
+  font-size: var(--font-size-tiny);
+  float: right;
+  background-color: var(--button);
+  color: var(--btn-text);
+  border: 1px solid var(--border);
+  margin-right: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+.name-popup::before {
+    content: "";
+    position: absolute;
+
+    top: -8px;
+    left: 20%;
+    transform: translateX(-50%);
+
+    width: 0;
+    height: 0;
+    background-color: transparent;
+
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid var(--tableHeader);
+}
+
+

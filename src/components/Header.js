@@ -72,6 +72,7 @@ export function Header({
             </label>
           </div>
         )}
+        
       </div>
       <div className="title">
         <h1>Take Initiative</h1>

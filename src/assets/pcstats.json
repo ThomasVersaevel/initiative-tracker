@@ -1,0 +1,22 @@
+{
+  "hakim": {
+    "name": "hakim",
+    "ac": 18,
+    "hp": 147
+  },
+  "asteria": {
+    "name": "Asteria",
+    "ac": 19,
+    "hp": 134
+  },
+  "dimitri": {
+    "name": "Dimitri",
+    "ac": 20,
+    "hp": 107
+  },
+  "thalioren": {
+    "name": "Thalioren",
+    "ac": 22,
+    "hp": 80
+  }
+}
