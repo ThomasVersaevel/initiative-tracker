@@ -3,6 +3,20 @@
 - Preset soundboard
 - Add carousel for all uploaded grid images (buttons in footer)
 
-optional:
-favorite character button that saves a cookie with gridrow info
+
+
+
+Favorite character button that saves a cookie with gridrow info
+triggers on names
+saves into cookie, defaults are CoC characters
+
+Needs little save button per row
+Needs a wayt o delete old ones in modal
+
+
+
 Also save images and sounds in cookie
+
+
+5-26: A stat block maker that will allow you to save it in a DB and then select it in the initative tracker such that its stat block appears in the images.
+

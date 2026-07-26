@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import "./GridRow.css";
 import { Popup } from "./Popup";
-import pcStats from "assets/pcstats.json";
 
 const condition = [
   "blinded",
@@ -59,12 +58,13 @@ export function GridRow({
   const [hovered, setHovered] = useState(false);
   const [d20Roll, setD20Roll] = useState("");
   const [maxHp, setMaxHp] = useState(0);
+  const [savedCharacterStats, setSavedCharacterStats] = useState({});
 
   // check if the character name matches a player character in pcstats.json and update the values accordingly
   const checkPlayerCharacter = (name) => {
     const lowerCaseName = name.trim().toLowerCase();
 
-    if (pcStats[lowerCaseName]) {
+    if (savedCharacterStats[lowerCaseName]) {
       setNameRecognised(true);
       console.log("Character name recognised:", lowerCaseName);
     } else {
@@ -74,10 +74,10 @@ export function GridRow({
 
   const importCharacterStats = (name) => {
     const lowerCaseName = name.trim().toLowerCase();
-    if (pcStats[lowerCaseName]) {
+    if (savedCharacterStats[lowerCaseName]) {
       setValues((prev) => ({
         ...prev,
-        ...pcStats[lowerCaseName],
+        ...savedCharacterStats[lowerCaseName],
       }));
     }
   };
@@ -202,6 +202,8 @@ export function GridRow({
       hpGroup: initialValues.hpGroup ?? [0, 0, 0, 0],
       isGroup: initialValues.isGroup ?? false,
     });
+
+    setSavedCharacterStats(JSON.parse(localStorage.getItem("pcStats") || "{}"));
   }, [initialValues]);
 
   useEffect(() => {
@@ -239,9 +241,10 @@ export function GridRow({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {nameRecognised && (          
+        {nameRecognised && (
           <div className="name-popup">
-            Import character?<br />
+            Import character?
+            <br />
             <button
               className="name-popup-btn"
               onClick={() => {
