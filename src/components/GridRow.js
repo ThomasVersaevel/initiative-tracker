@@ -52,11 +52,35 @@ export function GridRow({
     isGroup: initialValues.isGroup ?? false,
   });
 
+  const [nameRecognised, setNameRecognised] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [prevHighlighted, setPrevHighlighted] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [d20Roll, setD20Roll] = useState("");
   const [maxHp, setMaxHp] = useState(0);
+  const [savedCharacterStats, setSavedCharacterStats] = useState({});
+
+  // check if the character name matches a player character in pcstats.json and update the values accordingly
+  const checkPlayerCharacter = (name) => {
+    const lowerCaseName = name.trim().toLowerCase();
+
+    if (savedCharacterStats[lowerCaseName]) {
+      setNameRecognised(true);
+      console.log("Character name recognised:", lowerCaseName);
+    } else {
+      setNameRecognised(false);
+    }
+  };
+
+  const importCharacterStats = (name) => {
+    const lowerCaseName = name.trim().toLowerCase();
+    if (savedCharacterStats[lowerCaseName]) {
+      setValues((prev) => ({
+        ...prev,
+        ...savedCharacterStats[lowerCaseName],
+      }));
+    }
+  };
 
   const handleInputChange = (event) => {
     const { name, value, type, checked } = event.target;
@@ -67,6 +91,10 @@ export function GridRow({
       ...prev,
       [name]: newValue,
     }));
+
+    if (type === "text" && name === "charactername") {
+      checkPlayerCharacter(value);
+    }
 
     updateValues(id, name, newValue);
   };
@@ -174,6 +202,8 @@ export function GridRow({
       hpGroup: initialValues.hpGroup ?? [0, 0, 0, 0],
       isGroup: initialValues.isGroup ?? false,
     });
+
+    setSavedCharacterStats(JSON.parse(localStorage.getItem("pcStats") || "{}"));
   }, [initialValues]);
 
   useEffect(() => {
@@ -181,10 +211,6 @@ export function GridRow({
       rollDice();
     }
   }, [highlighted, rollDice]);
-
-  const closePopup = () => {
-    setIsPopupOpen(false);
-  };
 
   return (
     <div
@@ -209,11 +235,33 @@ export function GridRow({
           onChange={handleInputChange}
         />
       </div>
+
       <div
         className="cell"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
+        {nameRecognised && (
+          <div className="name-popup">
+            Import character?
+            <br />
+            <button
+              className="name-popup-btn"
+              onClick={() => {
+                setNameRecognised(false);
+                importCharacterStats(values.charactername);
+              }}
+            >
+              Yes
+            </button>
+            <button
+              className="name-popup-btn"
+              onClick={() => setNameRecognised(false)}
+            >
+              No
+            </button>
+          </div>
+        )}
         <input
           data-row={rowIndex}
           data-col={1}
@@ -416,7 +464,9 @@ export function GridRow({
         </button>
       </div>
 
-      {isPopupOpen && <Popup isOpen={isPopupOpen} onClose={closePopup}></Popup>}
+      {isPopupOpen && (
+        <Popup isOpen={isPopupOpen} onClose={setIsPopupOpen(false)}></Popup>
+      )}
     </div>
   );
 }
