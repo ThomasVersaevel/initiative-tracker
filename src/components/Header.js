@@ -1,5 +1,8 @@
 import React, { useState, useRef } from "react";
 import "./Header.css";
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const themes = [
   { label: "Default", value: "default" },
@@ -25,6 +28,7 @@ export function Header({
   const [pcStats, setPcStats] = useState(() => {
     return JSON.parse(localStorage.getItem("pcStats") || "{}");
   });
+  const navigate = useNavigate();
 
   const menuRef = useRef(null);
 
@@ -121,6 +125,12 @@ export function Header({
               }}
             >
               Add character stats
+            </button>
+            <button
+              className="menu-btn"
+              onClick={() => navigate("/stat-block-maker")}
+            >
+              Open stat block maker <FontAwesomeIcon icon={faArrowRight} />
             </button>
           </div>
         )}

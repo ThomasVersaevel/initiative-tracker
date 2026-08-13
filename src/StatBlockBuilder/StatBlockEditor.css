@@ -1,0 +1,261 @@
+.stat-block-normal {
+  --text-color: black;
+  --subtext-color: rgb(66, 66, 66);
+  --background-color: rgb(241, 225, 202);
+  --background-dark: rgb(199, 185, 165);
+  --background-light: rgb(255, 235, 216);
+  --background-darker: rgb(151, 135, 113);
+  --accent-color: rgb(156, 36, 36);
+  --accent-dark: rgb(126, 31, 31);
+  --accent-light: rgb(199, 49, 49);
+}
+
+/* div {
+    border: 1px solid green;
+} */
+
+.statblock-page-header {
+  padding: 8px;
+}
+
+.stat-block {
+  position: relative;
+  min-width: 500px;
+  min-height: 400px;
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(255, 255, 255, 0.35),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      rgba(100, 60, 20, 0.12),
+      transparent 40%
+    ),
+    linear-gradient(135deg, #f4e4b8, #e5c98b);
+  border: 1px solid #b89b63;
+  border-top: 5px solid #b18d46;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.35),
+    inset 0 0 30px rgba(90, 50, 10, 0.18);
+  color: var(--text-color);
+  padding: 6px;
+  font-size: 0.9rem;
+}
+
+.resize-handle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+  background: var(--accent-color);
+  opacity: 0.5;
+}
+
+.add-button {
+  font-size: 0.7rem;
+  font-weight: bold;
+  background-color: #b18d4667;
+  padding: 4px;
+}
+
+.border-top-3 {
+  border-top: 3px solid var(--accent-color);
+}
+
+.standard-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 8px;
+  gap: 12px;
+}
+
+.name-field {
+  flex: 1;
+}
+
+.two-digit-field {
+  width: 60px;
+}
+
+.subtext {
+  align-self: center;
+  font-size: 0.8rem;
+  color: var(--subtext-color);
+}
+
+.stats-row,
+.saves-row {
+  gap: 12px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 0% repeat(7, 4rem);
+  gap: 10px;
+  align-items: center;
+}
+
+.stats-row::before {
+  content: "";
+}
+
+.stat-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.stat-field input,
+.saves-row input {
+  width: 40px;
+  text-align: center;
+}
+
+.row-label {
+  font-weight: bold;
+}
+
+input {
+  background: var(--background-light);
+  border: 2px solid grey;
+  border-radius: 3px;
+}
+
+.icon-with-text {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(4px);
+  color: var(--accent-color);
+}
+
+.icon-with-text svg {
+  font-size: 1.5rem;
+}
+
+.icon-with-text span {
+  position: absolute;
+  top: 5px;
+  font-size: 0.6rem;
+  font-weight: bold;
+  color: white;
+}
+
+.stat-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: bold;
+  color: var(--subtext-color);
+}
+
+.stat-field input {
+  width: 60px;
+  text-align: center;
+}
+
+.save-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-left: 16px;
+  height: auto;
+}
+
+
+/* Item Store */
+.store-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background: var(--background-color);
+  color: var(--text-color);
+  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+  z-index: 1000;
+}
+
+.store-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--accent-color);
+  padding-bottom: 12px;
+  margin-bottom: 15px;
+}
+
+.store-header h2 {
+  margin: 0;
+}
+
+.store-items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.store-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 5px;
+}
+
+.store-item-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.store-item-info svg {
+  width: 20px;
+}
+
+.store-item-added {
+  opacity: 0.7;
+}
+
+.remove-button {
+  background: var(--accent-color);
+  color: white;
+}
+
+
+
+.width-100 {
+  width: 100%;
+}
+
+.width-70 {
+  width: 70%;
+}
+
+.width-50 {
+  width: 50%;
+}
+
+.width-30 {
+  width: 30%;
+}
+
+.margin-left-6 {
+  margin-left: 6;
+}
+
+.margin-bottom-4 {
+  margin-bottom: 4;
+}
+
+.flex {
+  display: flex;
+}

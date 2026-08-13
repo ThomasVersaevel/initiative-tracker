@@ -250,7 +250,7 @@
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  max-height: 7vh;
+  height: 7vh;
   font-size: calc(10px + 2vmin);
   color: var(--mainText);
   z-index: 10;
