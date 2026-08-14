@@ -1,22 +1,20 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faX } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { speedOptions } from "./StoreTypes";
 
 export function SpeedStore({
   setStorePanelOpen,
   speeds,
   setSpeeds,
-  attacks,
-  setAttacks,
 }) {
   return (
-    <div className="store-panel">
+    <div>
       <div className="store-header">
         <h2>Add Speed</h2>
 
         <button className="btn" onClick={() => setStorePanelOpen("")}>
-          <FontAwesomeIcon icon={faX} />
+          <FontAwesomeIcon icon={faArrowRight} />
         </button>
       </div>
 

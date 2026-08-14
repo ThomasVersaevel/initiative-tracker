@@ -6,12 +6,11 @@ import {
   faArrowLeft,
   faHeart,
   faShield,
-  faPersonRunning,
   faPlus,
-  faWind,
 } from "@fortawesome/free-solid-svg-icons";
-import { SpeedStore } from "./ItemStore/ItemStore";
-import { speedOptions } from "./ItemStore/StoreTypes";
+import { SpeedStore } from "./ItemStores/SpeedStore";
+import { speedOptions, traitOptions } from "./ItemStores/StoreTypes";
+import { TraitStore } from "./ItemStores/TraitStore";
 
 function StatBlockEditor() {
   const [theme, setTheme] = useState("default");
@@ -24,6 +23,8 @@ function StatBlockEditor() {
       value: 30,
     },
   ]);
+
+  const [resistances, setResistances] = useState([]);
 
   const [attacks, setAttacks] = useState([]);
 
@@ -111,7 +112,6 @@ function StatBlockEditor() {
 
     const action = e.nativeEvent.submitter.value;
     const statBlock = getStatBlockData(e.currentTarget);
-    console.log("Action: ", action);
 
     if (action === "download-json") {
       const json = JSON.stringify(statBlock, null, 2);
@@ -202,7 +202,7 @@ function StatBlockEditor() {
                 );
               })}
               <button
-                className="btn add-button"
+                className="button add-button"
                 onClick={() => setStorePanelOpen("speed")}
               >
                 Add <FontAwesomeIcon icon={faPlus} />
@@ -224,7 +224,14 @@ function StatBlockEditor() {
               ))}
             </div>
 
-            <div className="border-top-3"></div>
+            <div className="border-top-3 standard-row">
+              <button
+                className="button add-button width-100"
+                onClick={() => setStorePanelOpen("resistance")}
+              >
+                Add <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
           </form>
           <div className="resize-handle" onMouseDown={startResize} />
         </div>
@@ -260,15 +267,22 @@ function StatBlockEditor() {
           </button>
         </div>
       </div>
-      {storePanelOpen === "speed" && (
-        <SpeedStore
-          setStorePanelOpen={setStorePanelOpen}
-          speeds={speeds}
-          setSpeeds={setSpeeds}
-          attacks={attacks}
-          setAttacks={setAttacks}
-        />
-      )}
+      <div className={`store-panel ${storePanelOpen !== "" ? "open" : ""}`}>
+        {storePanelOpen === "speed" && (
+          <SpeedStore
+            setStorePanelOpen={setStorePanelOpen}
+            speeds={speeds}
+            setSpeeds={setSpeeds}
+          />
+        )}
+        {storePanelOpen === "resistance" && (
+          <TraitStore
+            setStorePanelOpen={setStorePanelOpen}
+            options={traitOptions}
+            setSpeeds={setSpeeds}
+          />
+        )}
+      </div>
       <div className="App-footer"></div>
     </div>
   );

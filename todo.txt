@@ -15,3 +15,10 @@ Todo:
 This will then allow you to import them into the initiative tracker easy
 
 Needs a database and full editor 
+
+Any value is overwritable, but is also set automatically
+
+subTodo:
+    - JSON data lready outdated
+    - MORE STORE STUFF
+    - Fancy animations!
