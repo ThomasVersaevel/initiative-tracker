@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { speedOptions } from "./StoreTypes";
+import { speedOptions } from "../TypesUtils/StoreTypes";
 
 export function SpeedStore({
   setStorePanelOpen,

@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
-    "ignoreDeprecations": "6.0",
     "module": "esnext",
-    "target": "es6"
+    "target": "es6",
+    "jsx": "react",
+    "allowImportingTsExtensions": true,
+    "strictNullChecks": true,
+    "checkJs": false,
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src"]
 }

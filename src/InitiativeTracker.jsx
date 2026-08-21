@@ -14,7 +14,7 @@ import {
 import { ImageHandler } from "./components/ImageHandler";
 import { LegendaryTracker } from "./components/LegendaryTracker";
 
-function App() {
+function InitiativeTracker({ setPage }) {
   const [turn, setTurn] = useState(1);
 
   const [showSpeed, setShowSpeed] = useState(
@@ -299,6 +299,7 @@ function App() {
         setShowSpell={setShowSpell}
         showCondition={showCondition}
         setShowCondition={setShowCondition}
+        setPage={setPage}
       ></Header>
       <div className={`diceroller-panel ${showDiceRoller ? "open" : ""}`}>
         <button
@@ -472,4 +473,4 @@ function App() {
     </div>
   );
 }
-export default App;
+export default InitiativeTracker;
