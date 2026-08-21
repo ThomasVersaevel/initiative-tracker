@@ -9,6 +9,7 @@ export const defaultStats = {
 
 export const defaultStatBlock = {
   name: "",
+  portrait: null,
   hp: 0,
   ac: 0,
   legendary: false,
@@ -29,7 +30,13 @@ export const defaultStatBlock = {
     challengeRating: 0,
   },
 
-  attacks: [],
+  attacks: {
+    multiattack: {
+      enabled: false,
+      attacks: [],
+    },
+    attacks: [],
+  },
 
   size: {
     width: 600,

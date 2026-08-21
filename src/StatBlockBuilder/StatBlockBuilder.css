@@ -106,6 +106,45 @@
   gap: 12px;
 }
 
+.stat-block-heading-row {
+  min-height: 54px;
+}
+
+.portrait-upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-left: auto;
+  overflow: hidden;
+  color: var(--accent-color);
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.portrait-upload:hover {
+  background: var(--background-dark);
+}
+
+.portrait-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 70px;
+  max-height: 70px;
+  border: none;
+  object-fit: contain;
+}
+
+.portrait-display {
+  display: flex;
+  align-self: flex-start;
+  margin-left: auto;
+}
+
 .trait-display-row {
   display: flex;
   flex-direction: column;
@@ -119,6 +158,95 @@
 
 .trait-actions-row {
   padding-top: 4px;
+}
+
+.attack-display-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  font-size: 0.85rem;
+}
+
+.attack-multiattack-text,
+.attack-display-item {
+  border-top: 1px solid var(--background-darker);
+  padding-top: 6px;
+}
+
+.attack-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 5px;
+}
+
+.attack-editor label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.attack-editor input,
+.attack-editor textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px;
+  color: var(--text-color);
+  background: var(--background-color);
+  border: 1px solid var(--background-darker);
+  border-radius: 4px;
+  font: inherit;
+}
+
+.attack-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.attack-remove-button {
+  padding: 4px 7px;
+  color: var(--accent-color);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.multiattack-toggle,
+.multiattack-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.multiattack-options {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px;
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 5px;
+}
+
+.multiattack-option {
+  font-size: 0.85rem;
+}
+
+.multiattack-count {
+  width: 3.5rem;
+  margin-left: auto;
+}
+
+.store-muted {
+  font-size: 0.8rem;
+  opacity: 0.7;
 }
 
 .name-field {

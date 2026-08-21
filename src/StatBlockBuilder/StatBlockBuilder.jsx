@@ -1,23 +1,81 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
   faHeart,
   faShield,
   faPlus,
+  faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import { SpeedStore } from "./ItemStores/SpeedStore";
 import { speedOptions, traitOptions } from "./TypesUtils/StoreTypes";
 import { TraitStore } from "./ItemStores/TraitStore";
+import { AttackStore } from "./ItemStores/AttackStore";
 import SaveUploads from "./SaveUploads";
 import { defaultStatBlock } from "./TypesUtils/Types.js";
 import "./StatBlockBuilder.css";
 
+const STAT_BLOCK_STORAGE_KEY = "statBlockBuilderState";
+
+const getInitialStatBlock = () => {
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem(STAT_BLOCK_STORAGE_KEY) || "null",
+    );
+    if (!saved) return structuredClone(defaultStatBlock);
+
+    return {
+      ...defaultStatBlock,
+      ...saved,
+      stats: {
+        ...defaultStatBlock.stats,
+        ...(saved.stats || {}),
+      },
+      traits: {
+        ...defaultStatBlock.traits,
+        ...(saved.traits || {}),
+      },
+      attacks: {
+        ...defaultStatBlock.attacks,
+        ...(saved.attacks || {}),
+        multiattack: {
+          ...defaultStatBlock.attacks.multiattack,
+          ...(saved.attacks?.multiattack || {}),
+        },
+      },
+      size: {
+        ...defaultStatBlock.size,
+        ...(saved.size || {}),
+      },
+    };
+  } catch {
+    return structuredClone(defaultStatBlock);
+  }
+};
+
 function StatBlockBuilder({ setPage }) {
-  const [statBlock, setStatBlock] = useState(defaultStatBlock);
+  const [statBlock, setStatBlock] = useState(getInitialStatBlock);
   const [storePanelOpen, setStorePanelOpen] = useState("");
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(STAT_BLOCK_STORAGE_KEY, JSON.stringify(statBlock));
+    } catch {
+      // Keep editing available if browser storage is unavailable or full.
+    }
+  }, [statBlock]);
+
   const resizing = useRef(false);
+
+  const uploadPortrait = (event) => {
+    const file = event.target.files?.[0];
+    if (!file || !file.type.startsWith("image/")) return;
+
+    const reader = new FileReader();
+    reader.onload = () => updateField("portrait", reader.result);
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  };
 
   const updateField = (field, value) => {
     setStatBlock((current) => ({
@@ -111,12 +169,12 @@ function StatBlockBuilder({ setPage }) {
           }}
         >
           <form id="stat-block-form">
-            <div className="standard-row">
+            <div className="standard-row stat-block-heading-row">
               <label>
-                Name:
                 <input
                   className="margin-left-6"
                   name="name"
+                  placeholder="Monster Name"
                   value={statBlock.name}
                   onChange={(e) => updateField("name", e.target.value)}
                 />
@@ -131,6 +189,29 @@ function StatBlockBuilder({ setPage }) {
                 />
                 <span className="subtext">Legendary:</span>
               </label>
+
+              {statBlock.portrait ? (
+                <div className="portrait-display">
+                  <img
+                    className="portrait-image"
+                    src={statBlock.portrait}
+                    alt="Creature portrait"
+                  />
+                </div>
+              ) : (
+                <label
+                  className="portrait-upload"
+                  title="Upload creature portrait"
+                >
+                  <FontAwesomeIcon icon={faUpload} />
+                  <input
+                    hidden
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    onChange={uploadPortrait}
+                  />
+                </label>
+              )}
             </div>
 
             <div className="standard-row border-top-3">
@@ -242,7 +323,8 @@ function StatBlockBuilder({ setPage }) {
               )}
               {statBlock.traits.senses.length > 0 && (
                 <div>
-                  <strong className="accent-color">Senses:</strong> {statBlock.traits.senses.join(", ")}
+                  <strong className="accent-color">Senses:</strong>{" "}
+                  {statBlock.traits.senses.join(", ")}
                 </div>
               )}
               {statBlock.traits.languages.length > 0 && (
@@ -265,15 +347,57 @@ function StatBlockBuilder({ setPage }) {
                 className="button add-button width-100"
                 onClick={() => setStorePanelOpen("trait")}
               >
-                Add <FontAwesomeIcon icon={faPlus} />
+                Add Traits <FontAwesomeIcon icon={faPlus} />
               </button>
+            </div>
+            <div className=" border-top-3">
+              <div className="attack-display-row">
+                {statBlock.attacks.multiattack.enabled &&
+                  statBlock.attacks.multiattack.attacks.length > 0 && (
+                    <div className="attack-multiattack-text">
+                      <strong>
+                        <em>Multiattack.</em>
+                      </strong>{" "}
+                      The {statBlock.name || "creature"} makes{" "}
+                      {statBlock.attacks.multiattack.attacks
+                        .map((selection) => {
+                          const attack = statBlock.attacks.attacks.find(
+                            (item) => item.id === selection.attackId,
+                          );
+                          return `${selection.count} ${
+                            attack?.name || "unnamed attack"
+                          } attack${selection.count === 1 ? "" : "s"}`;
+                        })
+                        .join(" or ")}
+                      .
+                    </div>
+                  )}
+                {statBlock.attacks.attacks.map((attack) => (
+                  <div className="attack-display-item" key={attack.id}>
+                    <strong>
+                      <em>{attack.name || "Unnamed attack"}.</em>
+                    </strong>{" "}
+                    {attack.description}
+                  </div>
+                ))}
+              </div>
+
+              <div className="standard-row trait-actions-row">
+                <button
+                  type="button"
+                  className="button add-button width-100"
+                  onClick={() => setStorePanelOpen("attack")}
+                >
+                  Add Attacks <FontAwesomeIcon icon={faPlus} />
+                </button>
+              </div>
             </div>
           </form>
 
           <div className="resize-handle" onMouseDown={startResize} />
         </div>
 
-        <SaveUploads />
+        <SaveUploads setStatBlock={setStatBlock} statBlock={statBlock} />
       </div>
 
       <div className={`store-panel ${storePanelOpen !== "" ? "open" : ""}`}>
@@ -291,6 +415,14 @@ function StatBlockBuilder({ setPage }) {
             options={traitOptions}
             traits={statBlock.traits}
             setTraits={setTraits}
+          />
+        )}
+
+        {storePanelOpen === "attack" && (
+          <AttackStore
+            setStorePanelOpen={setStorePanelOpen}
+            attacks={statBlock.attacks}
+            setAttacks={setAttacks}
           />
         )}
       </div>

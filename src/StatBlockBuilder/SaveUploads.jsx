@@ -23,10 +23,18 @@ const SaveUploads = ({ setStatBlock, statBlock }) => {
             ...(imported.stats || {}),
           },
           speeds: imported.speeds || defaultStatBlock.speeds,
-          traits: imported.traits || [],
-          senses: imported.senses || [],
-          languages: imported.languages || [],
-          attacks: imported.attacks || [],
+          traits: {
+            ...defaultStatBlock.traits,
+            ...(imported.traits || {}),
+          },
+          attacks: {
+            ...defaultStatBlock.attacks,
+            ...(imported.attacks || {}),
+            multiattack: {
+              ...defaultStatBlock.attacks.multiattack,
+              ...(imported.attacks?.multiattack || {}),
+            },
+          },
           size: imported.size || defaultStatBlock.size,
           theme: imported.theme || "default",
         });
