@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { defaultStatBlock, defaultStats } from "./TypesUtils/Types.js";
 
 
-const SaveUploads = ({ setStatBlock, statBlock }) => {
+const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
   const fileInputRef = useRef(null);
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -72,7 +72,7 @@ const SaveUploads = ({ setStatBlock, statBlock }) => {
     }
 
     if (submitAction === "download-image") {
-      // Image generation later
+      imageGeneratorRef.current?.download();
     }
 
     if (submitAction === "save") {

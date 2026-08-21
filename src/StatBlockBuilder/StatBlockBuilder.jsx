@@ -12,6 +12,7 @@ import { speedOptions, traitOptions } from "./TypesUtils/StoreTypes";
 import { TraitStore } from "./ItemStores/TraitStore";
 import { AttackStore } from "./ItemStores/AttackStore";
 import SaveUploads from "./SaveUploads";
+import StatBlockImageGenerator from "./StatBlockImageGenerator";
 import { defaultStatBlock } from "./TypesUtils/Types.js";
 import "./StatBlockBuilder.css";
 
@@ -56,6 +57,7 @@ const getInitialStatBlock = () => {
 function StatBlockBuilder({ setPage }) {
   const [statBlock, setStatBlock] = useState(getInitialStatBlock);
   const [storePanelOpen, setStorePanelOpen] = useState("");
+  const imageGeneratorRef = useRef(null);
 
   useEffect(() => {
     try {
@@ -397,7 +399,17 @@ function StatBlockBuilder({ setPage }) {
           <div className="resize-handle" onMouseDown={startResize} />
         </div>
 
-        <SaveUploads setStatBlock={setStatBlock} statBlock={statBlock} />
+        <SaveUploads
+          setStatBlock={setStatBlock}
+          statBlock={statBlock}
+          imageGeneratorRef={imageGeneratorRef}
+        />
+        <div className="stat-block-image-preview-wrapper" aria-hidden="true">
+          <StatBlockImageGenerator
+            ref={imageGeneratorRef}
+            statBlock={statBlock}
+          />
+        </div>
       </div>
 
       <div className={`store-panel ${storePanelOpen !== "" ? "open" : ""}`}>
