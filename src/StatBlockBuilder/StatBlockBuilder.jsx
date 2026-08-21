@@ -13,8 +13,7 @@ import SaveUploads from "./SaveUploads";
 import { defaultStatBlock } from "./TypesUtils/Types.js";
 import "./StatBlockBuilder.css";
 
-function StatBlockBuilder({setPage}) {
-
+function StatBlockBuilder({ setPage }) {
   const [statBlock, setStatBlock] = useState(defaultStatBlock);
   const [storePanelOpen, setStorePanelOpen] = useState("");
 
@@ -50,7 +49,7 @@ function StatBlockBuilder({setPage}) {
   const setTraits = (value) => {
     setStatBlock((current) => ({
       ...current,
-      trait: typeof value === "function" ? value(current.traits) : value,
+      traits: typeof value === "function" ? value(current.traits) : value,
     }));
   };
 
@@ -95,7 +94,10 @@ function StatBlockBuilder({setPage}) {
   return (
     <div className={`stat-block-normal ${statBlock.theme}`}>
       <div className="App-header statblock-page-header">
-        <button className="menu-btn" onClick={() => setPage("initiative-tracker")}>
+        <button
+          className="menu-btn"
+          onClick={() => setPage("initiative-tracker")}
+        >
           <FontAwesomeIcon icon={faArrowLeft} /> Initiative tracker
         </button>
       </div>
@@ -231,7 +233,33 @@ function StatBlockBuilder({setPage}) {
               ))}
             </div>
 
-            <div className="border-top-3 standard-row">
+            <div className="border-top-3 trait-display-row">
+              {statBlock.traits.resistances.length > 0 && (
+                <div>
+                  <strong className="accent-color">Resistances:</strong>{" "}
+                  {statBlock.traits.resistances.join(", ")}
+                </div>
+              )}
+              {statBlock.traits.senses.length > 0 && (
+                <div>
+                  <strong className="accent-color">Senses:</strong> {statBlock.traits.senses.join(", ")}
+                </div>
+              )}
+              {statBlock.traits.languages.length > 0 && (
+                <div>
+                  <strong className="accent-color">Languages:</strong>{" "}
+                  {statBlock.traits.languages.join(", ")}
+                </div>
+              )}
+              {statBlock.traits.challengeRating > 0 && (
+                <div>
+                  <strong className="accent-color">Challenge Rating:</strong>{" "}
+                  {statBlock.traits.challengeRating}
+                </div>
+              )}
+            </div>
+
+            <div className="standard-row trait-actions-row">
               <button
                 type="button"
                 className="button add-button width-100"
@@ -261,7 +289,7 @@ function StatBlockBuilder({setPage}) {
           <TraitStore
             setStorePanelOpen={setStorePanelOpen}
             options={traitOptions}
-            traits={statBlock}
+            traits={statBlock.traits}
             setTraits={setTraits}
           />
         )}

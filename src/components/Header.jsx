@@ -131,6 +131,12 @@ export function Header({
             >
               Open stat block maker <FontAwesomeIcon icon={faArrowRight} />
             </button>
+              <button
+              className="menu-btn"
+              onClick={() => setPage("token-stamp")}
+            >
+              Open token stamp <FontAwesomeIcon icon={faArrowRight} />
+            </button>
           </div>
         )}
       </div>

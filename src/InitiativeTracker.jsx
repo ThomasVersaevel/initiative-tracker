@@ -397,25 +397,25 @@ function InitiativeTracker({ setPage }) {
             </div>
           ))}
         </div>
-        <div className="row mt-3">
-          <div className="col-1">
-            <button className="btn btn-secondary bot" onClick={addRow}>
-              Add Row
-            </button>
-          </div>
-          <div className="col-1">
-            <button className="btn btn-secondary bot" onClick={sortDescending}>
-              Sort
-            </button>
-          </div>
-          <div className="col-1">
-            <button
-              className="btn btn-secondary bot"
-              onClick={clearInitiativeInputs}
-            >
-              Clear
-            </button>
-          </div>
+        <div className="initiative-actions mt-3">
+          <button
+            className="btn btn-secondary bot add-row-button"
+            onClick={addRow}
+          >
+            Add Row
+          </button>
+          <button
+            className="btn btn-secondary bot"
+            onClick={sortDescending}
+          >
+            Sort
+          </button>
+          <button
+            className="btn btn-secondary bot"
+            onClick={clearInitiativeInputs}
+          >
+            Clear
+          </button>
         </div>
         <ImageHandler
           highlightedRow={highlightedRow}

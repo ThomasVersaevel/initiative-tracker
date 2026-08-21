@@ -87,7 +87,6 @@
 }
 
 .add-button:hover {
-
   background-color: var(--button-dark);
 }
 
@@ -105,6 +104,21 @@
   align-items: center;
   padding: 8px;
   gap: 12px;
+}
+
+.trait-display-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 1.25rem;
+  padding: 8px;
+  color: var(--text-color);
+  font-size: 0.8rem;
+}
+
+.trait-actions-row {
+  padding-top: 4px;
 }
 
 .name-field {
@@ -240,6 +254,131 @@ input {
   gap: 10px;
 }
 
+.trait-select-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.trait-picker {
+  position: relative;
+}
+
+.trait-picker-input {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  width: 100%;
+  min-height: 36px;
+  padding: 5px 8px;
+  color: var(--text-color);
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 5px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.trait-picker-input:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.trait-picker-placeholder {
+  opacity: 0.65;
+}
+
+.trait-picker-chevron {
+  margin-left: auto;
+  padding-left: 4px;
+}
+
+.accent-color {
+  color: var(--accent-dark);
+}
+
+.trait-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  color: var(--text-color);
+  background: var(--background-dark);
+  border: 1px solid var(--background-darker);
+  border-radius: 999px;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.trait-pill-remove {
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.trait-picker-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px;
+  background: var(--background-color);
+  border: 1px solid var(--background-darker);
+  border-radius: 5px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+  z-index: 5;
+}
+
+.trait-picker-option {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 7px 8px;
+  color: var(--text-color);
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.trait-picker-option:hover,
+.trait-picker-option.selected {
+  background: var(--background-light);
+}
+
+.trait-select-field input {
+  width: 100%;
+  height: 36px;
+  padding: 6px;
+  color: var(--text-color);
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 5px;
+}
+
+.trait-select-field input,
+.trait-select-field option:checked {
+  color: var(--text-color);
+  background: var(--background-dark);
+}
+
+.trait-select-field input {
+  width: 100%;
+  height: 36px;
+  box-sizing: border-box;
+  padding: 6px;
+  border: 1px solid var(--background-darker);
+  border-radius: 5px;
+  background: var(--background-light);
+  font: inherit;
+}
+
 .store-item {
   display: flex;
   align-items: center;
@@ -296,4 +435,3 @@ input {
 .flex {
   display: flex;
 }
-

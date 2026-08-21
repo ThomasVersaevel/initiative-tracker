@@ -365,6 +365,7 @@ input[type="file"]::file-selector-button:hover {
   color: var(--buttonText);
   border-color: var(--border);
   min-width: 100%;
+  width: stretch;
 }
 
 .btn.btn-secondary.bot:hover {
@@ -377,6 +378,27 @@ input[type="file"]::file-selector-button:hover {
   background-color: var(--buttonActive);
   color: var(--buttonText);
   border-color: var(--border);
+}
+
+.add-row-button {
+  width: 7rem !important;
+  white-space: nowrap;
+}
+
+.initiative-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.initiative-actions .btn.btn-secondary.bot {
+  width: 4rem;
+  min-width: 4rem !important;
+}
+
+.initiative-actions .btn.btn-secondary.bot.add-row-button {
+  width: 7rem;
+  min-width: 7rem !important;
 }
 
 /* Legendary actions/resistances */

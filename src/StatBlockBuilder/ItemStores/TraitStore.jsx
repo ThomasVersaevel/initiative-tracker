@@ -1,30 +1,83 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { traitOptions } from "../TypesUtils/StoreTypes";
 
-export function TraitStore({
-  setStorePanelOpen,
-  traits,
-  setTraits,
-}) {
+export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
+  const [openCategory, setOpenCategory] = useState(null);
+
   const toggleOption = (category, option) => {
-    setTraits((current) => {
-      const values = current[category];
-
-      if (values.includes(option)) {
-        return {
-          ...current,
-          [category]: values.filter((value) => value !== option),
-        };
-      }
-
-      return {
-        ...current,
-        [category]: [...values, option],
-      };
-    });
+    setTraits((current) => ({
+      ...current,
+      [category]: current[category].includes(option)
+        ? current[category].filter((value) => value !== option)
+        : [...current[category], option],
+    }));
   };
+
+  const renderMultiSelect = (category, label) => (
+    <div className="trait-select-field">
+      <span>{label}</span>
+      <div className="trait-picker">
+        <button
+          type="button"
+          className="trait-picker-input"
+          aria-expanded={openCategory === category}
+          onClick={() =>
+            setOpenCategory((current) =>
+              current === category ? null : category,
+            )
+          }
+        >
+          {traits[category].length > 0 ? (
+            traits[category].map((option) => (
+              <span
+                className="trait-pill"
+                role="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  toggleOption(category, option);
+                }}
+                key={option}
+              >
+                {option}
+                <span
+                  className="trait-pill-remove"
+                  aria-label={`Remove ${option}`}
+                >
+                  x
+                </span>
+              </span>
+            ))
+          ) : (
+            <span className="trait-picker-placeholder">Choose options</span>
+          )}
+          <span className="trait-picker-chevron">▾</span>
+        </button>
+
+        {openCategory === category && (
+          <div className="trait-picker-menu">
+            {traitOptions[category].map((option) => {
+              const selected = traits[category].includes(option);
+              return (
+                <button
+                  type="button"
+                  key={option}
+                  className={`trait-picker-option${
+                    selected ? " selected" : ""
+                  }`}
+                  onClick={() => toggleOption(category, option)}
+                >
+                  <span>{option}</span>
+                  {selected && <span>✓</span>}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div>
@@ -41,106 +94,24 @@ export function TraitStore({
       </div>
 
       <div className="store-items">
-        <h3>Resistances</h3>
+        {renderMultiSelect("resistances", "Resistances")}
+        {renderMultiSelect("senses", "Senses")}
+        {renderMultiSelect("languages", "Languages")}
 
-        {traitOptions.resistances.map((option) => {
-          const alreadyAdded = traits.resistances.includes(option);
-
-          return (
-            <div
-              key={option}
-              className={`store-item ${
-                alreadyAdded ? "store-item-added" : ""
-              }`}
-            >
-              <div className="store-item-info">
-                <span>{option}</span>
-              </div>
-
-              <button
-                type="button"
-                className={`btn ${
-                  alreadyAdded ? "remove-button" : "add-button"
-                }`}
-                onClick={() => toggleOption("resistances", option)}
-              >
-                {alreadyAdded ? "Remove" : "Add"}
-              </button>
-            </div>
-          );
-        })}
-
-        <h3>Senses</h3>
-
-        {traitOptions.senses.map((option) => {
-          const alreadyAdded = traits.senses.includes(option);
-
-          return (
-            <div
-              key={option}
-              className={`store-item ${
-                alreadyAdded ? "store-item-added" : ""
-              }`}
-            >
-              <div className="store-item-info">
-                <span>{option}</span>
-              </div>
-
-              <button
-                type="button"
-                className={`btn ${
-                  alreadyAdded ? "remove-button" : "add-button"
-                }`}
-                onClick={() => toggleOption("senses", option)}
-              >
-                {alreadyAdded ? "Remove" : "Add"}
-              </button>
-            </div>
-          );
-        })}
-
-        <h3>Languages</h3>
-
-        {traitOptions.languages.map((option) => {
-          const alreadyAdded = traits.languages.includes(option);
-
-          return (
-            <div
-              key={option}
-              className={`store-item ${
-                alreadyAdded ? "store-item-added" : ""
-              }`}
-            >
-              <div className="store-item-info">
-                <span>{option}</span>
-              </div>
-
-              <button
-                type="button"
-                className={`btn ${
-                  alreadyAdded ? "remove-button" : "add-button"
-                }`}
-                onClick={() => toggleOption("languages", option)}
-              >
-                {alreadyAdded ? "Remove" : "Add"}
-              </button>
-            </div>
-          );
-        })}
-
-        <h3>Challenge Rating</h3>
-
-        <input
-          type="number"
-          min="0"
-          value={traits.challengeRating}
-          onChange={(e) =>
-            setTraits((current) => ({
-              ...current,
-              challengeRating: Number(e.target.value),
-            }))
-          }
-        />
+        <label className="trait-select-field">
+          <span>Challenge Rating</span>
+          <input
+            type="number"
+            min="0"
+            value={traits.challengeRating}
+            onChange={(e) =>
+              setTraits((current) => ({
+                ...current,
+                challengeRating: Number(e.target.value),
+              }))
+            }
+          />
+        </label>
       </div>
     </div>
   );
