@@ -75,8 +75,8 @@ export const languageOptions = [
 ];
 
 export const traitOptions = {
-  resistances: [resistanceOptions],
-  senses: [sensesOptions],
-  languages: [languageOptions],
-  challengeRating: 0,
+  resistances: resistanceOptions,
+  senses: sensesOptions,
+  languages: languageOptions,
 };
+

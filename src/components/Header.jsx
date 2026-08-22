@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import "./Header.css";
-import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
@@ -19,6 +18,7 @@ export function Header({
   setShowSpell,
   showCondition,
   setShowCondition,
+  setPage,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -28,7 +28,6 @@ export function Header({
   const [pcStats, setPcStats] = useState(() => {
     return JSON.parse(localStorage.getItem("pcStats") || "{}");
   });
-  const navigate = useNavigate();
 
   const menuRef = useRef(null);
 
@@ -128,9 +127,15 @@ export function Header({
             </button>
             <button
               className="menu-btn"
-              onClick={() => navigate("/stat-block-maker")}
+              onClick={() => setPage("stat-block-builder")}
             >
               Open stat block maker <FontAwesomeIcon icon={faArrowRight} />
+            </button>
+              <button
+              className="menu-btn"
+              onClick={() => setPage("token-stamp")}
+            >
+              Open token stamp <FontAwesomeIcon icon={faArrowRight} />
             </button>
           </div>
         )}

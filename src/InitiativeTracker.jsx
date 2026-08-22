@@ -10,11 +10,12 @@ import {
   faArrowLeft,
   faArrowRight,
   faDiceD20,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { ImageHandler } from "./components/ImageHandler";
 import { LegendaryTracker } from "./components/LegendaryTracker";
 
-function App() {
+function InitiativeTracker({ setPage }) {
   const [turn, setTurn] = useState(1);
 
   const [showSpeed, setShowSpeed] = useState(
@@ -299,6 +300,7 @@ function App() {
         setShowSpell={setShowSpell}
         showCondition={showCondition}
         setShowCondition={setShowCondition}
+        setPage={setPage}
       ></Header>
       <div className={`diceroller-panel ${showDiceRoller ? "open" : ""}`}>
         <button
@@ -396,25 +398,19 @@ function App() {
             </div>
           ))}
         </div>
-        <div className="row mt-3">
-          <div className="col-1">
-            <button className="btn btn-secondary bot" onClick={addRow}>
-              Add Row
-            </button>
-          </div>
-          <div className="col-1">
-            <button className="btn btn-secondary bot" onClick={sortDescending}>
-              Sort
-            </button>
-          </div>
-          <div className="col-1">
-            <button
-              className="btn btn-secondary bot"
-              onClick={clearInitiativeInputs}
-            >
-              Clear
-            </button>
-          </div>
+        <div className="initiative-actions mt-3">
+          <button className="btn btn-secondary bot-add-button" onClick={addRow}>
+            Add Row <FontAwesomeIcon icon={faPlus} />
+          </button>
+          <button className="btn btn-secondary bot-button" onClick={sortDescending}>
+            Sort
+          </button>
+          <button
+            className="btn btn-secondary bot bot-button"
+            onClick={clearInitiativeInputs}
+          >
+            Clear
+          </button>
         </div>
         <ImageHandler
           highlightedRow={highlightedRow}
@@ -472,4 +468,4 @@ function App() {
     </div>
   );
 }
-export default App;
+export default InitiativeTracker;

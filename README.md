@@ -2,6 +2,8 @@
 An initiative tracker web-app for TTRPG game masters.
 
 ### Features:
+
+#### Initiative tracker:
 Set initiative, player name, movement speed, HP, AC, spell save DC, condition and condition timer
 
 Move through rounds and keep round number.
@@ -16,6 +18,11 @@ Dynamically add and delete rows.
 Multiple color themes.
 Remembers setup from last session
 
+#### Stat block builder
+
+Build your own monster with this modular stat block building application.
+
 ### development
 
 Start dev server by running `npm start`  (port 3000)
+
