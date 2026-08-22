@@ -79,3 +79,4 @@ export const traitOptions = {
   senses: sensesOptions,
   languages: languageOptions,
 };
+

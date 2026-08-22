@@ -10,6 +10,7 @@ import {
   faArrowLeft,
   faArrowRight,
   faDiceD20,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { ImageHandler } from "./components/ImageHandler";
 import { LegendaryTracker } from "./components/LegendaryTracker";
@@ -398,20 +399,14 @@ function InitiativeTracker({ setPage }) {
           ))}
         </div>
         <div className="initiative-actions mt-3">
-          <button
-            className="btn btn-secondary bot add-row-button"
-            onClick={addRow}
-          >
-            Add Row
+          <button className="btn btn-secondary bot-add-button" onClick={addRow}>
+            Add Row <FontAwesomeIcon icon={faPlus} />
           </button>
-          <button
-            className="btn btn-secondary bot"
-            onClick={sortDescending}
-          >
+          <button className="btn btn-secondary bot-button" onClick={sortDescending}>
             Sort
           </button>
           <button
-            className="btn btn-secondary bot"
+            className="btn btn-secondary bot bot-button"
             onClick={clearInitiativeInputs}
           >
             Clear

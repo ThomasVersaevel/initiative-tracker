@@ -21,9 +21,15 @@
 }
 
 .stat-block {
+  box-sizing: border-box;
   position: relative;
   min-width: 500px;
   min-height: 400px;
+  max-height: calc(100vh - 10vh);
+  margin-bottom: 1rem;
+  direction: rtl;
+  overflow-x: hidden;
+  overflow-y: auto;
   background:
     radial-gradient(
       circle at 20% 20%,
@@ -44,6 +50,10 @@
   color: var(--text-color);
   padding: 6px;
   font-size: 0.9rem;
+}
+
+#stat-block-form {
+  direction: ltr;
 }
 
 .stat-block-image-preview-wrapper {
@@ -138,6 +148,41 @@
   cursor: nwse-resize;
   background: var(--accent-color);
   opacity: 0.5;
+}
+
+
+.resize-handle-block {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+  background: var(--background-darker);
+  opacity: 0.5;
+}
+
+.resize-handle-block::before {
+  position: absolute;
+  top: 3px;
+  left: 2px;
+  width: 7px;
+  height: 1px;
+  background: var(--background-light);
+  content: "";
+  transform: rotate(45deg);
+  transform-origin: left center;
+}
+
+.resize-handle-block::after {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  width: 6px;
+  height: 6px;
+  background: var(--background-light);
+  content: "";
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
 }
 
 .button {
@@ -239,6 +284,16 @@
   font-size: 0.8rem;
 }
 
+.challenge-rating-value {
+  font-size: inherit;
+}
+
+.challenge-rating-meta {
+  font-size: 0.8em;
+  font-style: italic;
+  font-weight: 400;
+}
+
 .trait-actions-row {
   padding-top: 4px;
 }
@@ -255,6 +310,38 @@
 .attack-display-item {
   border-top: 1px solid var(--background-darker);
   padding-top: 6px;
+}
+
+.ability-display-item {
+  padding: 8px;
+  font-size: 0.85rem;
+}
+
+.ability-editor,
+.ability-editor-header {
+  display: flex;
+  gap: 8px;
+}
+
+.ability-editor {
+  flex-direction: column;
+  padding: 10px;
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 5px;
+}
+
+.ability-editor-header {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ability-remove-button {
+  padding: 4px 7px;
+  color: var(--accent-color);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
 }
 
 .attack-editor {
@@ -427,14 +514,17 @@ input {
 
 /* Item Store */
 .store-panel {
+  box-sizing: border-box;
   position: fixed;
   top: 0;
   right: 0;
-  width: 320px;
+  width: 420px;
   height: 100vh;
   background: var(--background-color);
   color: var(--text-color);
   padding: 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
   box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
   z-index: 1000;
 
@@ -496,6 +586,21 @@ input {
 .trait-picker-input:focus-visible {
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
+}
+
+.challenge-rating-picker-input {
+  flex-wrap: nowrap;
+}
+
+.challenge-rating-meta {
+  color: var(--subtext-color);
+  font-size: 0.85em;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.challenge-rating-option {
+  align-items: center;
 }
 
 .trait-picker-placeholder {
@@ -561,6 +666,54 @@ input {
 .trait-picker-option:hover,
 .trait-picker-option.selected {
   background: var(--background-light);
+}
+
+.custom-sense-form,
+.sense-range-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.custom-sense-form {
+  margin-top: 6px;
+  padding: 8px;
+  border-top: 1px solid var(--background-darker);
+}
+
+.custom-sense-form input,
+.sense-range-fields input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 6px;
+  color: var(--text-color);
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 4px;
+  font: inherit;
+}
+
+.sense-range-fields {
+  margin-top: 4px;
+  padding: 6px 8px;
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 4px;
+}
+
+.sense-range-fields label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.sense-range-fields label span {
+  flex: 1;
+}
+
+.sense-range-fields input {
+  width: 6rem;
 }
 
 .trait-select-field input {

@@ -70,6 +70,7 @@
 }
 
 :root {
+  --font-size-mini: 0.3vw;
   --font-size-tiny: 0.6vw;
   --font-size-small: 0.8vw;
   --font-size-medium: 1vw;
@@ -360,12 +361,11 @@ input[type="file"]::file-selector-button:hover {
   font-size: var(--font-size);
 }
 
-.btn.btn-secondary.bot {
+.btn.btn-secondary.bot-button,
+.btn.btn-secondary.bot-add-button {
   background-color: var(--button);
   color: var(--buttonText);
   border-color: var(--border);
-  min-width: 100%;
-  width: stretch;
 }
 
 .btn.btn-secondary.bot:hover {
@@ -391,14 +391,14 @@ input[type="file"]::file-selector-button:hover {
   gap: 0.75rem;
 }
 
-.initiative-actions .btn.btn-secondary.bot {
-  width: 4rem;
-  min-width: 4rem !important;
+.initiative-actions .btn.btn-secondary.bot.add-button {
+  width: 8rem;
+  min-width: 8rem !important;
 }
 
-.initiative-actions .btn.btn-secondary.bot.add-row-button {
-  width: 7rem;
-  min-width: 7rem !important;
+.initiative-actions .btn.btn-secondary.bot-button {
+  width: 5rem;
+  min-width: 5rem !important;
 }
 
 /* Legendary actions/resistances */
@@ -450,6 +450,10 @@ input[type="file"]::file-selector-button:hover {
 /* When checked, change color */
 .custom-checkbox input[type="checkbox"]:checked + .checkmark {
   background-color: var(--button);
+}
+
+.mini-text {
+  font-size: var(--font-size-mini);
 }
 
 .custom-checkbox .checkmark::after,

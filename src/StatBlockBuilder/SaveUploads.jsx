@@ -23,6 +23,10 @@ const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
             ...(imported.stats || {}),
           },
           speeds: imported.speeds || defaultStatBlock.speeds,
+          abilities: {
+            ...defaultStatBlock.abilities,
+            ...(imported.abilities || {}),
+          },
           traits: {
             ...defaultStatBlock.traits,
             ...(imported.traits || {}),

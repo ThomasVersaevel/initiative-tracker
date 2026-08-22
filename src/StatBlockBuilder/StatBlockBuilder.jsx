@@ -14,7 +14,13 @@ import { AttackStore } from "./ItemStores/AttackStore";
 import SaveUploads from "./SaveUploads";
 import StatBlockImageGenerator from "./StatBlockImageGenerator";
 import { defaultStatBlock } from "./TypesUtils/Types.js";
+import {
+  formatSense,
+  getAbilityModifier,
+  getChallengeRating,
+} from "./TypesUtils/Types.js";
 import "./StatBlockBuilder.css";
+import { AbilityStore } from "./ItemStores/AbilityStore.jsx";
 
 const STAT_BLOCK_STORAGE_KEY = "statBlockBuilderState";
 
@@ -94,6 +100,10 @@ function StatBlockBuilder({ setPage }) {
         [stat]: {
           ...current.stats[stat],
           [field]: value,
+          ...(field === "value" &&
+          current.stats[stat].save === getAbilityModifier(current.stats[stat].value)
+            ? { save: getAbilityModifier(value) }
+            : {}),
         },
       },
     }));
@@ -117,6 +127,13 @@ function StatBlockBuilder({ setPage }) {
     setStatBlock((current) => ({
       ...current,
       attacks: typeof value === "function" ? value(current.attacks) : value,
+    }));
+  };
+
+  const setAbilities = (value) => {
+    setStatBlock((current) => ({
+      ...current,
+      abilities: typeof value === "function" ? value(current.abilities) : value,
     }));
   };
 
@@ -326,7 +343,7 @@ function StatBlockBuilder({ setPage }) {
               {statBlock.traits.senses.length > 0 && (
                 <div>
                   <strong className="accent-color">Senses:</strong>{" "}
-                  {statBlock.traits.senses.join(", ")}
+                  {statBlock.traits.senses.map(formatSense).join(", ")}
                 </div>
               )}
               {statBlock.traits.languages.length > 0 && (
@@ -335,12 +352,21 @@ function StatBlockBuilder({ setPage }) {
                   {statBlock.traits.languages.join(", ")}
                 </div>
               )}
-              {statBlock.traits.challengeRating > 0 && (
-                <div>
-                  <strong className="accent-color">Challenge Rating:</strong>{" "}
-                  {statBlock.traits.challengeRating}
-                </div>
-              )}
+              <div>
+                <strong className="accent-color">Challenge Rating:</strong>{" "}
+                <span className="challenge-rating-value">
+                  {getChallengeRating(statBlock.traits.challengeRating).label}
+                </span>{" "}
+                <span className="challenge-rating-meta">
+                  (XP {getChallengeRating(statBlock.traits.challengeRating).xp};
+                  PB{" "}
+                  {
+                    getChallengeRating(statBlock.traits.challengeRating)
+                      .proficiencyBonus
+                  }
+                  )
+                </span>
+              </div>
             </div>
 
             <div className="standard-row trait-actions-row">
@@ -353,7 +379,24 @@ function StatBlockBuilder({ setPage }) {
               </button>
             </div>
             <div className=" border-top-3">
-              <div className="attack-display-row">
+              <div>
+                <div className="standard-row trait-actions-row">
+                  <button
+                    type="button"
+                    className="button add-button width-100"
+                    onClick={() => setStorePanelOpen("ability")}
+                  >
+                    Add Abilities <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </div>
+              </div>
+              {statBlock.abilities.abilities.map((ability) => (
+                <div className="ability-display-item" key={ability.id}>
+                  <strong>{ability.name || "Unnamed ability"}.</strong>{" "}
+                  {ability.description}
+                </div>
+              ))}
+              <div className="attack-display-row border-top-3">
                 {statBlock.attacks.multiattack.enabled &&
                   statBlock.attacks.multiattack.attacks.length > 0 && (
                     <div className="attack-multiattack-text">
@@ -396,7 +439,7 @@ function StatBlockBuilder({ setPage }) {
             </div>
           </form>
 
-          <div className="resize-handle" onMouseDown={startResize} />
+          <div className="resize-handle-block" onMouseDown={startResize} />
         </div>
 
         <SaveUploads
@@ -437,9 +480,14 @@ function StatBlockBuilder({ setPage }) {
             setAttacks={setAttacks}
           />
         )}
+        {storePanelOpen === "ability" && (
+          <AbilityStore
+            setStorePanelOpen={setStorePanelOpen}
+            abilities={statBlock.abilities}
+            setAbilities={setAbilities}
+          />
+        )}
       </div>
-
-      <div className="App-footer"></div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import html2canvas from "html2canvas";
+import { formatSense, getChallengeRating } from "./TypesUtils/Types";
 
 const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 	{ statBlock },
@@ -53,18 +54,31 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 			</div>
 
 			<div className="stat-block-image-copy">
+				{statBlock.abilities.abilities.map((ability) => (
+					<p key={ability.id}>
+						<strong>{ability.name || "Unnamed ability"}.</strong>{" "}
+						{ability.description}
+					</p>
+				))}
 				{statBlock.traits.resistances.length > 0 && (
 					<p><strong>Resistances:</strong> {statBlock.traits.resistances.join(", ")}</p>
 				)}
 				{statBlock.traits.senses.length > 0 && (
-					<p><strong>Senses:</strong> {statBlock.traits.senses.join(", ")}</p>
+					<p><strong>Senses:</strong> {statBlock.traits.senses.map(formatSense).join(", ")}</p>
 				)}
 				{statBlock.traits.languages.length > 0 && (
 					<p><strong>Languages:</strong> {statBlock.traits.languages.join(", ")}</p>
 				)}
-				{statBlock.traits.challengeRating > 0 && (
-					<p><strong>Challenge Rating:</strong> {statBlock.traits.challengeRating}</p>
-				)}
+				<p>
+					<strong>Challenge Rating:</strong>{" "}
+					<span className="challenge-rating-value">
+						{getChallengeRating(statBlock.traits.challengeRating).label}
+					</span>{" "}
+					<span className="challenge-rating-meta">
+						(XP {getChallengeRating(statBlock.traits.challengeRating).xp}; PB{" "}
+						{getChallengeRating(statBlock.traits.challengeRating).proficiencyBonus})
+					</span>
+				</p>
 				{statBlock.attacks.multiattack.enabled &&
 					statBlock.attacks.multiattack.attacks.length > 0 && (
 						<p>
