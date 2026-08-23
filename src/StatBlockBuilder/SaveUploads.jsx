@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { defaultStatBlock, defaultStats } from "./TypesUtils/Types.js";
+import { defaultStatBlock, normalizeStats } from "./TypesUtils/Types.js";
 
 
 const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
@@ -18,10 +18,7 @@ const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
         setStatBlock({
           ...defaultStatBlock,
           ...imported,
-          stats: {
-            ...defaultStats,
-            ...(imported.stats || {}),
-          },
+          stats: normalizeStats(imported.stats),
           speeds: imported.speeds || defaultStatBlock.speeds,
           abilities: {
             ...defaultStatBlock.abilities,

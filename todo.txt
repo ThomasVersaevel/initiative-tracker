@@ -10,15 +10,13 @@ Features:
 - Needs a way to delete old ones in modal
 
 
-Todo: 
+ 
 5-26: A stat block maker that will allow you to save it in a DB and then select it in the initative tracker such that its stat block appears in the images.
 This will then allow you to import them into the initiative tracker easy
 
 Needs a database and full editor 
-
 Any value is overwritable, but is also set automatically
 
-subTodo:
-    - JSON data lready outdated
-    - MORE STORE STUFF
-    - Fancy animations!
+Todo 1.2:
+- database
+    - This allows me to save stat blocks for quick ref and to put into the init tracker automatically on typing its name

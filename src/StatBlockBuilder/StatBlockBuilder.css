@@ -102,8 +102,8 @@
 
 .stat-block-image-portrait {
   display: block;
-  max-width: 140px;
-  max-height: 140px;
+  max-width: 70px;
+  max-height: 70px;
   object-fit: contain;
 }
 
@@ -114,6 +114,11 @@
   padding: 10px 0;
   border-bottom: 1px solid var(--background-darker);
   font-weight: 700;
+}
+
+.stat-block-image-basics svg {
+  margin-right: 4px;
+  color: var(--accent-color);
 }
 
 .stat-block-image-stats {
@@ -139,6 +144,11 @@
   margin: 10px 0;
 }
 
+.stat-block-image-abilities,
+.stat-block-image-attacks {
+  border-top: 3px solid var(--accent-color);
+}
+
 .resize-handle {
   position: absolute;
   right: 0;
@@ -149,7 +159,6 @@
   background: var(--accent-color);
   opacity: 0.5;
 }
-
 
 .resize-handle-block {
   position: absolute;
@@ -315,25 +324,6 @@
 .ability-display-item {
   padding: 8px;
   font-size: 0.85rem;
-}
-
-.ability-editor,
-.ability-editor-header {
-  display: flex;
-  gap: 8px;
-}
-
-.ability-editor {
-  flex-direction: column;
-  padding: 10px;
-  background: var(--background-light);
-  border: 1px solid var(--background-darker);
-  border-radius: 5px;
-}
-
-.ability-editor-header {
-  align-items: center;
-  justify-content: space-between;
 }
 
 .ability-remove-button {

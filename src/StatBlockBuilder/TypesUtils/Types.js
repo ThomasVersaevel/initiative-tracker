@@ -1,16 +1,34 @@
 export const defaultStats = {
-  str: { value: 10, save: "+0" },
-  dex: { value: 10, save: "+0" },
-  con: { value: 10, save: "+0" },
-  int: { value: 10, save: "+0" },
-  wis: { value: 10, save: "+0" },
-  cha: { value: 10, save: "+0" },
+  str: { value: 10, save: "+0", saveIsManual: false },
+  dex: { value: 10, save: "+0", saveIsManual: false },
+  con: { value: 10, save: "+0", saveIsManual: false },
+  int: { value: 10, save: "+0", saveIsManual: false },
+  wis: { value: 10, save: "+0", saveIsManual: false },
+  cha: { value: 10, save: "+0", saveIsManual: false },
 };
 
 export const getAbilityModifier = (value) => {
   const modifier = Math.floor((Number(value) - 10) / 2);
   return modifier >= 0 ? `+${modifier}` : `${modifier}`;
 };
+
+export const normalizeStats = (stats = {}) =>
+  Object.fromEntries(
+    Object.entries(defaultStats).map(([stat, defaults]) => {
+      const savedStat = stats[stat] || {};
+      const value = savedStat.value ?? defaults.value;
+      const save = savedStat.save ?? getAbilityModifier(value);
+
+      return [stat, {
+        ...defaults,
+        ...savedStat,
+        value,
+        save,
+        saveIsManual:
+          savedStat.saveIsManual ?? save !== getAbilityModifier(value),
+      }];
+    }),
+  );
 
 export const challengeRatings = [
   { value: "0", label: "0", xp: "10", proficiencyBonus: "+2" },

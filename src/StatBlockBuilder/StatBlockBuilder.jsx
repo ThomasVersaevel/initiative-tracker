@@ -18,6 +18,7 @@ import {
   formatSense,
   getAbilityModifier,
   getChallengeRating,
+  normalizeStats,
 } from "./TypesUtils/Types.js";
 import "./StatBlockBuilder.css";
 import { AbilityStore } from "./ItemStores/AbilityStore.jsx";
@@ -35,8 +36,7 @@ const getInitialStatBlock = () => {
       ...defaultStatBlock,
       ...saved,
       stats: {
-        ...defaultStatBlock.stats,
-        ...(saved.stats || {}),
+        ...normalizeStats(saved.stats),
       },
       traits: {
         ...defaultStatBlock.traits,
@@ -100,8 +100,10 @@ function StatBlockBuilder({ setPage }) {
         [stat]: {
           ...current.stats[stat],
           [field]: value,
+          ...(field === "save" ? { saveIsManual: true } : {}),
           ...(field === "value" &&
-          current.stats[stat].save === getAbilityModifier(current.stats[stat].value)
+          value !== "" &&
+          !current.stats[stat].saveIsManual
             ? { save: getAbilityModifier(value) }
             : {}),
         },
@@ -319,7 +321,11 @@ function StatBlockBuilder({ setPage }) {
                     type="number"
                     value={statBlock.stats[stat].value}
                     onChange={(e) =>
-                      updateStat(stat, "value", Number(e.target.value))
+                      updateStat(
+                        stat,
+                        "value",
+                        e.target.value === "" ? "" : Number(e.target.value),
+                      )
                     }
                   />
 
@@ -379,6 +385,12 @@ function StatBlockBuilder({ setPage }) {
               </button>
             </div>
             <div className=" border-top-3">
+              {statBlock.abilities.abilities.map((ability) => (
+                <div className="ability-display-item" key={ability.id}>
+                  <strong>{ability.name || "Unnamed ability"}.</strong>{" "}
+                  {ability.description}
+                </div>
+              ))}
               <div>
                 <div className="standard-row trait-actions-row">
                   <button
@@ -390,12 +402,6 @@ function StatBlockBuilder({ setPage }) {
                   </button>
                 </div>
               </div>
-              {statBlock.abilities.abilities.map((ability) => (
-                <div className="ability-display-item" key={ability.id}>
-                  <strong>{ability.name || "Unnamed ability"}.</strong>{" "}
-                  {ability.description}
-                </div>
-              ))}
               <div className="attack-display-row border-top-3">
                 {statBlock.attacks.multiattack.enabled &&
                   statBlock.attacks.multiattack.attacks.length > 0 && (
