@@ -9,12 +9,27 @@ import {
 import "./TokenStamp.css";
 import tokenRing from "../assets/tokenRing.png";
 import tokenRingShadow from "../assets/tokenRingShadow.png";
+import tokenRingDouble from "../assets/TokenRingTwoTone.png";
 
 const SIZE = 700;
 const BORDER_RADIUS = SIZE / 2 - 200;
 const TOKEN_DIAMETER = BORDER_RADIUS * 2;
 const STORAGE_KEY = "tokenStampSettings";
 const DEFAULT_BACKGROUND = "#2d384e";
+const BORDER_OPTIONS = [
+  { label: "Thin metallic", image: tokenRing },
+  { label: "Metallic double", image: tokenRingDouble },
+  { label: "Thick metallic", image: tokenRingShadow },
+];
+
+const normalizeBorderSource = (source) => {
+  const legacySources = {
+    "token-ring": "0",
+    "token-ring-double": "1",
+    "token-ring-shadow": "2",
+  };
+  return legacySources[source] ?? source ?? "0";
+};
 
 const readSettings = () => {
   try {
@@ -46,6 +61,19 @@ const fileToDataUrl = (file, onLoad) => {
   reader.readAsDataURL(file);
 };
 
+const createTokenDataUrl = (canvas) => {
+  const output = document.createElement("canvas");
+  output.width = SIZE;
+  output.height = SIZE;
+  const outputContext = output.getContext("2d");
+  outputContext.drawImage(canvas, 0, 0);
+  outputContext.globalCompositeOperation = "destination-in";
+  outputContext.beginPath();
+  outputContext.arc(SIZE / 2, SIZE / 2, BORDER_RADIUS, 0, Math.PI * 2);
+  outputContext.fill();
+  return output.toDataURL("image/png");
+};
+
 export default function TokenStamp({ setPage }) {
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
@@ -71,7 +99,7 @@ export default function TokenStamp({ setPage }) {
   );
   const [hasImage, setHasImage] = useState(false);
   const [borderSource, setBorderSource] = useState(
-    savedSettings.borderSource || "token-ring",
+    normalizeBorderSource(savedSettings.borderSource),
   );
   const [borderImage, setBorderImage] = useState(null);
   const [imageData, setImageData] = useState(savedSettings.imageData || null);
@@ -79,6 +107,7 @@ export default function TokenStamp({ setPage }) {
     savedSettings.borderImageData || null,
   );
   const [isPickingBackground, setIsPickingBackground] = useState(false);
+  const [previewDataUrl, setPreviewDataUrl] = useState(null);
 
   useEffect(() => {
     try {
@@ -121,12 +150,10 @@ export default function TokenStamp({ setPage }) {
   }, [imageData]);
 
   useEffect(() => {
-    const bundledBorder =
-      borderSource === "token-ring"
-        ? tokenRing
-        : borderSource === "token-ring-shadow"
-          ? tokenRingShadow
-          : null;
+    const borderIndex = Number.parseInt(borderSource, 10);
+    const bundledBorder = Number.isNaN(borderIndex)
+      ? null
+      : BORDER_OPTIONS[borderIndex]?.image;
 
     if (!bundledBorder) {
       if (borderSource === "custom" && customBorderData) {
@@ -165,7 +192,12 @@ export default function TokenStamp({ setPage }) {
         ) * scale;
       const w = image.naturalWidth * fit;
       const h = image.naturalHeight * fit;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(center, center, radius - 8, 0, Math.PI * 2);
+      ctx.clip();
       ctx.drawImage(image, position.x - w / 2, position.y - h / 2, w, h);
+      ctx.restore();
     }
 
     if (borderSource !== "drawn" && borderImage) {
@@ -194,6 +226,7 @@ export default function TokenStamp({ setPage }) {
         ctx.stroke();
       }
     }
+    setPreviewDataUrl(createTokenDataUrl(canvas));
   }, [
     background,
     border,
@@ -314,19 +347,9 @@ export default function TokenStamp({ setPage }) {
   };
 
   const download = () => {
-    const output = document.createElement("canvas");
-    output.width = SIZE;
-    output.height = SIZE;
-    const outputContext = output.getContext("2d");
-    outputContext.drawImage(canvasRef.current, 0, 0);
-    outputContext.globalCompositeOperation = "destination-in";
-    outputContext.beginPath();
-    outputContext.arc(SIZE / 2, SIZE / 2, BORDER_RADIUS, 0, Math.PI * 2);
-    outputContext.fill();
-
     const link = document.createElement("a");
     link.download = "dnd-token.png";
-    link.href = output.toDataURL("image/png");
+    link.href = createTokenDataUrl(canvasRef.current);
     link.click();
   };
 
@@ -443,148 +466,164 @@ export default function TokenStamp({ setPage }) {
           {!hasImage && <span className="hint">Upload an image</span>}
         </div>
 
-        <div
-          className="controls panel"
-          style={{
-            gridColumn: "2",
-            gridRow: "1",
-            display: "flex",
-            flexDirection: "column",
-            gap: "1rem",
-          }}
-        >
-          <label className="border-source-row">
-            Border source
-            <label
-              className="border-source-upload"
-              title="Upload custom border"
-            >
-              <FontAwesomeIcon icon={faUpload} />
+        <div className="token-stamp-sidebar">
+          <div
+            className="controls panel"
+            style={{
+              gridColumn: "2",
+              gridRow: "1",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1rem",
+            }}
+          >
+            <label className="border-source-row">
+              Border source
+              <label
+                className="border-source-upload"
+                title="Upload custom border"
+              >
+                <FontAwesomeIcon icon={faUpload} />
+                <input
+                  hidden
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={uploadBorder}
+                />
+              </label>
+              <select
+                value={borderSource}
+                onChange={(e) => {
+                  const source = e.target.value;
+                  setBorderSource(source);
+                  if (source === "custom") {
+                    setBorderImage(null);
+                    setCustomBorderData(null);
+                  }
+                }}
+              >
+                <option value="drawn">Drawn colored border</option>
+                {BORDER_OPTIONS.map((option, index) => (
+                  <option key={option.label} value={index}>
+                    {option.label}
+                  </option>
+                ))}
+                <option value="custom">Uploaded border</option>
+              </select>
+            </label>
+            {borderSource === "drawn" && (
+              <label>
+                Drawn border
+                <select
+                  value={border}
+                  onChange={(e) => setBorder(e.target.value)}
+                >
+                  <option value="simple">Simple</option>
+                  <option value="two-tone">Two-tone</option>
+                </select>
+              </label>
+            )}
+            <label>
+              Border color
+              <span className="color-control" title="Choose drawn border color">
+                <FontAwesomeIcon icon={faFillDrip} />
+                <input
+                  type="color"
+                  value={borderColor}
+                  onChange={(e) => setBorderColor(e.target.value)}
+                  aria-label="Drawn border color"
+                />
+              </span>
+            </label>
+            <label className="range-control">
+              Border alpha <span>{Math.round(borderAlpha * 100)}%</span>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                value={borderAlpha}
+                onChange={(e) => setBorderAlpha(Number(e.target.value))}
+              />
+            </label>
+            <label className="background-row">
+              Background
+              <span
+                className="color-control"
+                title="Choose canvas background color"
+              >
+                <FontAwesomeIcon icon={faFillDrip} />
+                <input
+                  type="color"
+                  value={background}
+                  onChange={(e) => setBackground(e.target.value)}
+                  aria-label="Canvas background color"
+                />
+              </span>
+              <span className="eyedropper-wrap">
+                <button
+                  type="button"
+                  className={`button eyedropper-button${
+                    isPickingBackground ? " active" : ""
+                  }`}
+                  onClick={() => setIsPickingBackground((active) => !active)}
+                  disabled={!hasImage}
+                  title={
+                    isPickingBackground
+                      ? "Click the image to pick a color"
+                      : "Pick a background color from the uploaded image"
+                  }
+                  aria-label="Pick background color from image"
+                >
+                  <FontAwesomeIcon icon={faEyeDropper} />
+                </button>
+                {isPickingBackground && (
+                  <span className="eyedropper-instruction">
+                    Click the image to pick a color
+                  </span>
+                )}
+              </span>
+            </label>
+            <label className="upload">
+              Upload image <FontAwesomeIcon icon={faUpload} />
               <input
                 hidden
                 type="file"
-                accept="image/png,image/jpeg,image/webp"
-                onChange={uploadBorder}
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                onChange={upload}
               />
             </label>
-            <select
-              value={borderSource}
-              onChange={(e) => {
-                const source = e.target.value;
-                setBorderSource(source);
-                if (source === "custom") {
-                  setBorderImage(null);
-                  setCustomBorderData(null);
-                }
-              }}
-            >
-              <option value="drawn">Drawn colored border</option>
-              <option value="token-ring">Token ring</option>
-              <option value="token-ring-shadow">Token ring shadow</option>
-              <option value="custom">Uploaded border</option>
-            </select>
-          </label>
-          {borderSource === "drawn" && (
-            <label>
-              Drawn border
-              <select
-                value={border}
-                onChange={(e) => setBorder(e.target.value)}
-              >
-                <option value="simple">Simple</option>
-                <option value="two-tone">Two-tone</option>
-              </select>
+            <label className="range-control">
+              Image scale <span>{Math.round(scale * 100)}%</span>
+              <input
+                type="range"
+                min=".5"
+                max="2.5"
+                step=".01"
+                value={scale}
+                onChange={(e) => setScale(Number(e.target.value))}
+              />
             </label>
-          )}
-          <label>
-            Border color
-            <span className="color-control" title="Choose drawn border color">
-              <FontAwesomeIcon icon={faFillDrip} />
-              <input
-                type="color"
-                value={borderColor}
-                onChange={(e) => setBorderColor(e.target.value)}
-                aria-label="Drawn border color"
-              />
-            </span>
-          </label>
-          <label className="range-control">
-            Border alpha <span>{Math.round(borderAlpha * 100)}%</span>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
-              value={borderAlpha}
-              onChange={(e) => setBorderAlpha(Number(e.target.value))}
-            />
-          </label>
-          <label className="background-row">
-            Background
-            <span
-              className="color-control"
-              title="Choose canvas background color"
-            >
-              <FontAwesomeIcon icon={faFillDrip} />
-              <input
-                type="color"
-                value={background}
-                onChange={(e) => setBackground(e.target.value)}
-                aria-label="Canvas background color"
-              />
-            </span>
-            <span className="eyedropper-wrap">
-              <button
-                type="button"
-                className={`button eyedropper-button${
-                  isPickingBackground ? " active" : ""
-                }`}
-                onClick={() => setIsPickingBackground((active) => !active)}
-                disabled={!hasImage}
-                title={
-                  isPickingBackground
-                    ? "Click the image to pick a color"
-                    : "Pick a background color from the uploaded image"
-                }
-                aria-label="Pick background color from image"
-              >
-                <FontAwesomeIcon icon={faEyeDropper} />
-              </button>
-              {isPickingBackground && (
-                <span className="eyedropper-instruction">
-                  Click the image to pick a color
-                </span>
-              )}
-            </span>
-          </label>
-          <label className="upload">
-            Upload image <FontAwesomeIcon icon={faUpload} />
-            <input
-              hidden
-              type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif"
-              onChange={upload}
-            />
-          </label>
-          <label className="range-control">
-            Image scale <span>{Math.round(scale * 100)}%</span>
-            <input
-              type="range"
-              min=".5"
-              max="2.5"
-              step=".01"
-              value={scale}
-              onChange={(e) => setScale(Number(e.target.value))}
-            />
-          </label>
-          <p className="muted">
-            Drag inside the preview to reposition your image. Drag a corner to
-            resize it.
-          </p>
 
-          <button onClick={download} className="button">
-            Download PNG
-          </button>
+            <p className="muted">
+              Drag inside the preview to reposition your image. Drag a corner to
+              resize it.
+            </p>
+            {previewDataUrl && (
+              <>
+                <p></p>
+                <label>Preview token</label>
+                <img
+                  className="token-preview"
+                  src={previewDataUrl}
+                  alt="Live token preview"
+                />
+              </>
+            )}
+            <button onClick={download} className="button">
+              Download PNG
+            </button>
+          </div>
         </div>
       </section>
     </div>

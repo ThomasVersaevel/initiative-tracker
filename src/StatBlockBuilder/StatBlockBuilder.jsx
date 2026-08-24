@@ -6,6 +6,7 @@ import {
   faShield,
   faPlus,
   faUpload,
+  faCircleInfo,
 } from "@fortawesome/free-solid-svg-icons";
 import { SpeedStore } from "./ItemStores/SpeedStore";
 import { speedOptions, traitOptions } from "./TypesUtils/StoreTypes";
@@ -22,6 +23,8 @@ import {
 } from "./TypesUtils/Types.js";
 import "./StatBlockBuilder.css";
 import { AbilityStore } from "./ItemStores/AbilityStore.jsx";
+import { LegendaryStore } from "./ItemStores/LegendaryStore.jsx";
+import { FormattedText } from "./FormattedText";
 
 const STAT_BLOCK_STORAGE_KEY = "statBlockBuilderState";
 
@@ -49,6 +52,15 @@ const getInitialStatBlock = () => {
           ...defaultStatBlock.attacks.multiattack,
           ...(saved.attacks?.multiattack || {}),
         },
+      },
+      legendaryDetails: {
+        ...defaultStatBlock.legendaryDetails,
+        ...(saved.legendaryDetails || {}),
+        resistances: Array.isArray(saved.legendaryDetails?.resistances)
+          ? saved.legendaryDetails.resistances
+          : saved.legendaryDetails?.resistance
+            ? [{ id: 1, ...saved.legendaryDetails.resistance }]
+            : defaultStatBlock.legendaryDetails.resistances,
       },
       size: {
         ...defaultStatBlock.size,
@@ -92,6 +104,19 @@ function StatBlockBuilder({ setPage }) {
     }));
   };
 
+  const getProficiencyBonusValue = () =>
+    Number.parseInt(
+      getChallengeRating(statBlock.traits.challengeRating).proficiencyBonus,
+      10,
+    );
+
+  const formatModifier = (value) => (value >= 0 ? `+${value}` : `${value}`);
+
+  const getModifierValue = (value) => {
+    const parsedValue = Number.parseInt(String(value).replace("+", ""), 10);
+    return Number.isNaN(parsedValue) ? 0 : parsedValue;
+  };
+
   const updateStat = (stat, field, value) => {
     setStatBlock((current) => ({
       ...current,
@@ -100,16 +125,129 @@ function StatBlockBuilder({ setPage }) {
         [stat]: {
           ...current.stats[stat],
           [field]: value,
-          ...(field === "save" ? { saveIsManual: true } : {}),
+          ...(field === "save"
+            ? { saveBase: value, saveIsManual: true }
+            : {}),
           ...(field === "value" &&
           value !== "" &&
           !current.stats[stat].saveIsManual
-            ? { save: getAbilityModifier(value) }
+            ? {
+                saveBase: getAbilityModifier(value),
+                save: current.stats[stat].saveIsProficient
+                  ? formatModifier(
+                      getModifierValue(getAbilityModifier(value)) +
+                        getProficiencyBonusValue(),
+                    )
+                  : getAbilityModifier(value),
+              }
+            : {}),
+          ...(field === "save" && current.stats[stat].saveIsProficient
+            ? {
+                saveBase: value,
+                save: formatModifier(
+                  getModifierValue(value) + getProficiencyBonusValue(),
+                ),
+              }
             : {}),
         },
       },
     }));
   };
+
+  const addCustomStat = () => {
+    const customStatId = `custom-${Date.now()}`;
+
+    setStatBlock((current) => ({
+      ...current,
+      stats: {
+        ...current.stats,
+        [customStatId]: {
+          label: "",
+          value: 10,
+          save: "+0",
+          saveBase: "+0",
+          saveIsManual: false,
+          saveIsProficient: false,
+        },
+      },
+    }));
+  };
+
+  const updateCustomStatName = (stat, value) => {
+    setStatBlock((current) => ({
+      ...current,
+      stats: {
+        ...current.stats,
+        [stat]: {
+          ...current.stats[stat],
+          label: value.replace(/[^a-z]/gi, "").slice(0, 3),
+        },
+      },
+    }));
+  };
+
+  const removeCustomStat = (stat) => {
+    setStatBlock((current) => {
+      const stats = { ...current.stats };
+      delete stats[stat];
+      return { ...current, stats };
+    });
+  };
+
+  const toggleSaveProficiency = (stat) => {
+    setStatBlock((current) => {
+      const currentStat = current.stats[stat];
+      const isProficient = !currentStat.saveIsProficient;
+      const saveBase = currentStat.saveBase ?? currentStat.save;
+
+      return {
+        ...current,
+        stats: {
+          ...current.stats,
+          [stat]: {
+            ...currentStat,
+            saveBase,
+            save: isProficient
+              ? formatModifier(
+                  getModifierValue(saveBase) +
+                    Number.parseInt(
+                      getChallengeRating(current.traits.challengeRating)
+                        .proficiencyBonus,
+                      10,
+                    ),
+                )
+              : saveBase,
+            saveIsProficient: isProficient,
+          },
+        },
+      };
+    });
+  };
+
+  useEffect(() => {
+    setStatBlock((current) => {
+      const proficiencyBonus = Number.parseInt(
+        getChallengeRating(current.traits.challengeRating).proficiencyBonus,
+        10,
+      );
+      let hasChanged = false;
+      const stats = Object.fromEntries(
+        Object.entries(current.stats).map(([stat, currentStat]) => {
+          if (!currentStat.saveIsProficient) return [stat, currentStat];
+
+          const save = formatModifier(
+            getModifierValue(currentStat.saveBase) + proficiencyBonus,
+          );
+          if (save === currentStat.save) return [stat, currentStat];
+
+          hasChanged = true;
+          return [stat, { ...currentStat, save }];
+        }),
+      );
+
+      return hasChanged ? { ...current, stats } : current;
+    });
+  }, [statBlock.traits.challengeRating]);
 
   const setSpeeds = (value) => {
     setStatBlock((current) => ({
@@ -136,6 +274,15 @@ function StatBlockBuilder({ setPage }) {
     setStatBlock((current) => ({
       ...current,
       abilities: typeof value === "function" ? value(current.abilities) : value,
+    }));
+  };
+
+  const setLegendary = (value) => {
+    setStatBlock((current) => ({
+      ...current,
+      legendaryDetails: typeof value === "function"
+        ? value(current.legendaryDetails)
+        : value,
     }));
   };
 
@@ -173,12 +320,23 @@ function StatBlockBuilder({ setPage }) {
   return (
     <div className={`stat-block-normal ${statBlock.theme}`}>
       <div className="App-header statblock-page-header">
-        <button
-          className="menu-btn"
-          onClick={() => setPage("initiative-tracker")}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} /> Initiative tracker
-        </button>
+        <div className="statblock-header-left-controls">
+          <button
+            className="menu-btn"
+            onClick={() => setPage("initiative-tracker")}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} /> Initiative tracker
+          </button>
+          <span
+            className="statblock-upload-info statblock-header-info"
+            tabIndex="0"
+            role="img"
+            aria-label="You can also upload your own stat block"
+            data-tooltip="you can also upload your own stat block"
+          >
+            <FontAwesomeIcon icon={faCircleInfo} aria-hidden="true" />
+          </span>
+        </div>
       </div>
 
       <div className="App-body flex">
@@ -201,14 +359,14 @@ function StatBlockBuilder({ setPage }) {
                 />
               </label>
 
-              <label>
+              <label className="legendary-toggle">
                 <input
                   name="legendary"
                   type="checkbox"
                   checked={statBlock.legendary}
                   onChange={(e) => updateField("legendary", e.target.checked)}
                 />
-                <span className="subtext">Legendary:</span>
+                <span className="subtext margin-left-4">Legendary</span>
               </label>
 
               {statBlock.portrait ? (
@@ -311,9 +469,34 @@ function StatBlockBuilder({ setPage }) {
             </div>
 
             <div className="stats-row border-top-3">
-              {["str", "dex", "con", "int", "wis", "cha"].map((stat) => (
+              {Object.keys(statBlock.stats).map((stat) => (
                 <label key={stat} className="stat-field">
-                  {stat.toUpperCase()}
+                  {stat.startsWith("custom-") ? (
+                    <span className="custom-stat-name-control">
+                      <input
+                        className="custom-stat-name"
+                        type="text"
+                        value={statBlock.stats[stat].label}
+                        maxLength={3}
+                        placeholder="STAT"
+                        aria-label="Custom three-letter stat name"
+                        onChange={(e) =>
+                          updateCustomStatName(stat, e.target.value)
+                        }
+                      />
+                      <button
+                        type="button"
+                        className="custom-stat-remove"
+                        aria-label="Remove custom stat"
+                        title="Remove custom stat"
+                        onClick={() => removeCustomStat(stat)}
+                      >
+                        x
+                      </button>
+                    </span>
+                  ) : (
+                    stat.toUpperCase()
+                  )}
 
                   <input
                     className="margin-bottom-4"
@@ -329,17 +512,64 @@ function StatBlockBuilder({ setPage }) {
                     }
                   />
 
-                  <input
-                    name={`${stat}save`}
-                    type="text"
-                    value={statBlock.stats[stat].save}
-                    onChange={(e) => updateStat(stat, "save", e.target.value)}
-                  />
+                  <div className="save-control">
+                    <input
+                      name={`${stat}save`}
+                      type="text"
+                      value={statBlock.stats[stat].save}
+                      onChange={(e) => updateStat(stat, "save", e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      className={`save-proficiency-toggle${
+                        statBlock.stats[stat].saveIsProficient ? " active" : ""
+                      }`}
+                      aria-label={`${stat.toUpperCase()} saving throw proficiency`}
+                      aria-pressed={statBlock.stats[stat].saveIsProficient}
+                      title="Toggle proficiency bonus"
+                      onClick={() => toggleSaveProficiency(stat)}
+                    >
+                      P
+                    </button>
+                  </div>
                 </label>
               ))}
+              <div className="custom-stat-controls">
+                <button
+                  type="button"
+                  className="button add-button"
+                  onClick={addCustomStat}
+                >
+                  Add stat <FontAwesomeIcon icon={faPlus} />
+                </button>
+              </div>
             </div>
 
             <div className="border-top-3 trait-display-row">
+              {statBlock.legendary && (
+                <>
+                  {statBlock.legendaryDetails.resistances.map((resistance) => (
+                    <div className="legendary-resistance-display" key={resistance.id}>
+                      <strong className="accent-color">Legendary Resistance: </strong>
+                      <strong>
+                        {resistance.amount}/day
+                      </strong>{" "}
+                      <FormattedText
+                        text={resistance.description}
+                        name={statBlock.name}
+                        amount={resistance.amount}
+                      />
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className="button add-button width-100"
+                    onClick={() => setStorePanelOpen("legendary-resistance")}
+                  >
+                    Add Legendary Resistance <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </>
+              )}
               {statBlock.traits.resistances.length > 0 && (
                 <div>
                   <strong className="accent-color">Resistances:</strong>{" "}
@@ -388,7 +618,7 @@ function StatBlockBuilder({ setPage }) {
               {statBlock.abilities.abilities.map((ability) => (
                 <div className="ability-display-item" key={ability.id}>
                   <strong>{ability.name || "Unnamed ability"}.</strong>{" "}
-                  {ability.description}
+                  <FormattedText text={ability.description} name={statBlock.name} />
                 </div>
               ))}
               <div>
@@ -423,12 +653,12 @@ function StatBlockBuilder({ setPage }) {
                       .
                     </div>
                   )}
-                {statBlock.attacks.attacks.map((attack) => (
+              {statBlock.attacks.attacks.map((attack) => (
                   <div className="attack-display-item" key={attack.id}>
                     <strong>
                       <em>{attack.name || "Unnamed attack"}.</em>
                     </strong>{" "}
-                    {attack.description}
+                    <FormattedText text={attack.description} name={statBlock.name} />
                   </div>
                 ))}
               </div>
@@ -442,6 +672,26 @@ function StatBlockBuilder({ setPage }) {
                   Add Attacks <FontAwesomeIcon icon={faPlus} />
                 </button>
               </div>
+              {statBlock.legendary && (
+                <div className="legendary-actions-display border-top-3">
+                  <h2>Legendary Actions</h2>
+                  {statBlock.legendaryDetails.actions.map((action) => (
+                    <div className="attack-display-item" key={action.id}>
+                      <strong>
+                        <em>{action.name || "Unnamed action"}.</em>
+                      </strong>{" "}
+                      <FormattedText text={action.description} name={statBlock.name} />
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className="button add-button width-100 legendary-actions-add-button"
+                    onClick={() => setStorePanelOpen("legendary-action")}
+                  >
+                    Add Legendary Actions <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </div>
+              )}
             </div>
           </form>
 
@@ -457,6 +707,7 @@ function StatBlockBuilder({ setPage }) {
           <StatBlockImageGenerator
             ref={imageGeneratorRef}
             statBlock={statBlock}
+            size={statBlock.size}
           />
         </div>
       </div>
@@ -491,6 +742,17 @@ function StatBlockBuilder({ setPage }) {
             setStorePanelOpen={setStorePanelOpen}
             abilities={statBlock.abilities}
             setAbilities={setAbilities}
+          />
+        )}
+        {(storePanelOpen === "legendary-action" ||
+          storePanelOpen === "legendary-resistance") && (
+          <LegendaryStore
+            setStorePanelOpen={setStorePanelOpen}
+            legendary={statBlock.legendaryDetails}
+            setLegendary={setLegendary}
+            initialSection={
+              storePanelOpen === "legendary-action" ? "actions" : "resistance"
+            }
           />
         )}
       </div>

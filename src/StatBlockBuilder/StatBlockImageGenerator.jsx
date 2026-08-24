@@ -6,31 +6,48 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import html2canvas from "html2canvas";
 import { speedOptions } from "./TypesUtils/StoreTypes";
-import { formatSense, getChallengeRating } from "./TypesUtils/Types";
+import {
+	formatSense,
+	getChallengeRating,
+} from "./TypesUtils/Types";
+import { FormattedText } from "./FormattedText";
 
 const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
-	{ statBlock },
+	{ statBlock, size },
 	ref,
 ) {
 	const previewRef = useRef(null);
 
 	useImperativeHandle(ref, () => ({
-		async download() {
+		async getImageDataUrl() {
 			if (!previewRef.current) return;
 
 			const canvas = await html2canvas(previewRef.current, {
 				backgroundColor: null,
 				scale: 2,
 			});
+			return canvas.toDataURL("image/png");
+		},
+		async download(dataUrl) {
+			const imageDataUrl = dataUrl || await this.getImageDataUrl();
+			if (!imageDataUrl) return;
+
 			const link = document.createElement("a");
 			link.download = `${statBlock.name || "stat-block"}.png`;
-			link.href = canvas.toDataURL("image/png");
+			link.href = imageDataUrl;
 			link.click();
 		},
 	}), [statBlock]);
 
 	return (
-		<div ref={previewRef} className={`stat-block-image ${statBlock.theme}`}>
+		<div
+			ref={previewRef}
+			className={`stat-block-image ${statBlock.theme}`}
+			style={{
+				width: `${size?.width || 600}px`,
+				minHeight: `${size?.height || 700}px`,
+			}}
+		>
 			<div className="stat-block-image-heading">
 				<div>
 					<h1>{statBlock.name || "Unnamed Creature"}</h1>
@@ -62,7 +79,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 			<div className="stat-block-image-stats">
 				{Object.entries(statBlock.stats).map(([stat, values]) => (
 					<div key={stat}>
-						<strong>{stat.toUpperCase()}</strong>
+						<strong>{values.label || ""}</strong>
 						<span>{values.value}</span>
 						<small>{values.save}</small>
 					</div>
@@ -71,6 +88,16 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 
 			<div className="stat-block-image-copy">
 				<div className="stat-block-image-traits">
+					{statBlock.legendary && statBlock.legendaryDetails.resistances.map((resistance) => (
+						<p key={resistance.id}>
+							<strong className="accent-color">Legendary Resistance</strong>; <strong>{resistance.amount}/day</strong>{" "}
+							<FormattedText
+								text={resistance.description}
+								name={statBlock.name}
+								amount={resistance.amount}
+							/>
+						</p>
+					))}
 					{statBlock.traits.resistances.length > 0 && (
 					<p><strong>Resistances:</strong> {statBlock.traits.resistances.join(", ")}</p>
 					)}
@@ -93,10 +120,10 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 				</div>
 
 				<div className="stat-block-image-abilities">
-					{statBlock.abilities.abilities.map((ability) => (
+						{statBlock.abilities.abilities.map((ability) => (
 						<p key={ability.id}>
 							<strong>{ability.name || "Unnamed ability"}.</strong>{" "}
-							{ability.description}
+							<FormattedText text={ability.description} name={statBlock.name} />
 						</p>
 					))}
 				</div>
@@ -116,9 +143,21 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 					)}
 				{statBlock.attacks.attacks.map((attack) => (
 					<p key={attack.id}>
-						<strong>{attack.name || "Unnamed attack"}.</strong> {attack.description}
+						<strong>{attack.name || "Unnamed attack"}.</strong>{" "}
+						<FormattedText text={attack.description} name={statBlock.name} />
 					</p>
 				))}
+				{statBlock.legendary && (
+					<div className="stat-block-image-legendary-actions">
+						<h2>Legendary Actions</h2>
+						{statBlock.legendaryDetails.actions.map((action) => (
+							<p key={action.id}>
+								<strong><em>{action.name || "Unnamed action"}.</em></strong>{" "}
+								<FormattedText text={action.description} name={statBlock.name} />
+							</p>
+						))}
+					</div>
+				)}
 				</div>
 			</div>
 		</div>
