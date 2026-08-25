@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import "./GridRow.css";
 import { Popup } from "./Popup";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
 
 const condition = [
   "blinded",
@@ -44,6 +46,8 @@ export function GridRow({
   showSpellSave,
   showCondition,
   rowIndex,
+  savedCharacterStats,
+  onSaveCharacter,
 }) {
   const [values, setValues] = useState({
     ...initialValues,
@@ -56,9 +60,11 @@ export function GridRow({
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [prevHighlighted, setPrevHighlighted] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [rowHovered, setRowHovered] = useState(false);
   const [d20Roll, setD20Roll] = useState("");
   const [maxHp, setMaxHp] = useState(0);
-  const [savedCharacterStats, setSavedCharacterStats] = useState({});
+  const [savePromptOpen, setSavePromptOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // check if the character name matches a player character in pcstats.json and update the values accordingly
   const checkPlayerCharacter = (name) => {
@@ -80,6 +86,15 @@ export function GridRow({
         ...savedCharacterStats[lowerCaseName],
       }));
     }
+  };
+
+  const saveRowAsCharacter = async () => {
+    if (!values.charactername.trim()) return;
+
+    setIsSaving(true);
+    const saved = await onSaveCharacter(values);
+    setIsSaving(false);
+    if (saved) setSavePromptOpen(false);
   };
 
   const handleInputChange = (event) => {
@@ -203,7 +218,6 @@ export function GridRow({
       isGroup: initialValues.isGroup ?? false,
     });
 
-    setSavedCharacterStats(JSON.parse(localStorage.getItem("pcStats") || "{}"));
   }, [initialValues]);
 
   useEffect(() => {
@@ -222,8 +236,12 @@ export function GridRow({
             : ""
       } App ${theme}`}
       style={{ display: "grid", gridTemplateColumns: columnSizes }}
+      onMouseEnter={() => setRowHovered(true)}
+      onMouseLeave={() => setRowHovered(false)}
     >
-      <div className="cell">
+      <div
+        className="cell initiative-cell"
+      >
         <input
           data-row={rowIndex}
           data-col={0}
@@ -234,6 +252,37 @@ export function GridRow({
           value={values.initiative}
           onChange={handleInputChange}
         />
+        {rowHovered && (
+          <button
+            type="button"
+            className="save-row-button"
+            aria-label="Save row as character"
+            title="Save row as character"
+            onClick={() => setSavePromptOpen(true)}
+          >
+            <FontAwesomeIcon icon={faFloppyDisk} />
+          </button>
+        )}
+        {savePromptOpen && (
+          <div className="name-popup save-row-popup">
+            Save row as character?
+            <br />
+            <button
+              className="name-popup-btn"
+              disabled={isSaving || !values.charactername.trim()}
+              onClick={saveRowAsCharacter}
+            >
+              {isSaving ? "Saving..." : "Yes"}
+            </button>
+            <button
+              className="name-popup-btn"
+              disabled={isSaving}
+              onClick={() => setSavePromptOpen(false)}
+            >
+              No
+            </button>
+          </div>
+        )}
       </div>
 
       <div

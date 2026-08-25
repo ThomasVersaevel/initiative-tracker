@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import "./Header.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { supabase } from "../Supabase";
 
 const themes = [
   { label: "Default", value: "default" },
@@ -19,15 +20,15 @@ export function Header({
   showCondition,
   setShowCondition,
   setPage,
+  pcStats,
+  setPcStats,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [characterName, setCharacterName] = useState("");
   const [characterAC, setCharacterAC] = useState("");
   const [characterHP, setCharacterHP] = useState("");
-  const [pcStats, setPcStats] = useState(() => {
-    return JSON.parse(localStorage.getItem("pcStats") || "{}");
-  });
+  const [editingCharacterId, setEditingCharacterId] = useState(null);
 
   const menuRef = useRef(null);
 
@@ -41,34 +42,64 @@ export function Header({
     setCharacterName("");
     setCharacterAC("");
     setCharacterHP("");
+    setEditingCharacterId(null);
   };
 
-  const saveCharacterStats = (character) => {
-    const updated = {
-      ...pcStats,
-      [character.name.toLowerCase()]: character,
-    };
+  const saveCharacterStats = async (character) => {
+    const query = editingCharacterId !== null
+      ? supabase
+          .from("characters")
+          .update(character)
+          .eq("id", editingCharacterId)
+          .select()
+          .single()
+      : supabase.from("characters").insert(character).select().single();
+    const { data, error } = await query;
 
-    setPcStats(updated);
-    localStorage.setItem("pcStats", JSON.stringify(updated));
+    if (error) {
+      console.error("Failed to save character:", error);
+      alert("Unable to save character.");
+      return false;
+    }
+
+    setPcStats((current) => {
+      const updated = { ...current };
+      const previousEntry = Object.entries(updated).find(
+        ([, savedCharacter]) => savedCharacter.id === data.id,
+      );
+      if (previousEntry) delete updated[previousEntry[0]];
+      updated[data.name.toLowerCase()] = data;
+      return updated;
+    });
+    return true;
   };
 
   const editCharacterStats = (name) => {
-    const updated = { ...pcStats };
-    setCharacterName(updated[name].name);
-    setCharacterAC(updated[name].ac);
-    setCharacterHP(updated[name].hp);
-    delete updated[name];
-
-    localStorage.setItem("pcStats", JSON.stringify(updated));
+    const character = pcStats[name];
+    setCharacterName(character.name);
+    setCharacterAC(character.ac);
+    setCharacterHP(character.hp);
+    setEditingCharacterId(character.id);
   };
 
-  const deleteCharacterStats = (name) => {
-    const updated = { ...pcStats };
-    delete updated[name];
+  const deleteCharacterStats = async (name) => {
+    const character = pcStats[name];
+    const { error } = await supabase
+      .from("characters")
+      .delete()
+      .eq("id", character.id);
 
-    setPcStats(updated);
-    localStorage.setItem("pcStats", JSON.stringify(updated));
+    if (error) {
+      console.error("Failed to delete character:", error);
+      alert("Unable to delete character.");
+      return;
+    }
+
+    setPcStats((current) => {
+      const updated = { ...current };
+      delete updated[name];
+      return updated;
+    });
   };
 
   return (
@@ -196,14 +227,16 @@ export function Header({
 
               <button
                 className="modal-btn"
-                onClick={() => {
-                  saveCharacterStats({
+                onClick={async () => {
+                  const saved = await saveCharacterStats({
                     name: characterName,
                     ac: Number(characterAC),
                     hp: Number(characterHP),
                   });
-                  clearCharacterInputs();
-                  setShowModal(false);
+                  if (saved) {
+                    clearCharacterInputs();
+                    setShowModal(false);
+                  }
                 }}
               >
                 Save
