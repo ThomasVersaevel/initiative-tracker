@@ -1,9 +1,33 @@
-import React, { useRef } from "react";
-import { defaultStatBlock, defaultStats } from "./TypesUtils/Types.js";
+import React, { useRef, useState } from "react";
+import { defaultStatBlock, normalizeStats } from "./TypesUtils/Types.js";
 
 
 const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
   const fileInputRef = useRef(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
+
+  const closeImagePreview = () => setImagePreview("");
+
+  const openImagePreview = async () => {
+    setIsGeneratingPreview(true);
+
+    try {
+      const imageDataUrl = await imageGeneratorRef.current?.getImageDataUrl();
+      if (imageDataUrl) setImagePreview(imageDataUrl);
+    } catch (error) {
+      console.error("Failed to generate stat block image:", error);
+      alert("Unable to generate the stat block image.");
+    } finally {
+      setIsGeneratingPreview(false);
+    }
+  };
+
+  const downloadImage = () => {
+    imageGeneratorRef.current?.download(imagePreview);
+    closeImagePreview();
+  };
+
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
 
@@ -18,10 +42,7 @@ const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
         setStatBlock({
           ...defaultStatBlock,
           ...imported,
-          stats: {
-            ...defaultStats,
-            ...(imported.stats || {}),
-          },
+          stats: normalizeStats(imported.stats),
           speeds: imported.speeds || defaultStatBlock.speeds,
           abilities: {
             ...defaultStatBlock.abilities,
@@ -76,7 +97,7 @@ const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
     }
 
     if (submitAction === "download-image") {
-      imageGeneratorRef.current?.download();
+      openImagePreview();
     }
 
     if (submitAction === "save") {
@@ -96,10 +117,10 @@ const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
 
       <button
         type="button"
-        className="btn btn-secondary"
+        className="btn btn-secondary import"
         onClick={() => fileInputRef.current.click()}
       >
-        Upload Statblock JSON
+        Import Statblock JSON
       </button>
 
       <button
@@ -131,6 +152,46 @@ const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
       >
         Download Stat JSON data
       </button>
+
+      {(isGeneratingPreview || imagePreview) && (
+        <div
+          className="stat-block-image-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="stat-block-image-modal-title"
+        >
+          <div className="stat-block-image-modal-content">
+            <h2 id="stat-block-image-modal-title">Preview Statblock Image</h2>
+            {isGeneratingPreview ? (
+              <p>Preparing image...</p>
+            ) : (
+              <img
+                className="stat-block-image-modal-preview"
+                src={imagePreview}
+                alt={`Preview of ${statBlock.name || "stat block"}`}
+              />
+            )}
+            <div className="stat-block-image-modal-actions">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={closeImagePreview}
+                disabled={isGeneratingPreview}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={downloadImage}
+                disabled={isGeneratingPreview || !imagePreview}
+              >
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

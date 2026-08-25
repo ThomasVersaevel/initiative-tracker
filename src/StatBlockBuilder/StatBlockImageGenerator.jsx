@@ -1,30 +1,53 @@
 import React, { forwardRef, useImperativeHandle, useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+	faHeart,
+	faShield,
+} from "@fortawesome/free-solid-svg-icons";
 import html2canvas from "html2canvas";
-import { formatSense, getChallengeRating } from "./TypesUtils/Types";
+import { speedOptions } from "./TypesUtils/StoreTypes";
+import {
+	formatSense,
+	getChallengeRating,
+} from "./TypesUtils/Types";
+import { FormattedText } from "./FormattedText";
 
 const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
-	{ statBlock },
+	{ statBlock, size },
 	ref,
 ) {
 	const previewRef = useRef(null);
 
 	useImperativeHandle(ref, () => ({
-		async download() {
+		async getImageDataUrl() {
 			if (!previewRef.current) return;
 
 			const canvas = await html2canvas(previewRef.current, {
 				backgroundColor: null,
 				scale: 2,
 			});
+			return canvas.toDataURL("image/png");
+		},
+		async download(dataUrl) {
+			const imageDataUrl = dataUrl || await this.getImageDataUrl();
+			if (!imageDataUrl) return;
+
 			const link = document.createElement("a");
 			link.download = `${statBlock.name || "stat-block"}.png`;
-			link.href = canvas.toDataURL("image/png");
+			link.href = imageDataUrl;
 			link.click();
 		},
 	}), [statBlock]);
 
 	return (
-		<div ref={previewRef} className={`stat-block-image ${statBlock.theme}`}>
+		<div
+			ref={previewRef}
+			className={`stat-block-image ${statBlock.theme}`}
+			style={{
+				width: `${size?.width || 600}px`,
+				minHeight: `${size?.height || 700}px`,
+			}}
+		>
 			<div className="stat-block-image-heading">
 				<div>
 					<h1>{statBlock.name || "Unnamed Creature"}</h1>
@@ -36,17 +59,27 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 			</div>
 
 			<div className="stat-block-image-basics">
-				<span>HP {statBlock.hp}</span>
-				<span>AC {statBlock.ac}</span>
+				<span>
+					<FontAwesomeIcon icon={faHeart} aria-hidden="true" /> HP {statBlock.hp}
+				</span>
+				<span>
+					<FontAwesomeIcon icon={faShield} aria-hidden="true" /> AC {statBlock.ac}
+				</span>
 				{statBlock.speeds.map((speed) => (
-					<span key={speed.type}>{speed.type} {speed.value}</span>
+					<span key={speed.type}>
+						<FontAwesomeIcon
+							icon={speedOptions.find((option) => option.type === speed.type)?.icon}
+							aria-hidden="true"
+						/>{" "}
+						{speed.type} {speed.value}
+					</span>
 				))}
 			</div>
 
 			<div className="stat-block-image-stats">
 				{Object.entries(statBlock.stats).map(([stat, values]) => (
 					<div key={stat}>
-						<strong>{stat.toUpperCase()}</strong>
+						<strong>{values.label || ""}</strong>
 						<span>{values.value}</span>
 						<small>{values.save}</small>
 					</div>
@@ -54,22 +87,27 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 			</div>
 
 			<div className="stat-block-image-copy">
-				{statBlock.abilities.abilities.map((ability) => (
-					<p key={ability.id}>
-						<strong>{ability.name || "Unnamed ability"}.</strong>{" "}
-						{ability.description}
-					</p>
-				))}
-				{statBlock.traits.resistances.length > 0 && (
+				<div className="stat-block-image-traits">
+					{statBlock.legendary && statBlock.legendaryDetails.resistances.map((resistance) => (
+						<p key={resistance.id}>
+							<strong className="accent-color">Legendary Resistance</strong>; <strong>{resistance.amount}/day</strong>{" "}
+							<FormattedText
+								text={resistance.description}
+								name={statBlock.name}
+								amount={resistance.amount}
+							/>
+						</p>
+					))}
+					{statBlock.traits.resistances.length > 0 && (
 					<p><strong>Resistances:</strong> {statBlock.traits.resistances.join(", ")}</p>
-				)}
-				{statBlock.traits.senses.length > 0 && (
+					)}
+					{statBlock.traits.senses.length > 0 && (
 					<p><strong>Senses:</strong> {statBlock.traits.senses.map(formatSense).join(", ")}</p>
-				)}
-				{statBlock.traits.languages.length > 0 && (
+					)}
+					{statBlock.traits.languages.length > 0 && (
 					<p><strong>Languages:</strong> {statBlock.traits.languages.join(", ")}</p>
-				)}
-				<p>
+					)}
+					<p>
 					<strong>Challenge Rating:</strong>{" "}
 					<span className="challenge-rating-value">
 						{getChallengeRating(statBlock.traits.challengeRating).label}
@@ -78,7 +116,19 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						(XP {getChallengeRating(statBlock.traits.challengeRating).xp}; PB{" "}
 						{getChallengeRating(statBlock.traits.challengeRating).proficiencyBonus})
 					</span>
-				</p>
+					</p>
+				</div>
+
+				<div className="stat-block-image-abilities">
+						{statBlock.abilities.abilities.map((ability) => (
+						<p key={ability.id}>
+							<strong>{ability.name || "Unnamed ability"}.</strong>{" "}
+							<FormattedText text={ability.description} name={statBlock.name} />
+						</p>
+					))}
+				</div>
+
+				<div className="stat-block-image-attacks">
 				{statBlock.attacks.multiattack.enabled &&
 					statBlock.attacks.multiattack.attacks.length > 0 && (
 						<p>
@@ -93,9 +143,22 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 					)}
 				{statBlock.attacks.attacks.map((attack) => (
 					<p key={attack.id}>
-						<strong>{attack.name || "Unnamed attack"}.</strong> {attack.description}
+						<strong>{attack.name || "Unnamed attack"}.</strong>{" "}
+						<FormattedText text={attack.description} name={statBlock.name} />
 					</p>
 				))}
+				{statBlock.legendary && (
+					<div className="stat-block-image-legendary-actions">
+						<h2>Legendary Actions</h2>
+						{statBlock.legendaryDetails.actions.map((action) => (
+							<p key={action.id}>
+								<strong><em>{action.name || "Unnamed action"}.</em></strong>{" "}
+								<FormattedText text={action.description} name={statBlock.name} />
+							</p>
+						))}
+					</div>
+				)}
+				</div>
 			</div>
 		</div>
 	);

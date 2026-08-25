@@ -44,7 +44,7 @@ export function AbilityStore({ setStorePanelOpen, abilities, setAbilities }) {
   return (
     <div>
       <div className="store-header">
-        <h2>abilities</h2>
+        <h2>Abilities</h2>
         <button
           type="button"
           className="btn"
@@ -64,8 +64,8 @@ export function AbilityStore({ setStorePanelOpen, abilities, setAbilities }) {
         </button>
 
         {abilities.abilities.map((ability) => (
-          <div className="ability-editor" key={ability.id}>
-            <div className="ability-editor-header">
+          <div className="attack-editor" key={ability.id}>
+            <div className="attack-editor-header">
               <strong>Ability</strong>
               <button
                 type="button"
