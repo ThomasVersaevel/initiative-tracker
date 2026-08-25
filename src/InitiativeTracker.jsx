@@ -14,6 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { ImageHandler } from "./components/ImageHandler";
 import { LegendaryTracker } from "./components/LegendaryTracker";
+import { supabase } from "./Supabase";
 
 function InitiativeTracker({ setPage }) {
   const [turn, setTurn] = useState(1);
@@ -71,6 +72,26 @@ function InitiativeTracker({ setPage }) {
   const [selectedStationary, setSelectedStationary] = useState(null);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [uploadedStationary, setUploadedStationary] = useState([]);
+  const [pcStats, setPcStats] = useState({});
+
+  useEffect(() => {
+    const loadCharacters = async () => {
+      const { data, error } = await supabase.from("characters").select("*");
+
+      if (error) {
+        console.error("Failed to load characters:", error);
+        return;
+      }
+
+      setPcStats(
+        Object.fromEntries(
+          data.map((character) => [character.name.toLowerCase(), character]),
+        ),
+      );
+    };
+
+    loadCharacters();
+  }, []);
 
   const updateValues = (id, name, value) => {
     setGridRows((prevGridRows) =>
@@ -78,6 +99,30 @@ function InitiativeTracker({ setPage }) {
         row.id === id ? { ...row, [name]: value } : row,
       ),
     );
+  };
+
+  const saveCharacterFromRow = async (row) => {
+    const character = {
+      name: row.charactername.trim(),
+      ac: Number(row.ac) || 0,
+      hp: Number(row.hp) || 0,
+    };
+    const { data, error } = await supabase
+      .from("characters")
+      .insert(character)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Failed to save character:", error);
+      return false;
+    }
+
+    setPcStats((current) => ({
+      ...current,
+      [data.name.toLowerCase()]: data,
+    }));
+    return true;
   };
 
   const clearInitiativeInputs = () => {
@@ -301,6 +346,8 @@ function InitiativeTracker({ setPage }) {
         showCondition={showCondition}
         setShowCondition={setShowCondition}
         setPage={setPage}
+        pcStats={pcStats}
+        setPcStats={setPcStats}
       ></Header>
       <div className={`diceroller-panel ${showDiceRoller ? "open" : ""}`}>
         <button
@@ -389,6 +436,8 @@ function InitiativeTracker({ setPage }) {
                 updateValues={updateValues}
                 onDeleteRow={onDeleteRow}
                 theme={theme}
+                savedCharacterStats={pcStats}
+                onSaveCharacter={saveCharacterFromRow}
                 showSpeed={showSpeed}
                 showSpellSave={showSpellSave}
                 showCondition={showCondition}
