@@ -117,10 +117,10 @@ const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
 
       <button
         type="button"
-        className="btn btn-secondary"
+        className="btn btn-secondary import"
         onClick={() => fileInputRef.current.click()}
       >
-        Upload Statblock JSON
+        Import Statblock JSON
       </button>
 
       <button

@@ -663,6 +663,10 @@ input {
   height: auto;
 }
 
+.import {
+  border: 1px solid var(--border);
+}
+
 .statblock-upload-info {
   position: relative;
   display: inline-flex;
@@ -1022,6 +1026,11 @@ input {
   background: var(--background-light);
   border: 1px solid var(--background-darker);
   border-radius: 5px;
+}
+
+.bot {
+  background-color: var(--button);
+  border: 1px solid var(--border);
 }
 
 .store-item-info {
