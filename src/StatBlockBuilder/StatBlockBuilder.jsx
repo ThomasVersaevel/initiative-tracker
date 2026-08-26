@@ -125,9 +125,7 @@ function StatBlockBuilder({ setPage }) {
         [stat]: {
           ...current.stats[stat],
           [field]: value,
-          ...(field === "save"
-            ? { saveBase: value, saveIsManual: true }
-            : {}),
+          ...(field === "save" ? { saveBase: value, saveIsManual: true } : {}),
           ...(field === "value" &&
           value !== "" &&
           !current.stats[stat].saveIsManual
@@ -280,9 +278,8 @@ function StatBlockBuilder({ setPage }) {
   const setLegendary = (value) => {
     setStatBlock((current) => ({
       ...current,
-      legendaryDetails: typeof value === "function"
-        ? value(current.legendaryDetails)
-        : value,
+      legendaryDetails:
+        typeof value === "function" ? value(current.legendaryDetails) : value,
     }));
   };
 
@@ -358,7 +355,31 @@ function StatBlockBuilder({ setPage }) {
                   onChange={(e) => updateField("name", e.target.value)}
                 />
               </label>
-
+              <label>
+                <select
+                  className="trait-picker-input creature-size-select"
+                  name="creatureSize"
+                  value={statBlock.creatureSize}
+                  onChange={(e) => updateField("creatureSize", e.target.value)}
+                  aria-label="Creature size"
+                >
+                  <option value="Tiny">Tiny</option>
+                  <option value="Small">Small</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Large">Large</option>
+                  <option value="Huge">Huge</option>
+                  <option value="Gargantuan">Gargantuan</option>
+                </select>
+              </label>
+              <label>
+                <input
+                  className="margin-left-6"
+                  name="creatureType"
+                  placeholder="Creature type"
+                  value={statBlock.creatureType}
+                  onChange={(e) => updateField("creatureType", e.target.value)}
+                />
+              </label>
               <label className="legendary-toggle">
                 <input
                   name="legendary"
@@ -549,11 +570,14 @@ function StatBlockBuilder({ setPage }) {
               {statBlock.legendary && (
                 <>
                   {statBlock.legendaryDetails.resistances.map((resistance) => (
-                    <div className="legendary-resistance-display" key={resistance.id}>
-                      <strong className="accent-color">Legendary Resistance: </strong>
-                      <strong>
-                        {resistance.amount}/day
-                      </strong>{" "}
+                    <div
+                      className="legendary-resistance-display"
+                      key={resistance.id}
+                    >
+                      <strong className="accent-color">
+                        Legendary Resistance:{" "}
+                      </strong>
+                      <strong className="accent-color">{resistance.amount}/day</strong>{" "}
                       <FormattedText
                         text={resistance.description}
                         name={statBlock.name}
@@ -614,85 +638,100 @@ function StatBlockBuilder({ setPage }) {
                 Add Traits <FontAwesomeIcon icon={faPlus} />
               </button>
             </div>
-            <div className=" border-top-3">
+            <div className="stat-block-content-section stat-block-abilities border-top-3">
+              {statBlock.abilities.abilities.length > 0 && (
+                <h2 className="stat-block-section-header">Abilities</h2>
+              )}
               {statBlock.abilities.abilities.map((ability) => (
-                <div className="ability-display-item" key={ability.id}>
-                  <strong>{ability.name || "Unnamed ability"}.</strong>{" "}
-                  <FormattedText text={ability.description} name={statBlock.name} />
+                <div className="stat-block-section-item" key={ability.id}>
+                  <strong className="accent-color">{ability.name || "Unnamed ability"}.</strong>{" "}
+                  <FormattedText
+                    text={ability.description}
+                    name={statBlock.name}
+                  />
                 </div>
               ))}
-              <div>
-                <div className="standard-row trait-actions-row">
-                  <button
-                    type="button"
-                    className="button add-button width-100"
-                    onClick={() => setStorePanelOpen("ability")}
-                  >
-                    Add Abilities <FontAwesomeIcon icon={faPlus} />
-                  </button>
-                </div>
-              </div>
-              <div className="attack-display-row border-top-3">
-                {statBlock.attacks.multiattack.enabled &&
-                  statBlock.attacks.multiattack.attacks.length > 0 && (
-                    <div className="attack-multiattack-text">
-                      <strong>
-                        <em>Multiattack.</em>
-                      </strong>{" "}
-                      The {statBlock.name || "creature"} makes{" "}
-                      {statBlock.attacks.multiattack.attacks
-                        .map((selection) => {
-                          const attack = statBlock.attacks.attacks.find(
-                            (item) => item.id === selection.attackId,
-                          );
-                          return `${selection.count} ${
-                            attack?.name || "unnamed attack"
-                          } attack${selection.count === 1 ? "" : "s"}`;
-                        })
-                        .join(" or ")}
-                      .
-                    </div>
-                  )}
-              {statBlock.attacks.attacks.map((attack) => (
-                  <div className="attack-display-item" key={attack.id}>
-                    <strong>
-                      <em>{attack.name || "Unnamed attack"}.</em>
+            </div>
+            <div className="standard-row trait-actions-row">
+              <button
+                type="button"
+                className="button add-button width-100"
+                onClick={() => setStorePanelOpen("ability")}
+              >
+                Add Abilities <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
+            <div className="stat-block-content-section stat-block-attacks border-top-3">
+              {((statBlock.attacks.multiattack.enabled &&
+                statBlock.attacks.multiattack.attacks.length > 0) ||
+                statBlock.attacks.attacks.length > 0) && (
+                <h2 className="stat-block-section-header">Attacks</h2>
+              )}
+              {statBlock.attacks.multiattack.enabled &&
+                statBlock.attacks.multiattack.attacks.length > 0 && (
+                  <div className="attack-multiattack-text">
+                    <strong className="accent-color">
+                      <em>Multiattack.</em>
                     </strong>{" "}
-                    <FormattedText text={attack.description} name={statBlock.name} />
+                    The {statBlock.name || "creature"} makes{" "}
+                    {statBlock.attacks.multiattack.attacks
+                      .map((selection) => {
+                        const attack = statBlock.attacks.attacks.find(
+                          (item) => item.id === selection.attackId,
+                        );
+                        return `${selection.count} ${
+                          attack?.name || "unnamed attack"
+                        } attack${selection.count === 1 ? "" : "s"}`;
+                      })
+                      .join(" or ")}
+                    .
+                  </div>
+                )}
+              {statBlock.attacks.attacks.map((attack) => (
+                <div className="attack-display-item" key={attack.id}>
+                  <strong className="accent-color">
+                    <em>{attack.name || "Unnamed attack"}.</em>
+                  </strong>{" "}
+                  <FormattedText
+                    text={attack.description}
+                    name={statBlock.name}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="standard-row trait-actions-row">
+              <button
+                type="button"
+                className="button add-button width-100"
+                onClick={() => setStorePanelOpen("attack")}
+              >
+                Add Attacks <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
+            {statBlock.legendary && (
+              <div className="stat-block-content-section stat-block-legendary-actions border-top-3">
+                <h2 className="stat-block-section-header">Legendary Actions</h2>
+                {statBlock.legendaryDetails.actions.map((action) => (
+                  <div className="attack-display-item" key={action.id}>
+                    <strong className="accent-color">
+                      <em>{action.name || "Unnamed action"}.</em>
+                    </strong>{" "}
+                    <FormattedText
+                      text={action.description}
+                      name={statBlock.name}
+                    />
                   </div>
                 ))}
-              </div>
-
-              <div className="standard-row trait-actions-row">
                 <button
                   type="button"
-                  className="button add-button width-100"
-                  onClick={() => setStorePanelOpen("attack")}
+                  className="button add-button width-100 legendary-actions-add-button"
+                  onClick={() => setStorePanelOpen("legendary-action")}
                 >
-                  Add Attacks <FontAwesomeIcon icon={faPlus} />
+                  Add Legendary Actions <FontAwesomeIcon icon={faPlus} />
                 </button>
               </div>
-              {statBlock.legendary && (
-                <div className="legendary-actions-display border-top-3">
-                  <h2>Legendary Actions</h2>
-                  {statBlock.legendaryDetails.actions.map((action) => (
-                    <div className="attack-display-item" key={action.id}>
-                      <strong>
-                        <em>{action.name || "Unnamed action"}.</em>
-                      </strong>{" "}
-                      <FormattedText text={action.description} name={statBlock.name} />
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    className="button add-button width-100 legendary-actions-add-button"
-                    onClick={() => setStorePanelOpen("legendary-action")}
-                  >
-                    Add Legendary Actions <FontAwesomeIcon icon={faPlus} />
-                  </button>
-                </div>
-              )}
-            </div>
+            )}
           </form>
 
           <div className="resize-handle-block" onMouseDown={startResize} />

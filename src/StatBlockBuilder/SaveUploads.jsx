@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { defaultStatBlock, normalizeStats } from "./TypesUtils/Types.js";
-
 
 const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
   const fileInputRef = useRef(null);
@@ -161,7 +162,19 @@ const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
           aria-labelledby="stat-block-image-modal-title"
         >
           <div className="stat-block-image-modal-content">
-            <h2 id="stat-block-image-modal-title">Preview Statblock Image</h2>
+            <div className="stat-block-image-modal-header">
+              <h2 id="stat-block-image-modal-title">Preview Statblock Image</h2>
+              <button
+                type="button"
+                className="stat-block-image-modal-close"
+                onClick={closeImagePreview}
+                disabled={isGeneratingPreview}
+                aria-label="Close image preview"
+                title="Close image preview"
+              >
+                <FontAwesomeIcon icon={faXmark} aria-hidden="true" />
+              </button>
+            </div>
             {isGeneratingPreview ? (
               <p>Preparing image...</p>
             ) : (

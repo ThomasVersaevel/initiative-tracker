@@ -11,7 +11,7 @@ export function SpeedStore({
   return (
     <div>
       <div className="store-header">
-        <h2>Add Speed</h2>
+        <h2>Speeds</h2>
 
         <button className="btn" onClick={() => setStorePanelOpen("")}>
           <FontAwesomeIcon icon={faArrowRight} />

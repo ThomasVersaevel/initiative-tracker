@@ -21,6 +21,7 @@ Remembers setup from last session
 #### Stat block builder
 
 Build your own monster with this modular stat block building application.
+Saved in database and importable in the initiative tracker.
 
 ### development
 

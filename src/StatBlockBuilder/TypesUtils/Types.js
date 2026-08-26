@@ -99,6 +99,8 @@ export const formatLegendaryText = (text, name, amount) =>
 
 export const defaultStatBlock = {
   name: "",
+  creatureSize: "Medium",
+  creatureType: "",
   portrait: null,
   hp: 0,
   ac: 0,

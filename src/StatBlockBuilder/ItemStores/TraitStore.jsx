@@ -222,7 +222,7 @@ export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
   return (
     <div>
       <div className="store-header">
-        <h2>Add Traits</h2>
+        <h2>Traits</h2>
 
         <button
           type="button"
