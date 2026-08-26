@@ -177,7 +177,9 @@
 }
 
 .stat-block-image-abilities,
-.stat-block-image-attacks {
+.stat-block-image-actions,
+.stat-block-image-bonus-actions,
+.stat-block-image-reactions {
   border-top: 3px solid var(--accent-color);
 }
 
@@ -378,7 +380,9 @@
   font-size: 1.1rem;
 }
 .stat-block-image-abilities h2,
-.stat-block-image-attacks h2,
+.stat-block-image-actions h2,
+.stat-block-image-bonus-actions h2,
+.stat-block-image-reactions h2,
 .stat-block-image-legendary-actions h2 {
   margin-top: 8px;
   font-size: 1.1rem;
@@ -665,9 +669,34 @@ input {
 .save-buttons {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   margin-left: 16px;
   height: auto;
+}
+
+.side-panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  background: var(--header);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.side-panel-section h2 {
+  margin: 0 0 4px;
+  color: var(--accent-color);
+  font-size: 1rem;
+}
+
+.undo-redo-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.undo-redo-controls .btn {
+  flex: 1;
 }
 
 .import {

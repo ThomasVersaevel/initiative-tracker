@@ -140,8 +140,8 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 					))}
 				</div>
 
-				<div className="stat-block-image-attacks">
-				{((statBlock.attacks.multiattack.enabled && statBlock.attacks.multiattack.attacks.length > 0) || statBlock.attacks.attacks.length > 0) && <h2 className="accent-color">Attacks</h2>}
+				<div className="stat-block-image-actions">
+				{((statBlock.attacks.multiattack.enabled && statBlock.attacks.multiattack.attacks.length > 0) || statBlock.attacks.attacks.length > 0) && <h2 className="accent-color">Actions</h2>}
 				{statBlock.attacks.multiattack.enabled &&
 					statBlock.attacks.multiattack.attacks.length > 0 && (
 						<p>
@@ -150,16 +150,35 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 								const attack = statBlock.attacks.attacks.find(
 									(item) => item.id === selection.attackId,
 								);
-								return `${selection.count} ${attack?.name || "unnamed attack"} attack${selection.count === 1 ? "" : "s"}`;
+								return `${selection.count} ${attack?.name || "unnamed action"} action${selection.count === 1 ? "" : "s"}`;
 							}).join(" or ")}. 
 						</p>
 					)}
 				{statBlock.attacks.attacks.map((attack) => (
 					<p key={attack.id}>
-						<strong className="accent-color">{attack.name || "Unnamed attack"}.</strong>{" "}
+						<strong className="accent-color">{attack.name || "Unnamed action"}.</strong>{" "}
 						<FormattedText text={attack.description} name={statBlock.name} />
 					</p>
 				))}
+				</div>
+				<div className="stat-block-image-bonus-actions">
+				{statBlock.bonusActions.length > 0 && <h2 className="accent-color">Bonus Actions</h2>}
+				{statBlock.bonusActions.map((action) => (
+					<p key={action.id}>
+						<strong className="accent-color"><em>{action.name || "Unnamed bonus action"}.</em></strong>{" "}
+						<FormattedText text={action.description} name={statBlock.name} />
+					</p>
+				))}
+				</div>
+				<div className="stat-block-image-reactions">
+				{statBlock.reactions.length > 0 && <h2 className="accent-color">Reactions</h2>}
+				{statBlock.reactions.map((reaction) => (
+					<p key={reaction.id}>
+						<strong className="accent-color"><em>{reaction.name || "Unnamed reaction"}.</em></strong>{" "}
+						<FormattedText text={reaction.description} name={statBlock.name} />
+					</p>
+				))}
+				</div>
 				{statBlock.legendary && (
 					<div className="stat-block-image-legendary-actions">
 						<h2 className="accent-color">Legendary Actions</h2>
@@ -171,7 +190,6 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						))}
 					</div>
 				)}
-				</div>
 			</div>
 		</div>
 	);

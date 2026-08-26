@@ -1,10 +1,46 @@
 export const defaultStats = {
-  str: { value: 10, save: "+0", saveBase: "+0", saveIsManual: false, saveIsProficient: false },
-  dex: { value: 10, save: "+0", saveBase: "+0", saveIsManual: false, saveIsProficient: false },
-  con: { value: 10, save: "+0", saveBase: "+0", saveIsManual: false, saveIsProficient: false },
-  int: { value: 10, save: "+0", saveBase: "+0", saveIsManual: false, saveIsProficient: false },
-  wis: { value: 10, save: "+0", saveBase: "+0", saveIsManual: false, saveIsProficient: false },
-  cha: { value: 10, save: "+0", saveBase: "+0", saveIsManual: false, saveIsProficient: false },
+  str: {
+    value: 10,
+    save: "+0",
+    saveBase: "+0",
+    saveIsManual: false,
+    saveIsProficient: false,
+  },
+  dex: {
+    value: 10,
+    save: "+0",
+    saveBase: "+0",
+    saveIsManual: false,
+    saveIsProficient: false,
+  },
+  con: {
+    value: 10,
+    save: "+0",
+    saveBase: "+0",
+    saveIsManual: false,
+    saveIsProficient: false,
+  },
+  int: {
+    value: 10,
+    save: "+0",
+    saveBase: "+0",
+    saveIsManual: false,
+    saveIsProficient: false,
+  },
+  wis: {
+    value: 10,
+    save: "+0",
+    saveBase: "+0",
+    saveIsManual: false,
+    saveIsProficient: false,
+  },
+  cha: {
+    value: 10,
+    save: "+0",
+    saveBase: "+0",
+    saveIsManual: false,
+    saveIsProficient: false,
+  },
 };
 
 export const getAbilityModifier = (value) => {
@@ -18,16 +54,19 @@ export const normalizeStats = (stats = {}) => {
     const value = savedStat.value ?? defaults.value;
     const save = savedStat.save ?? getAbilityModifier(value);
 
-    return [stat, {
-      ...defaults,
-      ...savedStat,
-      value,
-      save,
-      saveBase: savedStat.saveBase ?? save,
-      saveIsProficient: savedStat.saveIsProficient ?? false,
-      saveIsManual:
-        savedStat.saveIsManual ?? save !== getAbilityModifier(value),
-    }];
+    return [
+      stat,
+      {
+        ...defaults,
+        ...savedStat,
+        value,
+        save,
+        saveBase: savedStat.saveBase ?? save,
+        saveIsProficient: savedStat.saveIsProficient ?? false,
+        saveIsManual:
+          savedStat.saveIsManual ?? save !== getAbilityModifier(value),
+      },
+    ];
   });
 
   const customStatEntries = Object.entries(stats)
@@ -36,15 +75,18 @@ export const normalizeStats = (stats = {}) => {
       const value = savedStat.value ?? 10;
       const save = savedStat.save ?? getAbilityModifier(value);
 
-      return [stat, {
-        value,
-        save,
-        label: savedStat.label ?? "",
-        saveBase: savedStat.saveBase ?? save,
-        saveIsProficient: savedStat.saveIsProficient ?? false,
-        saveIsManual:
-          savedStat.saveIsManual ?? save !== getAbilityModifier(value),
-      }];
+      return [
+        stat,
+        {
+          value,
+          save,
+          label: savedStat.label ?? "",
+          saveBase: savedStat.saveBase ?? save,
+          saveIsProficient: savedStat.saveIsProficient ?? false,
+          saveIsManual:
+            savedStat.saveIsManual ?? save !== getAbilityModifier(value),
+        },
+      ];
     });
 
   return Object.fromEntries([...statEntries, ...customStatEntries]);
@@ -134,13 +176,20 @@ export const defaultStatBlock = {
     attacks: [],
   },
 
+  bonusActions: [],
+
+  reactions: [],
+
   legendaryDetails: {
     actions: [],
-    resistances: [{
-      id: 1,
-      amount: 3,
-      description: "If the <name> fails a saving throw, it can choose to succeed instead.",
-    }],
+    resistances: [
+      {
+        id: 1,
+        amount: 3,
+        description:
+          "If the <name> fails a saving throw, it can choose to succeed instead.",
+      },
+    ],
   },
 
   size: {

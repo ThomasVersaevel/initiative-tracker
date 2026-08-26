@@ -40,7 +40,6 @@ export function AbilityStore({ setStorePanelOpen, abilities, setAbilities }) {
     }));
   };
 
-
   return (
     <div>
       <div className="store-header">

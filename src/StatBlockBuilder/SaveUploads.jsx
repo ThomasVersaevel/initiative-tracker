@@ -1,9 +1,21 @@
 import React, { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRotateLeft,
+  faArrowRotateRight,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { defaultStatBlock, normalizeStats } from "./TypesUtils/Types.js";
 
-const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
+const SaveUploads = ({
+  setStatBlock,
+  statBlock,
+  imageGeneratorRef,
+  canUndo,
+  canRedo,
+  undo,
+  redo,
+}) => {
   const fileInputRef = useRef(null);
   const [imagePreview, setImagePreview] = useState("");
   const [isGeneratingPreview, setIsGeneratingPreview] = useState(false);
@@ -61,6 +73,16 @@ const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
               ...(imported.attacks?.multiattack || {}),
             },
           },
+          bonusActions: Array.isArray(imported.bonusActions)
+            ? imported.bonusActions
+            : Array.isArray(imported.bonusActions?.bonusActions)
+              ? imported.bonusActions.bonusActions
+            : defaultStatBlock.bonusActions,
+          reactions: Array.isArray(imported.reactions)
+            ? imported.reactions
+            : Array.isArray(imported.reactions?.reactions)
+              ? imported.reactions.reactions
+            : defaultStatBlock.reactions,
           size: imported.size || defaultStatBlock.size,
           theme: imported.theme || "default",
         });
@@ -108,51 +130,75 @@ const SaveUploads = ({ setStatBlock, statBlock, imageGeneratorRef }) => {
 
   return (
     <div className="save-buttons">
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".json,application/json"
-        onChange={handleFileUpload}
-        style={{ display: "none" }}
-      />
+      <section className="side-panel-section">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,application/json"
+          onChange={handleFileUpload}
+          style={{ display: "none" }}
+        />
 
-      <button
-        type="button"
-        className="btn btn-secondary import"
-        onClick={() => fileInputRef.current.click()}
-      >
-        Import Statblock JSON
-      </button>
+        <button
+          type="button"
+          className="btn btn-secondary import"
+          onClick={() => fileInputRef.current.click()}
+        >
+          Import Statblock JSON
+        </button>
 
-      <button
-        className="btn btn-secondary bot"
-        type="submit"
-        name="action"
-        value="save"
-        onClick={(e) => handleSubmit(e)}
-      >
-        Save Statblock
-      </button>
+        <button
+          className="btn btn-secondary bot"
+          type="submit"
+          name="action"
+          value="save"
+          onClick={(e) => handleSubmit(e)}
+        >
+          Save Statblock
+        </button>
 
-      <button
-        className="btn btn-secondary bot"
-        type="submit"
-        name="action"
-        value="download-image"
-        onClick={(e) => handleSubmit(e)}
-      >
-        Download Statblock image
-      </button>
+        <button
+          className="btn btn-secondary bot"
+          type="submit"
+          name="action"
+          value="download-image"
+          onClick={(e) => handleSubmit(e)}
+        >
+          Download Statblock image
+        </button>
 
-      <button
-        className="btn btn-secondary bot"
-        type="submit"
-        name="action"
-        value="download-json"
-        onClick={(e) => handleSubmit(e)}
-      >
-        Download Stat JSON data
-      </button>
+        <button
+          className="btn btn-secondary bot"
+          type="submit"
+          name="action"
+          value="download-json"
+          onClick={(e) => handleSubmit(e)}
+        >
+          Download Stat JSON data
+        </button>
+      </section>
+
+      <section className="side-panel-section">
+        <div className="undo-redo-controls">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={undo}
+            disabled={!canUndo}
+          >
+            <FontAwesomeIcon icon={faArrowRotateLeft} aria-hidden="true" /> Undo
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={redo}
+            disabled={!canRedo}
+          >
+            <FontAwesomeIcon icon={faArrowRotateRight} aria-hidden="true" />{" "}
+            Redo
+          </button>
+        </div>
+      </section>
 
       {(isGeneratingPreview || imagePreview) && (
         <div
