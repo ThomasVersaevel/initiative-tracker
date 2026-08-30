@@ -91,12 +91,12 @@ const SaveUploads = ({
             ? imported.bonusActions
             : Array.isArray(imported.bonusActions?.bonusActions)
               ? imported.bonusActions.bonusActions
-            : defaultStatBlock.bonusActions,
+              : defaultStatBlock.bonusActions,
           reactions: Array.isArray(imported.reactions)
             ? imported.reactions
             : Array.isArray(imported.reactions?.reactions)
               ? imported.reactions.reactions
-            : defaultStatBlock.reactions,
+              : defaultStatBlock.reactions,
           size: imported.size || defaultStatBlock.size,
           theme: imported.theme || "default",
         });
@@ -114,13 +114,18 @@ const SaveUploads = ({
     const { configured, userId, error } = await ensureAnonymousSession();
 
     if (!configured) {
-      alert("Add your Supabase environment variables before saving to the database.");
+      alert(
+        "Add your Supabase environment variables before saving to the database.",
+      );
       return false;
     }
 
     if (error || !userId) {
       console.error("Failed to initialize anonymous session:", error);
-      alert(error?.friendlyMessage || "Unable to create an anonymous Supabase session.");
+      alert(
+        error?.friendlyMessage ||
+          "Unable to create an anonymous Supabase session.",
+      );
       return false;
     }
 
@@ -181,7 +186,9 @@ const SaveUploads = ({
       const { configured, userId, error } = await ensureAnonymousSession();
 
       if (!configured || error || !userId) {
-        setLibraryError("Unable to load saved stat blocks. Configure Supabase.");
+        setLibraryError(
+          "Unable to load saved stat blocks. Configure Supabase.",
+        );
         setIsLoadingLibrary(false);
         return;
       }
@@ -198,9 +205,11 @@ const SaveUploads = ({
       }
 
       // Add sorting
-      const orderColumn = sortBy === "cr" ? "data->traits->challengeRating" : "created_at";
+      const orderColumn =
+        sortBy === "cr" ? "data->traits->challengeRating" : "created_at";
       const orderAscending = sortBy === "cr";
-      query = query.order(orderColumn, { ascending: orderAscending })
+      query = query
+        .order(orderColumn, { ascending: orderAscending })
         .order("name", { ascending: true });
 
       // Add pagination
@@ -244,6 +253,7 @@ const SaveUploads = ({
   // Fetch stat blocks when search, sort, or page changes
   useEffect(() => {
     fetchStatBlocks();
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [searchQuery, sortBy, pageNumber]);
 
   // Handle importing stat block from library
@@ -376,7 +386,10 @@ const SaveUploads = ({
           <button
             type="button"
             className={`btn btn-sort ${sortBy === "created" ? "active" : ""}`}
-            onClick={() => { setSortBy("created"); setPageNumber(1); }}
+            onClick={() => {
+              setSortBy("created");
+              setPageNumber(1);
+            }}
             aria-pressed={sortBy === "created"}
           >
             Created (Newest)
@@ -384,7 +397,10 @@ const SaveUploads = ({
           <button
             type="button"
             className={`btn btn-sort ${sortBy === "cr" ? "active" : ""}`}
-            onClick={() => { setSortBy("cr"); setPageNumber(1); }}
+            onClick={() => {
+              setSortBy("cr");
+              setPageNumber(1);
+            }}
             aria-pressed={sortBy === "cr"}
           >
             CR
@@ -399,7 +415,8 @@ const SaveUploads = ({
 
         {isLoadingLibrary ? (
           <div className="library-loading">
-            <FontAwesomeIcon icon={faSpinner} spin aria-hidden="true" /> Loading...
+            <FontAwesomeIcon icon={faSpinner} spin aria-hidden="true" />{" "}
+            Loading...
           </div>
         ) : statBlocks.length > 0 ? (
           <>
@@ -412,7 +429,9 @@ const SaveUploads = ({
                   onClick={() => handleImportFromLibrary(block)}
                   title={`Import ${block.name}`}
                 >
-                  <div className="library-card-name">{block.name || "Unnamed"}</div>
+                  <div className="library-card-name">
+                    {block.name || "Unnamed"}
+                  </div>
                   <div className="library-card-cr">
                     CR {block.data?.traits?.challengeRating ?? "—"}
                   </div>
@@ -437,7 +456,9 @@ const SaveUploads = ({
                 <button
                   type="button"
                   className="btn btn-secondary pagination-btn"
-                  onClick={() => setPageNumber(Math.min(totalPages, pageNumber + 1))}
+                  onClick={() =>
+                    setPageNumber(Math.min(totalPages, pageNumber + 1))
+                  }
                   disabled={pageNumber === totalPages}
                   aria-label="Next page"
                 >
@@ -447,9 +468,7 @@ const SaveUploads = ({
             )}
           </>
         ) : (
-          <div className="library-empty">
-            No saved stat blocks found.
-          </div>
+          <div className="library-empty">No saved stat blocks found.</div>
         )}
       </section>
 

@@ -6,7 +6,6 @@ import {
   faShield,
   faPlus,
   faUpload,
-  faCircleInfo,
   faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { SpeedStore } from "./ItemStores/SpeedStore";
