@@ -240,7 +240,7 @@ export function Header({
           </div>
 
           <div className="modal-right">
-            <h4>Saved Characters</h4>
+            <h4>Saved</h4>
 
             {Object.entries(pcStats).map(([name]) => (
               <div key={name} className="character-entry">
