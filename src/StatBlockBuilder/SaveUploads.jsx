@@ -5,6 +5,7 @@ import {
   faArrowRotateRight,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
+import { supabase, ensureAnonymousSession } from "../Supabase";
 import { defaultStatBlock, normalizeStats } from "./TypesUtils/Types.js";
 
 const SaveUploads = ({
@@ -96,7 +97,37 @@ const SaveUploads = ({
     e.target.value = "";
   };
 
-  const handleSubmit = (e, action) => {
+  const saveStatBlockToSupabase = async () => {
+    const { configured, userId, error } = await ensureAnonymousSession();
+
+    if (!configured) {
+      alert("Add your Supabase environment variables before saving to the database.");
+      return false;
+    }
+
+    if (error || !userId) {
+      console.error("Failed to initialize anonymous session:", error);
+      alert(error?.friendlyMessage || "Unable to create an anonymous Supabase session.");
+      return false;
+    }
+
+    const { error: insertError } = await supabase.from("stat_blocks").insert({
+      user_id: userId,
+      name: statBlock.name?.trim() || "Unnamed creature",
+      data: statBlock,
+    });
+
+    if (insertError) {
+      console.error("Failed to save stat block:", insertError);
+      alert("Unable to save stat block.");
+      return false;
+    }
+
+    alert("Stat block saved to the database.");
+    return true;
+  };
+
+  const handleSubmit = async (e, action) => {
     e.preventDefault();
 
     const submitAction =
@@ -124,7 +155,7 @@ const SaveUploads = ({
     }
 
     if (submitAction === "save") {
-      // Database saving later
+      await saveStatBlockToSupabase();
     }
   };
 
