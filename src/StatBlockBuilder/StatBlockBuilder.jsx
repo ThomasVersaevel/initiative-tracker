@@ -7,6 +7,7 @@ import {
   faPlus,
   faUpload,
   faCircleInfo,
+  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { SpeedStore } from "./ItemStores/SpeedStore";
 import { speedOptions, traitOptions } from "./TypesUtils/StoreTypes";
@@ -117,12 +118,12 @@ const getInitialStatBlock = () => {
         ? saved.bonusActions
         : Array.isArray(saved.bonusActions?.bonusActions)
           ? saved.bonusActions.bonusActions
-        : defaultStatBlock.bonusActions,
+          : defaultStatBlock.bonusActions,
       reactions: Array.isArray(saved.reactions)
         ? saved.reactions
         : Array.isArray(saved.reactions?.reactions)
           ? saved.reactions.reactions
-        : defaultStatBlock.reactions,
+          : defaultStatBlock.reactions,
       legendaryDetails: {
         ...defaultStatBlock.legendaryDetails,
         ...(saved.legendaryDetails || {}),
@@ -449,27 +450,30 @@ function StatBlockBuilder({ setPage }) {
 
   return (
     <div className={`stat-block-normal ${statBlock.theme}`}>
-      <div className="App-header statblock-page-header">
-        <div className="statblock-header-left-controls">
+      <div className="App-header statblock-header-left-controls">
+        <div>
           <button
             className="menu-btn"
             onClick={() => setPage("initiative-tracker")}
           >
-            <FontAwesomeIcon icon={faArrowLeft} /> Initiative tracker
+            <FontAwesomeIcon icon={faArrowLeft} /> Initiative Tracker
           </button>
-          <span
-            className="statblock-upload-info statblock-header-info"
+          {/* <span
+            className="statblock-upload-info"
             tabIndex="0"
             role="img"
             aria-label="You can also upload your own stat block"
             data-tooltip="you can also upload your own stat block"
           >
             <FontAwesomeIcon icon={faCircleInfo} aria-hidden="true" />
-          </span>
+          </span> */}
         </div>
         <div className="title">
           <h1>Stat block builder</h1>
         </div>
+        <button className="menu-btn" onClick={() => setPage("token-stamp")}>
+          Token Stamp <FontAwesomeIcon icon={faArrowRight} />
+        </button>
       </div>
 
       <div className="App-body flex">

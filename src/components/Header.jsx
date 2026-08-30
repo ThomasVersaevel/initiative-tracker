@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import "./Header.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { supabase } from "../Supabase";
 
 const themes = [
@@ -46,14 +46,15 @@ export function Header({
   };
 
   const saveCharacterStats = async (character) => {
-    const query = editingCharacterId !== null
-      ? supabase
-          .from("characters")
-          .update(character)
-          .eq("id", editingCharacterId)
-          .select()
-          .single()
-      : supabase.from("characters").insert(character).select().single();
+    const query =
+      editingCharacterId !== null
+        ? supabase
+            .from("characters")
+            .update(character)
+            .eq("id", editingCharacterId)
+            .select()
+            .single()
+        : supabase.from("characters").insert(character).select().single();
     const { data, error } = await query;
 
     if (error) {
@@ -104,6 +105,10 @@ export function Header({
 
   return (
     <div className="App-header">
+      <button className="menu-btn" onClick={() => setPage("token-stamp")}>
+        <FontAwesomeIcon icon={faArrowLeft} /> Token Stamp
+      </button>
+
       <div onBlur={handleBlur} ref={menuRef}>
         <button
           className="hamburger"
@@ -113,7 +118,6 @@ export function Header({
         >
           <span>☰</span>
         </button>
-
         {menuOpen && (
           <div className="hamburger-menu">
             <label className="form-check-label">
@@ -156,26 +160,12 @@ export function Header({
             >
               Add character stats
             </button>
-            <button
-              className="menu-btn"
-              onClick={() => setPage("stat-block-builder")}
-            >
-              Open stat block maker <FontAwesomeIcon icon={faArrowRight} />
-            </button>
-              <button
-              className="menu-btn"
-              onClick={() => setPage("token-stamp")}
-            >
-              Open token stamp <FontAwesomeIcon icon={faArrowRight} />
-            </button>
           </div>
         )}
       </div>
-
       <div className="title">
         <h1>Take Initiative</h1>
       </div>
-
       <div className="class-selector">
         <select
           className="form-control select"
@@ -188,7 +178,12 @@ export function Header({
           ))}
         </select>
       </div>
-
+      <button
+        className="menu-btn"
+        onClick={() => setPage("stat-block-builder")}
+      >
+        Stat Block Builder <FontAwesomeIcon icon={faArrowRight} />
+      </button>
       {showModal && (
         <div className="character-modal">
           <div className="modal-left">

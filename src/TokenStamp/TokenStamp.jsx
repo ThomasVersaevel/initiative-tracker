@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
+  faArrowRight,
   faEyeDropper,
   faFillDrip,
   faUpload,
@@ -371,9 +372,18 @@ export default function TokenStamp({ setPage }) {
       <div className="App-header statblock-page-header">
         <button
           className="menu-btn"
+          onClick={() => setPage("stat-block-builder")}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} /> Stat Block Builder
+        </button>
+        <div className="title">
+          <h1>Token Stamp</h1>
+        </div>
+        <button
+          className="menu-btn"
           onClick={() => setPage("initiative-tracker")}
         >
-          <FontAwesomeIcon icon={faArrowLeft} /> Initiative tracker
+          <FontAwesomeIcon icon={faArrowRight} /> Initiative tracker
         </button>
       </div>
 
