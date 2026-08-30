@@ -1,14 +1,18 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StatBlockBuilder from "./StatBlockBuilder/StatBlockBuilder";
 import InitiativeTracker from "./InitiativeTracker";
 import TokenStamp from "./TokenStamp/TokenStamp";
-
+import { ensureAnonymousSession } from "./Supabase";
 
 function App() {
   const [page, setPage] = useState(
     () => localStorage.getItem("currentPage") || "initiative-tracker",
   );
+
+  useEffect(() => {
+    ensureAnonymousSession();
+  }, []);
 
   const changePage = (newPage) => {
     localStorage.setItem("currentPage", newPage);
@@ -45,7 +49,7 @@ function App() {
         )}
         {page === "token-stamp" && (
           <motion.div
-            key="stat-block-builder"
+            key="token-stamp"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}

@@ -17,6 +17,11 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 	ref,
 ) {
 	const previewRef = useRef(null);
+	const orderedSpeeds = [...statBlock.speeds].sort((left, right) => {
+		if (left.type === "walk") return -1;
+		if (right.type === "walk") return 1;
+		return 0;
+	});
 
 	useImperativeHandle(ref, () => ({
 		async getImageDataUrl() {
@@ -51,7 +56,11 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 			<div className="stat-block-image-heading">
 				<div>
 					<h1>{statBlock.name || "Unnamed Creature"}</h1>
-					{statBlock.legendary && <em>Legendary</em>}
+					<div className="stat-block-image-creature-details">
+						{statBlock.legendary && "Legendary "}
+						{statBlock.creatureSize || "Medium"}{" "}
+						{statBlock.creatureType || "Monster"}
+					</div>
 				</div>
 				{statBlock.portrait && (
 					<img src={statBlock.portrait} alt="" className="stat-block-image-portrait" />
@@ -65,13 +74,15 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 				<span>
 					<FontAwesomeIcon icon={faShield} aria-hidden="true" /> AC {statBlock.ac}
 				</span>
-				{statBlock.speeds.map((speed) => (
+				{orderedSpeeds.map((speed) => (
 					<span key={speed.type}>
 						<FontAwesomeIcon
 							icon={speedOptions.find((option) => option.type === speed.type)?.icon}
 							aria-hidden="true"
-						/>{" "}
-						{speed.type} {speed.value}
+						/>
+						{speed.type === "walk"
+							? "Speed"
+							: `${speed.type.charAt(0).toUpperCase()}${speed.type.slice(1)}`} {speed.value}
 					</span>
 				))}
 			</div>
@@ -99,16 +110,16 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						</p>
 					))}
 					{statBlock.traits.resistances.length > 0 && (
-					<p><strong>Resistances:</strong> {statBlock.traits.resistances.join(", ")}</p>
+					<p><strong className="accent-color">Resistances:</strong> {statBlock.traits.resistances.join(", ")}</p>
 					)}
 					{statBlock.traits.senses.length > 0 && (
-					<p><strong>Senses:</strong> {statBlock.traits.senses.map(formatSense).join(", ")}</p>
+					<p><strong className="accent-color">Senses:</strong> {statBlock.traits.senses.map(formatSense).join(", ")}</p>
 					)}
 					{statBlock.traits.languages.length > 0 && (
-					<p><strong>Languages:</strong> {statBlock.traits.languages.join(", ")}</p>
+					<p><strong className="accent-color">Languages:</strong> {statBlock.traits.languages.join(", ")}</p>
 					)}
 					<p>
-					<strong>Challenge Rating:</strong>{" "}
+					<strong className="accent-color">Challenge Rating:</strong>{" "}
 					<span className="challenge-rating-value">
 						{getChallengeRating(statBlock.traits.challengeRating).label}
 					</span>{" "}
@@ -120,45 +131,65 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 				</div>
 
 				<div className="stat-block-image-abilities">
+					{statBlock.abilities.abilities.length > 0 && <h2 className="accent-color">Abilities</h2>}
 						{statBlock.abilities.abilities.map((ability) => (
 						<p key={ability.id}>
-							<strong>{ability.name || "Unnamed ability"}.</strong>{" "}
+							<strong className="accent-color">{ability.name || "Unnamed ability"}.</strong>{" "}
 							<FormattedText text={ability.description} name={statBlock.name} />
 						</p>
 					))}
 				</div>
 
-				<div className="stat-block-image-attacks">
+				<div className="stat-block-image-actions">
+				{((statBlock.attacks.multiattack.enabled && statBlock.attacks.multiattack.attacks.length > 0) || statBlock.attacks.attacks.length > 0) && <h2 className="accent-color">Actions</h2>}
 				{statBlock.attacks.multiattack.enabled &&
 					statBlock.attacks.multiattack.attacks.length > 0 && (
 						<p>
-							<strong>Multiattack.</strong> The {statBlock.name || "creature"} makes{" "}
+							<strong className="accent-color">Multiattack.</strong> The {statBlock.name || "creature"} makes{" "}
 							{statBlock.attacks.multiattack.attacks.map((selection) => {
 								const attack = statBlock.attacks.attacks.find(
 									(item) => item.id === selection.attackId,
 								);
-								return `${selection.count} ${attack?.name || "unnamed attack"} attack${selection.count === 1 ? "" : "s"}`;
+								return `${selection.count} ${attack?.name || "unnamed action"} action${selection.count === 1 ? "" : "s"}`;
 							}).join(" or ")}. 
 						</p>
 					)}
 				{statBlock.attacks.attacks.map((attack) => (
 					<p key={attack.id}>
-						<strong>{attack.name || "Unnamed attack"}.</strong>{" "}
+						<strong className="accent-color">{attack.name || "Unnamed action"}.</strong>{" "}
 						<FormattedText text={attack.description} name={statBlock.name} />
 					</p>
 				))}
+				</div>
+				<div className="stat-block-image-bonus-actions">
+				{statBlock.bonusActions.length > 0 && <h2 className="accent-color">Bonus Actions</h2>}
+				{statBlock.bonusActions.map((action) => (
+					<p key={action.id}>
+						<strong className="accent-color"><em>{action.name || "Unnamed bonus action"}.</em></strong>{" "}
+						<FormattedText text={action.description} name={statBlock.name} />
+					</p>
+				))}
+				</div>
+				<div className="stat-block-image-reactions">
+				{statBlock.reactions.length > 0 && <h2 className="accent-color">Reactions</h2>}
+				{statBlock.reactions.map((reaction) => (
+					<p key={reaction.id}>
+						<strong className="accent-color"><em>{reaction.name || "Unnamed reaction"}.</em></strong>{" "}
+						<FormattedText text={reaction.description} name={statBlock.name} />
+					</p>
+				))}
+				</div>
 				{statBlock.legendary && (
 					<div className="stat-block-image-legendary-actions">
-						<h2>Legendary Actions</h2>
+						<h2 className="accent-color">Legendary Actions</h2>
 						{statBlock.legendaryDetails.actions.map((action) => (
 							<p key={action.id}>
-								<strong><em>{action.name || "Unnamed action"}.</em></strong>{" "}
+								<strong className="accent-color"><em>{action.name || "Unnamed action"}.</em></strong>{" "}
 								<FormattedText text={action.description} name={statBlock.name} />
 							</p>
 						))}
 					</div>
 				)}
-				</div>
 			</div>
 		</div>
 	);

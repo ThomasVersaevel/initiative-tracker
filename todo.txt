@@ -11,7 +11,7 @@ Features:
 
 
  
-5-26: A stat block maker that will allow you to save it in a DB and then select it in the initative tracker such that its stat block appears in the images.
+1.1 5-26: A stat block maker that will allow you to save it in a DB and then select it in the initative tracker such that its stat block appears in the images.
 This will then allow you to import them into the initiative tracker easy
 
 Needs a database and full editor 
@@ -20,3 +20,10 @@ Any value is overwritable, but is also set automatically
 Todo 1.2:
 - database
     - This allows me to save stat blocks for quick ref and to put into the init tracker automatically on typing its name
+Todo 1.3
+    - Add saving the json of a stat block to DB, then in initative tracker allow auto importing it
+    - Undo system
+    - Reactions, bonus actions
+    - Inverntory/loot
+    - Lair actions
+

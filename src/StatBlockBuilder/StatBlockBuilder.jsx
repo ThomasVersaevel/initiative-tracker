@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
@@ -6,7 +6,7 @@ import {
   faShield,
   faPlus,
   faUpload,
-  faCircleInfo,
+  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { SpeedStore } from "./ItemStores/SpeedStore";
 import { speedOptions, traitOptions } from "./TypesUtils/StoreTypes";
@@ -25,8 +25,68 @@ import "./StatBlockBuilder.css";
 import { AbilityStore } from "./ItemStores/AbilityStore.jsx";
 import { LegendaryStore } from "./ItemStores/LegendaryStore.jsx";
 import { FormattedText } from "./FormattedText";
+import { BonusActionStore } from "./ItemStores/BonusActionStore.jsx";
+import { ReactionStore } from "./ItemStores/ReactionStore.jsx";
 
 const STAT_BLOCK_STORAGE_KEY = "statBlockBuilderState";
+const MAX_HISTORY_ENTRIES = 50;
+const INPUT_HISTORY_DEBOUNCE_MS = 700;
+
+const historyReducer = (state, action) => {
+  if (action.type === "update") {
+    const next =
+      typeof action.update === "function"
+        ? action.update(state.present)
+        : action.update;
+
+    if (Object.is(next, state.present)) return state;
+
+    const canCoalesce =
+      action.historyKey &&
+      state.lastHistoryKey === action.historyKey &&
+      action.timestamp - state.lastHistoryAt < INPUT_HISTORY_DEBOUNCE_MS;
+
+    if (canCoalesce) {
+      return {
+        ...state,
+        present: next,
+        lastHistoryAt: action.timestamp,
+      };
+    }
+
+    return {
+      past: [...state.past, state.present].slice(-MAX_HISTORY_ENTRIES),
+      present: next,
+      future: [],
+      lastHistoryKey: action.historyKey,
+      lastHistoryAt: action.timestamp,
+    };
+  }
+
+  if (action.type === "undo" && state.past.length > 0) {
+    const previous = state.past[state.past.length - 1];
+    return {
+      past: state.past.slice(0, -1),
+      present: previous,
+      future: [state.present, ...state.future],
+      lastHistoryKey: null,
+      lastHistoryAt: 0,
+    };
+  }
+
+  if (action.type === "redo" && state.future.length > 0) {
+    const next = state.future[0];
+    return {
+      past: [...state.past, state.present].slice(-MAX_HISTORY_ENTRIES),
+      present: next,
+      future: state.future.slice(1),
+      lastHistoryKey: null,
+      lastHistoryAt: 0,
+    };
+  }
+
+  return state;
+};
 
 const getInitialStatBlock = () => {
   try {
@@ -53,6 +113,16 @@ const getInitialStatBlock = () => {
           ...(saved.attacks?.multiattack || {}),
         },
       },
+      bonusActions: Array.isArray(saved.bonusActions)
+        ? saved.bonusActions
+        : Array.isArray(saved.bonusActions?.bonusActions)
+          ? saved.bonusActions.bonusActions
+          : defaultStatBlock.bonusActions,
+      reactions: Array.isArray(saved.reactions)
+        ? saved.reactions
+        : Array.isArray(saved.reactions?.reactions)
+          ? saved.reactions.reactions
+          : defaultStatBlock.reactions,
       legendaryDetails: {
         ...defaultStatBlock.legendaryDetails,
         ...(saved.legendaryDetails || {}),
@@ -73,9 +143,57 @@ const getInitialStatBlock = () => {
 };
 
 function StatBlockBuilder({ setPage }) {
-  const [statBlock, setStatBlock] = useState(getInitialStatBlock);
+  const [history, dispatchHistory] = useReducer(
+    historyReducer,
+    undefined,
+    () => ({
+      past: [],
+      present: getInitialStatBlock(),
+      future: [],
+      lastHistoryKey: null,
+      lastHistoryAt: 0,
+    }),
+  );
+  const statBlock = history.present;
   const [storePanelOpen, setStorePanelOpen] = useState("");
   const imageGeneratorRef = useRef(null);
+
+  const setStatBlock = (update) => {
+    const activeElement = document.activeElement;
+    const isTextInput = activeElement?.matches(
+      "input:not([type=button]):not([type=checkbox]):not([type=file]), textarea",
+    );
+
+    dispatchHistory({
+      type: "update",
+      update,
+      historyKey: isTextInput ? activeElement : null,
+      timestamp: Date.now(),
+    });
+  };
+
+  const undo = () => dispatchHistory({ type: "undo" });
+  const redo = () => dispatchHistory({ type: "redo" });
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+
+      if (event.key.toLowerCase() === "z") {
+        event.preventDefault();
+        if (event.shiftKey) redo();
+        else undo();
+      }
+
+      if (event.key.toLowerCase() === "y") {
+        event.preventDefault();
+        redo();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
 
   useEffect(() => {
     try {
@@ -125,9 +243,7 @@ function StatBlockBuilder({ setPage }) {
         [stat]: {
           ...current.stats[stat],
           [field]: value,
-          ...(field === "save"
-            ? { saveBase: value, saveIsManual: true }
-            : {}),
+          ...(field === "save" ? { saveBase: value, saveIsManual: true } : {}),
           ...(field === "value" &&
           value !== "" &&
           !current.stats[stat].saveIsManual
@@ -263,13 +379,6 @@ function StatBlockBuilder({ setPage }) {
     }));
   };
 
-  const setAttacks = (value) => {
-    setStatBlock((current) => ({
-      ...current,
-      attacks: typeof value === "function" ? value(current.attacks) : value,
-    }));
-  };
-
   const setAbilities = (value) => {
     setStatBlock((current) => ({
       ...current,
@@ -277,12 +386,33 @@ function StatBlockBuilder({ setPage }) {
     }));
   };
 
+  const setAttacks = (value) => {
+    setStatBlock((current) => ({
+      ...current,
+      attacks: typeof value === "function" ? value(current.attacks) : value,
+    }));
+  };
+
+  const setBonusActions = (value) => {
+    setStatBlock((current) => ({
+      ...current,
+      bonusActions:
+        typeof value === "function" ? value(current.bonusActions) : value,
+    }));
+  };
+
+  const setReactions = (value) => {
+    setStatBlock((current) => ({
+      ...current,
+      reactions: typeof value === "function" ? value(current.reactions) : value,
+    }));
+  };
+
   const setLegendary = (value) => {
     setStatBlock((current) => ({
       ...current,
-      legendaryDetails: typeof value === "function"
-        ? value(current.legendaryDetails)
-        : value,
+      legendaryDetails:
+        typeof value === "function" ? value(current.legendaryDetails) : value,
     }));
   };
 
@@ -319,24 +449,30 @@ function StatBlockBuilder({ setPage }) {
 
   return (
     <div className={`stat-block-normal ${statBlock.theme}`}>
-      <div className="App-header statblock-page-header">
-        <div className="statblock-header-left-controls">
+      <div className="App-header statblock-header-left-controls">
+        <div>
           <button
             className="menu-btn"
             onClick={() => setPage("initiative-tracker")}
           >
-            <FontAwesomeIcon icon={faArrowLeft} /> Initiative tracker
+            <FontAwesomeIcon icon={faArrowLeft} /> Initiative Tracker
           </button>
-          <span
-            className="statblock-upload-info statblock-header-info"
+          {/* <span
+            className="statblock-upload-info"
             tabIndex="0"
             role="img"
             aria-label="You can also upload your own stat block"
             data-tooltip="you can also upload your own stat block"
           >
             <FontAwesomeIcon icon={faCircleInfo} aria-hidden="true" />
-          </span>
+          </span> */}
         </div>
+        <div className="title">
+          <h1>Stat block builder</h1>
+        </div>
+        <button className="menu-btn" onClick={() => setPage("token-stamp")}>
+          Token Stamp <FontAwesomeIcon icon={faArrowRight} />
+        </button>
       </div>
 
       <div className="App-body flex">
@@ -350,6 +486,7 @@ function StatBlockBuilder({ setPage }) {
           <form id="stat-block-form">
             <div className="standard-row stat-block-heading-row">
               <label>
+                <span>Name</span>
                 <input
                   className="margin-left-6"
                   name="name"
@@ -358,7 +495,33 @@ function StatBlockBuilder({ setPage }) {
                   onChange={(e) => updateField("name", e.target.value)}
                 />
               </label>
-
+              <label>
+                <span>Size</span>
+                <select
+                  className="trait-picker-input creature-size-select"
+                  name="creatureSize"
+                  value={statBlock.creatureSize}
+                  onChange={(e) => updateField("creatureSize", e.target.value)}
+                  aria-label="Creature size"
+                >
+                  <option value="Tiny">Tiny</option>
+                  <option value="Small">Small</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Large">Large</option>
+                  <option value="Huge">Huge</option>
+                  <option value="Gargantuan">Gargantuan</option>
+                </select>
+              </label>
+              <label>
+                <span>Monster type</span>
+                <input
+                  className="margin-left-6"
+                  name="creatureType"
+                  placeholder="Creature type"
+                  value={statBlock.creatureType}
+                  onChange={(e) => updateField("creatureType", e.target.value)}
+                />
+              </label>
               <label className="legendary-toggle">
                 <input
                   name="legendary"
@@ -549,9 +712,14 @@ function StatBlockBuilder({ setPage }) {
               {statBlock.legendary && (
                 <>
                   {statBlock.legendaryDetails.resistances.map((resistance) => (
-                    <div className="legendary-resistance-display" key={resistance.id}>
-                      <strong className="accent-color">Legendary Resistance: </strong>
-                      <strong>
+                    <div
+                      className="legendary-resistance-display"
+                      key={resistance.id}
+                    >
+                      <strong className="accent-color">
+                        Legendary Resistance:{" "}
+                      </strong>
+                      <strong className="accent-color">
                         {resistance.amount}/day
                       </strong>{" "}
                       <FormattedText
@@ -614,85 +782,150 @@ function StatBlockBuilder({ setPage }) {
                 Add Traits <FontAwesomeIcon icon={faPlus} />
               </button>
             </div>
-            <div className=" border-top-3">
+            <div className="stat-block-content-section stat-block-abilities border-top-3">
+              {statBlock.abilities.abilities.length > 0 && (
+                <h2 className="stat-block-section-header">Abilities</h2>
+              )}
               {statBlock.abilities.abilities.map((ability) => (
-                <div className="ability-display-item" key={ability.id}>
-                  <strong>{ability.name || "Unnamed ability"}.</strong>{" "}
-                  <FormattedText text={ability.description} name={statBlock.name} />
+                <div className="stat-block-section-item" key={ability.id}>
+                  <strong className="accent-color">
+                    {ability.name || "Unnamed ability"}.
+                  </strong>{" "}
+                  <FormattedText
+                    text={ability.description}
+                    name={statBlock.name}
+                  />
                 </div>
               ))}
-              <div>
-                <div className="standard-row trait-actions-row">
-                  <button
-                    type="button"
-                    className="button add-button width-100"
-                    onClick={() => setStorePanelOpen("ability")}
-                  >
-                    Add Abilities <FontAwesomeIcon icon={faPlus} />
-                  </button>
-                </div>
-              </div>
-              <div className="attack-display-row border-top-3">
-                {statBlock.attacks.multiattack.enabled &&
-                  statBlock.attacks.multiattack.attacks.length > 0 && (
-                    <div className="attack-multiattack-text">
-                      <strong>
-                        <em>Multiattack.</em>
-                      </strong>{" "}
-                      The {statBlock.name || "creature"} makes{" "}
-                      {statBlock.attacks.multiattack.attacks
-                        .map((selection) => {
-                          const attack = statBlock.attacks.attacks.find(
-                            (item) => item.id === selection.attackId,
-                          );
-                          return `${selection.count} ${
-                            attack?.name || "unnamed attack"
-                          } attack${selection.count === 1 ? "" : "s"}`;
-                        })
-                        .join(" or ")}
-                      .
-                    </div>
-                  )}
-              {statBlock.attacks.attacks.map((attack) => (
-                  <div className="attack-display-item" key={attack.id}>
-                    <strong>
-                      <em>{attack.name || "Unnamed attack"}.</em>
+            </div>
+            <div className="standard-row trait-actions-row">
+              <button
+                type="button"
+                className="button add-button width-100"
+                onClick={() => setStorePanelOpen("ability")}
+              >
+                Add Abilities <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
+            <div className="stat-block-content-section stat-block-actions border-top-3">
+              {((statBlock.attacks.multiattack.enabled &&
+                statBlock.attacks.multiattack.attacks.length > 0) ||
+                statBlock.attacks.attacks.length > 0) && (
+                <h2 className="stat-block-section-header">Actions</h2>
+              )}
+              {statBlock.attacks.multiattack.enabled &&
+                statBlock.attacks.multiattack.attacks.length > 0 && (
+                  <div className="attack-multiattack-text">
+                    <strong className="accent-color">
+                      <em>Multiattack.</em>
                     </strong>{" "}
-                    <FormattedText text={attack.description} name={statBlock.name} />
+                    The {statBlock.name || "creature"} makes{" "}
+                    {statBlock.attacks.multiattack.attacks
+                      .map((selection) => {
+                        const attack = statBlock.attacks.attacks.find(
+                          (item) => item.id === selection.attackId,
+                        );
+                        return `${selection.count} ${
+                          attack?.name || "unnamed action"
+                        } action${selection.count === 1 ? "" : "s"}`;
+                      })
+                      .join(" or ")}
+                    .
+                  </div>
+                )}
+              {statBlock.attacks.attacks.map((attack) => (
+                <div className="attack-display-item" key={attack.id}>
+                  <strong className="accent-color">
+                    <em>{attack.name || "Unnamed action"}.</em>
+                  </strong>{" "}
+                  <FormattedText
+                    text={attack.description}
+                    name={statBlock.name}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="standard-row trait-actions-row">
+              <button
+                type="button"
+                className="button add-button width-100"
+                onClick={() => setStorePanelOpen("attack")}
+              >
+                Add Actions <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
+            <div className="stat-block-content-section stat-block-bonus-actions border-top-3">
+              {statBlock.bonusActions.length > 0 && (
+                <h2 className="stat-block-section-header">Bonus Actions</h2>
+              )}
+              {statBlock.bonusActions.map((action) => (
+                <div className="attack-display-item" key={action.id}>
+                  <strong className="accent-color">
+                    <em>{action.name || "Unnamed bonus action"}.</em>
+                  </strong>{" "}
+                  <FormattedText
+                    text={action.description}
+                    name={statBlock.name}
+                  />
+                </div>
+              ))}
+              <button
+                type="button"
+                className="button add-button width-100"
+                onClick={() => setStorePanelOpen("bonusAction")}
+                title="Bonus action store coming soon"
+              >
+                Add Bonus Actions <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
+            <div className="stat-block-content-section stat-block-reactions border-top-3">
+              {statBlock.reactions.length > 0 && (
+                <h2 className="stat-block-section-header">Reactions</h2>
+              )}
+              {statBlock.reactions.map((reaction) => (
+                <div className="attack-display-item" key={reaction.id}>
+                  <strong className="accent-color">
+                    <em>{reaction.name || "Unnamed reaction"}.</em>
+                  </strong>{" "}
+                  <FormattedText
+                    text={reaction.description}
+                    name={statBlock.name}
+                  />
+                </div>
+              ))}
+              <button
+                type="button"
+                className="button add-button width-100"
+                onClick={() => setStorePanelOpen("reaction")}
+                title="Reaction store coming soon"
+              >
+                Add Reactions <FontAwesomeIcon icon={faPlus} />
+              </button>
+            </div>
+            {statBlock.legendary && (
+              <div className="stat-block-content-section stat-block-legendary-actions border-top-3">
+                <h2 className="stat-block-section-header">Legendary Actions</h2>
+                {statBlock.legendaryDetails.actions.map((action) => (
+                  <div className="attack-display-item" key={action.id}>
+                    <strong className="accent-color">
+                      <em>{action.name || "Unnamed action"}.</em>
+                    </strong>{" "}
+                    <FormattedText
+                      text={action.description}
+                      name={statBlock.name}
+                    />
                   </div>
                 ))}
-              </div>
-
-              <div className="standard-row trait-actions-row">
                 <button
                   type="button"
-                  className="button add-button width-100"
-                  onClick={() => setStorePanelOpen("attack")}
+                  className="button add-button width-100 legendary-actions-add-button"
+                  onClick={() => setStorePanelOpen("legendary-action")}
                 >
-                  Add Attacks <FontAwesomeIcon icon={faPlus} />
+                  Add Legendary Actions <FontAwesomeIcon icon={faPlus} />
                 </button>
               </div>
-              {statBlock.legendary && (
-                <div className="legendary-actions-display border-top-3">
-                  <h2>Legendary Actions</h2>
-                  {statBlock.legendaryDetails.actions.map((action) => (
-                    <div className="attack-display-item" key={action.id}>
-                      <strong>
-                        <em>{action.name || "Unnamed action"}.</em>
-                      </strong>{" "}
-                      <FormattedText text={action.description} name={statBlock.name} />
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    className="button add-button width-100 legendary-actions-add-button"
-                    onClick={() => setStorePanelOpen("legendary-action")}
-                  >
-                    Add Legendary Actions <FontAwesomeIcon icon={faPlus} />
-                  </button>
-                </div>
-              )}
-            </div>
+            )}
           </form>
 
           <div className="resize-handle-block" onMouseDown={startResize} />
@@ -702,6 +935,10 @@ function StatBlockBuilder({ setPage }) {
           setStatBlock={setStatBlock}
           statBlock={statBlock}
           imageGeneratorRef={imageGeneratorRef}
+          canUndo={history.past.length > 0}
+          canRedo={history.future.length > 0}
+          undo={undo}
+          redo={redo}
         />
         <div className="stat-block-image-preview-wrapper" aria-hidden="true">
           <StatBlockImageGenerator
@@ -729,7 +966,13 @@ function StatBlockBuilder({ setPage }) {
             setTraits={setTraits}
           />
         )}
-
+        {storePanelOpen === "ability" && (
+          <AbilityStore
+            setStorePanelOpen={setStorePanelOpen}
+            abilities={statBlock.abilities}
+            setAbilities={setAbilities}
+          />
+        )}
         {storePanelOpen === "attack" && (
           <AttackStore
             setStorePanelOpen={setStorePanelOpen}
@@ -737,11 +980,18 @@ function StatBlockBuilder({ setPage }) {
             setAttacks={setAttacks}
           />
         )}
-        {storePanelOpen === "ability" && (
-          <AbilityStore
+        {storePanelOpen === "bonusAction" && (
+          <BonusActionStore
             setStorePanelOpen={setStorePanelOpen}
-            abilities={statBlock.abilities}
-            setAbilities={setAbilities}
+            bonusActions={statBlock.bonusActions}
+            setBonusActions={setBonusActions}
+          />
+        )}
+        {storePanelOpen === "reaction" && (
+          <ReactionStore
+            setStorePanelOpen={setStorePanelOpen}
+            reactions={statBlock.reactions}
+            setReactions={setReactions}
           />
         )}
         {(storePanelOpen === "legendary-action" ||

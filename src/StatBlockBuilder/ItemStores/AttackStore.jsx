@@ -96,7 +96,7 @@ export function AttackStore({
 	return (
 		<div>
 			<div className="store-header">
-				<h2>Attacks</h2>
+				<h2>Actions</h2>
 				<button
 					type="button"
 					className="btn"
@@ -118,9 +118,9 @@ export function AttackStore({
 
 				{attacks.multiattack.enabled && (
 					<div className="multiattack-options">
-						<strong>Included attacks</strong>
+						<strong>Included actions</strong>
 						{attacks.attacks.length === 0 && (
-							<span className="store-muted">Add an attack below first.</span>
+							<span className="store-muted">Add an action below first.</span>
 						)}
 						{attacks.attacks.map((attack) => {
 							const selection = attacks.multiattack.attacks.find(
@@ -143,7 +143,7 @@ export function AttackStore({
 											onChange={(event) =>
 												updateMultiattackCount(attack.id, event.target.value)
 											}
-											aria-label={`Number of ${attack.name || "attack"} attacks`}
+											aria-label={`Number of ${attack.name || "action"} actions`}
 										/>
 									)}
 								</label>
@@ -153,19 +153,19 @@ export function AttackStore({
 				)}
 
 				<button type="button" className="button add-button" onClick={addAttack}>
-					Add attack
+					Add action
 				</button>
 
 				{attacks.attacks.map((attack) => (
 					<div className="attack-editor" key={attack.id}>
 						<div className="attack-editor-header">
-							<strong>Attack</strong>
+								<strong>Action</strong>
 							<button
 								type="button"
 								className="attack-remove-button"
 								onClick={() => removeAttack(attack.id)}
-								title="Remove attack"
-								aria-label="Remove attack"
+									title="Remove action"
+									aria-label="Remove action"
 							>
 								<FontAwesomeIcon icon={faTrash} />
 							</button>
