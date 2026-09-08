@@ -281,6 +281,12 @@
   align-items: center;
 }
 
+.feature-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .portrait-upload {
   display: inline-flex;
   align-items: center;
@@ -370,15 +376,47 @@
   border-top: 3px solid var(--accent-color);
 }
 
+.stat-block-image-lair-actions,
+.stat-block-image-inventory {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 3px solid var(--accent-color);
+}
+
+.stat-block-image-inventory-text {
+  white-space: pre-wrap;
+}
+
+.stat-block-inventory textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 1.5rem;
+  resize: none;
+  overflow: hidden;
+}
+
 .stat-block-section-header {
   margin: 0px;
   font-size: 1.1rem;
 }
+
+.stat-block-section-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.stat-block-section-heading small {
+  color: var(--subtext-color);
+}
+
 .stat-block-image-abilities h2,
 .stat-block-image-actions h2,
 .stat-block-image-bonus-actions h2,
 .stat-block-image-reactions h2,
-.stat-block-image-legendary-actions h2 {
+.stat-block-image-legendary-actions h2,
+.stat-block-image-lair-actions h2,
+.stat-block-image-inventory h2 {
   margin-top: 8px;
   font-size: 1.1rem;
 }
@@ -426,6 +464,20 @@
   justify-content: space-between;
 }
 
+.legendary-store-uses {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.legendary-store-uses input {
+  width: 3rem;
+  padding: 6px;
+  text-align: center;
+}
+
 .attack-editor label {
   display: flex;
   flex-direction: column;
@@ -441,6 +493,17 @@
   padding: 6px;
   color: var(--text-color);
   background: var(--background-color);
+  border: 1px solid var(--background-darker);
+  border-radius: 4px;
+  font: inherit;
+}
+
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0px;
+  color: var(--text-color);
+  background: transparent;
   border: 1px solid var(--background-darker);
   border-radius: 4px;
   font: inherit;

@@ -5,6 +5,30 @@
   color: var(--mainText);
   border-bottom: 3px solid var(--border);
   width: 100%;
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.grid-row.deleting {
+  opacity: 0;
+  transform: translateX(-12px);
+  pointer-events: none;
+}
+
+.grid-row.row-entering {
+  animation: row-enter 300ms ease both;
+}
+
+@keyframes row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .highlighted {
@@ -57,6 +81,32 @@
 
   font-size: 1rem !important;
   font-weight: bold;
+}
+
+.d20-rolling {
+  animation: d20-wiggle 420ms ease-in-out;
+}
+
+@keyframes d20-wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg) translateX(0);
+  }
+  25% {
+    transform: rotate(-6deg) translateX(-2px);
+  }
+  50% {
+    transform: rotate(5deg) translateX(2px);
+  }
+  75% {
+    transform: rotate(-3deg) translateX(-1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .d20-rolling {
+    animation: none;
+  }
 }
 
 .d-flex {

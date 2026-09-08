@@ -147,6 +147,8 @@ export const defaultStatBlock = {
   hp: 0,
   ac: 0,
   legendary: false,
+  lair: false,
+  inventory: "",
 
   speeds: [
     {
@@ -181,6 +183,7 @@ export const defaultStatBlock = {
   reactions: [],
 
   legendaryDetails: {
+    uses: 3,
     actions: [],
     resistances: [
       {
@@ -190,6 +193,11 @@ export const defaultStatBlock = {
           "If the <name> fails a saving throw, it can choose to succeed instead.",
       },
     ],
+  },
+
+  lairDetails: {
+    uses: 3,
+    actions: [],
   },
 
   size: {

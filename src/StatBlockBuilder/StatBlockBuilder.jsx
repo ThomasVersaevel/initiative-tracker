@@ -27,6 +27,7 @@ import { LegendaryStore } from "./ItemStores/LegendaryStore.jsx";
 import { FormattedText } from "./FormattedText";
 import { BonusActionStore } from "./ItemStores/BonusActionStore.jsx";
 import { ReactionStore } from "./ItemStores/ReactionStore.jsx";
+import { LairStore } from "./ItemStores/LairStore.jsx";
 
 const STAT_BLOCK_STORAGE_KEY = "statBlockBuilderState";
 const MAX_HISTORY_ENTRIES = 50;
@@ -126,12 +127,21 @@ const getInitialStatBlock = () => {
       legendaryDetails: {
         ...defaultStatBlock.legendaryDetails,
         ...(saved.legendaryDetails || {}),
+        uses: saved.legendaryDetails?.uses ?? defaultStatBlock.legendaryDetails.uses,
         resistances: Array.isArray(saved.legendaryDetails?.resistances)
           ? saved.legendaryDetails.resistances
           : saved.legendaryDetails?.resistance
             ? [{ id: 1, ...saved.legendaryDetails.resistance }]
             : defaultStatBlock.legendaryDetails.resistances,
       },
+          lairDetails: {
+            ...defaultStatBlock.lairDetails,
+            ...(saved.lairDetails || {}),
+            uses: saved.lairDetails?.uses ?? defaultStatBlock.lairDetails.uses,
+            actions: Array.isArray(saved.lairDetails?.actions)
+              ? saved.lairDetails.actions
+              : defaultStatBlock.lairDetails.actions,
+          },
       size: {
         ...defaultStatBlock.size,
         ...(saved.size || {}),
@@ -157,6 +167,7 @@ function StatBlockBuilder({ setPage }) {
   const statBlock = history.present;
   const [storePanelOpen, setStorePanelOpen] = useState("");
   const imageGeneratorRef = useRef(null);
+  const inventoryRef = useRef(null);
 
   const setStatBlock = (update) => {
     const activeElement = document.activeElement;
@@ -202,6 +213,13 @@ function StatBlockBuilder({ setPage }) {
       // Keep editing available if browser storage is unavailable or full.
     }
   }, [statBlock]);
+
+  useEffect(() => {
+    if (!inventoryRef.current) return;
+
+    inventoryRef.current.style.height = "auto";
+    inventoryRef.current.style.height = `${inventoryRef.current.scrollHeight}px`;
+  }, [statBlock.inventory]);
 
   const resizing = useRef(false);
 
@@ -416,6 +434,14 @@ function StatBlockBuilder({ setPage }) {
     }));
   };
 
+  const setLair = (value) => {
+    setStatBlock((current) => ({
+      ...current,
+      lairDetails:
+        typeof value === "function" ? value(current.lairDetails) : value,
+    }));
+  };
+
   const startResize = (e) => {
     e.preventDefault();
     resizing.current = true;
@@ -522,15 +548,26 @@ function StatBlockBuilder({ setPage }) {
                   onChange={(e) => updateField("creatureType", e.target.value)}
                 />
               </label>
-              <label className="legendary-toggle">
-                <input
-                  name="legendary"
-                  type="checkbox"
-                  checked={statBlock.legendary}
-                  onChange={(e) => updateField("legendary", e.target.checked)}
-                />
-                <span className="subtext margin-left-4">Legendary</span>
-              </label>
+              <div className="feature-toggles">
+                <label className="legendary-toggle">
+                  <input
+                    name="legendary"
+                    type="checkbox"
+                    checked={statBlock.legendary}
+                    onChange={(e) => updateField("legendary", e.target.checked)}
+                  />
+                  <span className="subtext margin-left-4">Legendary</span>
+                </label>
+                <label className="legendary-toggle">
+                  <input
+                    name="lair"
+                    type="checkbox"
+                    checked={statBlock.lair}
+                    onChange={(e) => updateField("lair", e.target.checked)}
+                  />
+                  <span className="subtext margin-left-4">Lair</span>
+                </label>
+              </div>
 
               {statBlock.portrait ? (
                 <div className="portrait-display">
@@ -827,7 +864,7 @@ function StatBlockBuilder({ setPage }) {
                         );
                         return `${selection.count} ${
                           attack?.name || "unnamed action"
-                        } action${selection.count === 1 ? "" : "s"}`;
+                        } attack${selection.count === 1 ? "" : "s"}`;
                       })
                       .join(" or ")}
                     .
@@ -905,7 +942,10 @@ function StatBlockBuilder({ setPage }) {
             </div>
             {statBlock.legendary && (
               <div className="stat-block-content-section stat-block-legendary-actions border-top-3">
-                <h2 className="stat-block-section-header">Legendary Actions</h2>
+                <div className="stat-block-section-heading">
+                  <h2 className="stat-block-section-header">Legendary Actions</h2>
+                  <small>{statBlock.legendaryDetails.uses} per round</small>
+                </div>
                 {statBlock.legendaryDetails.actions.map((action) => (
                   <div className="attack-display-item" key={action.id}>
                     <strong className="accent-color">
@@ -926,6 +966,42 @@ function StatBlockBuilder({ setPage }) {
                 </button>
               </div>
             )}
+            {statBlock.lair && (
+              <div className="stat-block-content-section stat-block-lair-actions border-top-3">
+                <div className="stat-block-section-heading">
+                  <h2 className="stat-block-section-header">Lair Actions</h2>
+                  <small>{statBlock.lairDetails.uses} per round</small>
+                </div>
+                {statBlock.lairDetails.actions.map((action) => (
+                  <div className="attack-display-item" key={action.id}>
+                    <strong className="accent-color">
+                      <em>{action.name || "Unnamed action"}.</em>
+                    </strong>{" "}
+                    <FormattedText
+                      text={action.description}
+                      name={statBlock.name}
+                    />
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  className="button add-button width-100 legendary-actions-add-button"
+                  onClick={() => setStorePanelOpen("lair-action")}
+                >
+                  Add Lair Actions <FontAwesomeIcon icon={faPlus} />
+                </button>
+              </div>
+            )}
+            <div className="stat-block-content-section stat-block-inventory border-top-3">
+              <h2 className="stat-block-section-header">Inventory</h2>
+              <textarea
+                ref={inventoryRef}
+                rows="1"
+                value={statBlock.inventory}
+                onChange={(e) => updateField("inventory", e.target.value)}
+                placeholder="Loot expected to be found on this monster"
+              />
+            </div>
           </form>
 
           <div className="resize-handle-block" onMouseDown={startResize} />
@@ -1003,6 +1079,13 @@ function StatBlockBuilder({ setPage }) {
             initialSection={
               storePanelOpen === "legendary-action" ? "actions" : "resistance"
             }
+          />
+        )}
+        {storePanelOpen === "lair-action" && (
+          <LairStore
+            setStorePanelOpen={setStorePanelOpen}
+            lair={statBlock.lairDetails}
+            setLair={setLair}
           />
         )}
       </div>

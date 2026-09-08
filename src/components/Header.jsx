@@ -109,7 +109,7 @@ export function Header({
         <FontAwesomeIcon icon={faArrowLeft} /> Token Stamp
       </button>
 
-      <div onBlur={handleBlur} ref={menuRef}>
+      <div className="hamburger-container" onBlur={handleBlur} ref={menuRef}>
         <button
           className="hamburger"
           onClick={() => setMenuOpen((prev) => !prev)}

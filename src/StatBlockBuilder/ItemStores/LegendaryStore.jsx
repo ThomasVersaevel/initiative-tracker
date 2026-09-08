@@ -97,6 +97,20 @@ export function LegendaryStore({
 					Add action
 				</button>
 			</div>
+			<label className="legendary-store-uses">
+				Number of uses
+				<input
+					type="number"
+					min="0"
+					value={legendary.uses}
+					onChange={(event) =>
+						setLegendary((current) => ({
+							...current,
+							uses: Math.max(0, Number(event.target.value) || 0),
+						}))
+					}
+				/>
+			</label>
 			{legendary.actions.map((action) => (
 				<div className="attack-editor" key={action.id}>
 					<div className="attack-editor-header">
