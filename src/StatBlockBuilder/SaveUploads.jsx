@@ -5,6 +5,8 @@ import {
   faArrowRotateRight,
   faXmark,
   faSpinner,
+  faArrowLeft,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { supabase, ensureAnonymousSession } from "../Supabase";
 import { defaultStatBlock, normalizeStats } from "./TypesUtils/Types.js";
@@ -24,13 +26,36 @@ const SaveUploads = ({
 
   // Library state
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("created"); // "created" or "cr"
   const [pageNumber, setPageNumber] = useState(1);
   const [statBlocks, setStatBlocks] = useState([]);
-  const [isLoadingLibrary, setIsLoadingLibrary] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [libraryError, setLibraryError] = useState("");
   const [totalPages, setTotalPages] = useState(0);
+  const [pendingImportBlock, setPendingImportBlock] = useState(null);
+  const [pendingDeleteBlock, setPendingDeleteBlock] = useState(null);
   const debounceTimerRef = useRef(null);
+
+  const isLoadingLibrary = isLoading;
+
+  const formatSavedDate = (dateString) => {
+    if (!dateString) {
+      return "";
+    }
+
+    try {
+      const date = new Date(dateString);
+      const day = String(date.getDate()).padStart(2, "0");
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const year = String(date.getFullYear()).slice(-2);
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `${day}-${month}-${year} ${hours}:${minutes}`;
+    } catch {
+      return "";
+    }
+  };
 
   const ITEMS_PER_PAGE = 12;
 
@@ -129,9 +154,44 @@ const SaveUploads = ({
       return false;
     }
 
+    const trimmedName = statBlock.name?.trim() || "Unnamed creature";
+
+    const { data: existingRows, error: lookupError } = await supabase
+      .from("stat_blocks")
+      .select("id")
+      .eq("user_id", userId)
+      .ilike("name", trimmedName)
+      .limit(1);
+
+    if (lookupError) {
+      console.error("Failed to check for existing stat block:", lookupError);
+      alert("Unable to save stat block.");
+      return false;
+    }
+
+    if (existingRows && existingRows.length > 0) {
+      const { error: updateError } = await supabase
+        .from("stat_blocks")
+        .update({
+          name: trimmedName,
+          data: statBlock,
+          created_at: new Date().toISOString(),
+        })
+        .eq("id", existingRows[0].id);
+
+      if (updateError) {
+        console.error("Failed to update stat block:", updateError);
+        alert("Unable to update stat block.");
+        return false;
+      }
+
+      alert("Stat block updated in the database.");
+      return true;
+    }
+
     const { error: insertError } = await supabase.from("stat_blocks").insert({
       user_id: userId,
-      name: statBlock.name?.trim() || "Unnamed creature",
+      name: trimmedName,
       data: statBlock,
     });
 
@@ -173,13 +233,16 @@ const SaveUploads = ({
     }
 
     if (submitAction === "save") {
-      await saveStatBlockToSupabase();
+      const saveSucceeded = await saveStatBlockToSupabase();
+
+      if (saveSucceeded) {
+        await fetchStatBlocks();
+      }
     }
   };
 
-  // Fetch saved stat blocks from Supabase
   const fetchStatBlocks = async () => {
-    setIsLoadingLibrary(true);
+    setIsLoading(true);
     setLibraryError("");
 
     try {
@@ -189,30 +252,32 @@ const SaveUploads = ({
         setLibraryError(
           "Unable to load saved stat blocks. Configure Supabase.",
         );
-        setIsLoadingLibrary(false);
+        setStatBlocks([]);
+        setTotalPages(0);
+        setIsLoading(false);
         return;
       }
 
-      // Build query
       let query = supabase
         .from("stat_blocks")
         .select("id, name, data, created_at", { count: "exact" })
         .eq("user_id", userId);
 
-      // Add search filter
-      if (searchQuery.trim()) {
-        query = query.ilike("name", `%${searchQuery.trim()}%`);
+      const normalizedSearch = debouncedSearchQuery.trim();
+      if (normalizedSearch) {
+        query = query.ilike("name", `%${normalizedSearch}%`);
       }
 
-      // Add sorting
-      const orderColumn =
-        sortBy === "cr" ? "data->traits->challengeRating" : "created_at";
-      const orderAscending = sortBy === "cr";
-      query = query
-        .order(orderColumn, { ascending: orderAscending })
-        .order("name", { ascending: true });
+      if (sortBy === "cr") {
+        query = query
+          .order("data->traits->challengeRating", { ascending: true })
+          .order("name", { ascending: true });
+      } else {
+        query = query
+          .order("created_at", { ascending: false })
+          .order("name", { ascending: true });
+      }
 
-      // Add pagination
       const start = (pageNumber - 1) * ITEMS_PER_PAGE;
       query = query.range(start, start + ITEMS_PER_PAGE - 1);
 
@@ -220,8 +285,9 @@ const SaveUploads = ({
 
       if (fetchError) {
         console.error("Failed to fetch stat blocks:", fetchError);
-        setLibraryError("Failed to load saved stat blocks.");
-        setIsLoadingLibrary(false);
+        setStatBlocks([]);
+        setTotalPages(0);
+        setLibraryError("Failed to load saved stat blocks. Please try again.");
         return;
       }
 
@@ -229,13 +295,14 @@ const SaveUploads = ({
       setTotalPages(Math.ceil((count || 0) / ITEMS_PER_PAGE));
     } catch (error) {
       console.error("Error fetching stat blocks:", error);
+      setStatBlocks([]);
+      setTotalPages(0);
       setLibraryError("An error occurred while loading stat blocks.");
     } finally {
-      setIsLoadingLibrary(false);
+      setIsLoading(false);
     }
   };
 
-  // Debounced search handler
   const handleSearch = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -246,19 +313,34 @@ const SaveUploads = ({
     }
 
     debounceTimerRef.current = setTimeout(() => {
-      // Fetch will happen via useEffect when searchQuery changes
-    }, 300);
+      setDebouncedSearchQuery(value);
+    }, 400);
   };
 
-  // Fetch stat blocks when search, sort, or page changes
   useEffect(() => {
     fetchStatBlocks();
     /* eslint-disable react-hooks/exhaustive-deps */
-  }, [searchQuery, sortBy, pageNumber]);
+  }, [debouncedSearchQuery, sortBy, pageNumber]);
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   // Handle importing stat block from library
   const handleImportFromLibrary = (savedStatBlock) => {
-    const imported = savedStatBlock.data;
+    setPendingImportBlock(savedStatBlock);
+  };
+
+  const confirmImportFromLibrary = () => {
+    if (!pendingImportBlock) {
+      return;
+    }
+
+    const imported = pendingImportBlock.data;
 
     setStatBlock({
       ...defaultStatBlock,
@@ -294,6 +376,51 @@ const SaveUploads = ({
       size: imported.size || defaultStatBlock.size,
       theme: imported.theme || "default",
     });
+
+    setPendingImportBlock(null);
+  };
+
+  const handleDeleteFromLibrary = (savedStatBlock) => {
+    setPendingDeleteBlock(savedStatBlock);
+  };
+
+  const confirmDeleteFromLibrary = async () => {
+    if (!pendingDeleteBlock) {
+      return;
+    }
+
+    try {
+      const { configured, userId, error } = await ensureAnonymousSession();
+
+      if (!configured || error || !userId) {
+        setLibraryError("Unable to delete saved stat block.");
+        setPendingDeleteBlock(null);
+        return;
+      }
+
+      const { error: deleteError } = await supabase
+        .from("stat_blocks")
+        .delete()
+        .eq("id", pendingDeleteBlock.id)
+        .eq("user_id", userId);
+
+      if (deleteError) {
+        console.error("Failed to delete stat block:", deleteError);
+        setLibraryError("Failed to delete saved stat block.");
+        setPendingDeleteBlock(null);
+        return;
+      }
+
+      setStatBlocks((currentBlocks) =>
+        currentBlocks.filter((block) => block.id !== pendingDeleteBlock.id),
+      );
+      setPendingDeleteBlock(null);
+      setLibraryError("");
+    } catch (error) {
+      console.error("Error deleting stat block:", error);
+      setLibraryError("An error occurred while deleting the stat block.");
+      setPendingDeleteBlock(null);
+    }
   };
 
   return (
@@ -368,8 +495,62 @@ const SaveUploads = ({
         </div>
       </section>
 
-      <section className="side-panel-section">
+      <section className="side-panel-section library-panel">
         <h3 className="library-heading">Saved Stat Blocks</h3>
+
+        {pendingImportBlock && (
+          <div className="library-import-modal" role="dialog" aria-modal="true">
+            <div className="library-import-modal-content">
+              <p>
+                Import <strong>{pendingImportBlock.name || "Unnamed"}</strong>? <br />
+                This will replace your current stat block.
+              </p>
+              <div className="library-import-modal-actions">
+                <button
+                  type="button"
+                  className="btn btn-primary bot"
+                  onClick={() => setPendingImportBlock(null)}
+                >
+                  No
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary bot"
+                  onClick={confirmImportFromLibrary}
+                >
+                  Yes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {pendingDeleteBlock && (
+          <div className="library-import-modal" role="dialog" aria-modal="true">
+            <div className="library-import-modal-content">
+              <p>
+                Delete <strong>{pendingDeleteBlock.name || "Unnamed"}</strong>? <br />
+                This removes it from your saved stat blocks.
+              </p>
+              <div className="library-import-modal-actions">
+                <button
+                  type="button"
+                  className="btn btn-primary bot"
+                  onClick={() => setPendingDeleteBlock(null)}
+                >
+                  No
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary bot"
+                  onClick={confirmDeleteFromLibrary}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="library-search">
           <input
@@ -392,7 +573,7 @@ const SaveUploads = ({
             }}
             aria-pressed={sortBy === "created"}
           >
-            Created (Newest)
+            Newest
           </button>
           <button
             type="button"
@@ -409,33 +590,62 @@ const SaveUploads = ({
 
         {libraryError && (
           <div className="library-error" role="alert">
+            <span className="library-error-icon" aria-hidden="true">
+              !
+            </span>
             {libraryError}
           </div>
         )}
 
         {isLoadingLibrary ? (
-          <div className="library-loading">
-            <FontAwesomeIcon icon={faSpinner} spin aria-hidden="true" />{" "}
-            Loading...
+          <div className="library-loading" aria-live="polite">
+            <FontAwesomeIcon icon={faSpinner} spin aria-hidden="true" />
+            <span>Loading...</span>
           </div>
         ) : statBlocks.length > 0 ? (
           <>
             <div className="library-cards-grid">
               {statBlocks.map((block) => (
-                <button
-                  key={block.id}
-                  type="button"
-                  className="library-card"
-                  onClick={() => handleImportFromLibrary(block)}
-                  title={`Import ${block.name}`}
-                >
-                  <div className="library-card-name">
-                    {block.name || "Unnamed"}
-                  </div>
-                  <div className="library-card-cr">
-                    CR {block.data?.traits?.challengeRating ?? "—"}
-                  </div>
-                </button>
+                <div key={block.id} className="library-card">
+                  <button
+                    type="button"
+                    className="library-card-main"
+                    onClick={() => handleImportFromLibrary(block)}
+                    title={`Import ${block.name}`}
+                  >
+                    <span className="library-card-icon" aria-hidden="true">
+                      <FontAwesomeIcon icon={faArrowLeft} />
+                    </span>
+                    <span className="library-card-body">
+                      <span className="library-card-name">
+                        {block.name || "Unnamed"}
+                      </span>
+                      <span className="library-card-meta">
+                        <span className="library-card-cr">
+                          CR {block.data?.traits?.challengeRating ?? "—"}
+                        </span>
+                        {block.created_at && (
+                          <span className="library-card-date">
+                            {formatSavedDate(block.created_at)}
+                          </span>
+                        )}
+                      </span>
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="library-card-delete"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleDeleteFromLibrary(block);
+                    }}
+                    title={`Delete ${block.name}`}
+                    aria-label={`Delete ${block.name}`}
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </button>
+                </div>
               ))}
             </div>
 
@@ -467,9 +677,9 @@ const SaveUploads = ({
               </div>
             )}
           </>
-        ) : (
-          <div className="library-empty">No saved stat blocks found.</div>
-        )}
+        ) : !isLoadingLibrary ? (
+          <div className="library-empty">No results</div>
+        ) : null}
       </section>
 
       {(isGeneratingPreview || imagePreview) && (
