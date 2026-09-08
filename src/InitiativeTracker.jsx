@@ -67,6 +67,9 @@ function InitiativeTracker({ setPage }) {
     return [createRow(0)];
   });
   const [highlightedRow, setHighlightedRow] = useState(0);
+  const [shouldRollHighlightedRow, setShouldRollHighlightedRow] =
+    useState(false);
+  const [newRowId, setNewRowId] = useState(null);
   const [theme, setTheme] = useState("default");
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedStationary, setSelectedStationary] = useState(null);
@@ -138,6 +141,7 @@ function InitiativeTracker({ setPage }) {
       gridRows.length > 0 ? Math.max(...gridRows.map((row) => row.id)) + 1 : 0;
 
     setGridRows([...gridRows, createRow(nextId)]);
+    setNewRowId(nextId);
   };
 
   const sortDescending = () => {
@@ -151,12 +155,15 @@ function InitiativeTracker({ setPage }) {
     setUploadedImages(sortUploadedImages(sortedGridRows, uploadedImages));
   };
 
-  const onDeleteRow = (id) => {
+  const onDeleteRow = (id, checkOnly = false) => {
     if (gridRows.length === 1) {
       // Skip deletion if there's only one row left
-      return;
+      return false;
     }
+    if (checkOnly) return true;
+
     setGridRows((prevGridRows) => prevGridRows.filter((row) => row.id !== id));
+    return true;
   };
 
   const sortUploadedImages = (gridRows, uploadedImages) => {
@@ -212,6 +219,7 @@ function InitiativeTracker({ setPage }) {
   }, [gridRows]);
 
   const nextTurn = useCallback(() => {
+    setShouldRollHighlightedRow(true);
     setHighlightedRow((prevHighlightedRow) => {
       const nextRow =
         prevHighlightedRow < gridRows.length - 1 ? prevHighlightedRow + 1 : 0;
@@ -224,6 +232,7 @@ function InitiativeTracker({ setPage }) {
   }, [decreaseTimer, gridRows.length, turn]);
 
   const prevTurn = useCallback(() => {
+    setShouldRollHighlightedRow(false);
     setHighlightedRow((prevHighlightedRow) => {
       const nextRow =
         prevHighlightedRow > 0 ? prevHighlightedRow - 1 : gridRows.length - 1;
@@ -430,9 +439,11 @@ function InitiativeTracker({ setPage }) {
               <GridRow
                 columnSizes={columnSizes}
                 highlighted={index === highlightedRow}
+                shouldRoll={shouldRollHighlightedRow}
                 key={row.id}
                 id={row.id}
                 initialValues={row}
+                isNew={row.id === newRowId}
                 updateValues={updateValues}
                 onDeleteRow={onDeleteRow}
                 theme={theme}

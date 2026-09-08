@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "./GridRow.css";
 import { Popup } from "./Popup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -40,7 +40,9 @@ export function GridRow({
   initialValues,
   updateValues,
   onDeleteRow,
+  isNew,
   highlighted,
+  shouldRoll,
   theme,
   showSpeed,
   showSpellSave,
@@ -62,9 +64,32 @@ export function GridRow({
   const [hovered, setHovered] = useState(false);
   const [rowHovered, setRowHovered] = useState(false);
   const [d20Roll, setD20Roll] = useState("");
+  const [isD20Rolling, setIsD20Rolling] = useState(false);
   const [maxHp, setMaxHp] = useState(0);
   const [savePromptOpen, setSavePromptOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const deleteTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (deleteTimeoutRef.current) {
+        clearTimeout(deleteTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleDelete = () => {
+    if (isDeleting) return;
+
+    const deletionStarted = onDeleteRow(id, true);
+    if (deletionStarted === false) return;
+
+    setIsDeleting(true);
+    deleteTimeoutRef.current = setTimeout(() => {
+      onDeleteRow(id);
+    }, 300);
+  };
 
   // check if the character name matches a player character in pcstats.json and update the values accordingly
   const checkPlayerCharacter = (name) => {
@@ -221,14 +246,30 @@ export function GridRow({
   }, [initialValues]);
 
   useEffect(() => {
-    if (highlighted) {
-      rollDice();
+    if (!highlighted) {
+      setIsD20Rolling(false);
+      return;
     }
-  }, [highlighted, rollDice]);
+
+    if (!shouldRoll) return;
+
+    rollDice();
+    setIsD20Rolling(true);
+
+    const animationTimeout = setTimeout(() => {
+      setIsD20Rolling(false);
+    }, 420);
+
+    return () => clearTimeout(animationTimeout);
+  }, [highlighted, rollDice, shouldRoll]);
 
   return (
     <div
       className={`grid-row form-inline ${
+        isNew ? "row-entering" : ""
+      } ${
+        isDeleting ? "deleting" : ""
+      } ${
         values.condition === "surprised"
           ? "surprised"
           : highlighted
@@ -493,7 +534,9 @@ export function GridRow({
 
       <div className="cell d-flex align-items-center">
         <input
-          className="form-control grid-row-input d20-transparent"
+          className={`form-control grid-row-input d20-transparent ${
+            isD20Rolling ? "d20-rolling" : ""
+          }`}
           name="d20"
           type="number"
           value={d20Roll}
@@ -507,7 +550,8 @@ export function GridRow({
           data-col={8}
           onKeyDown={handleNavigation}
           className="btn btn-danger shrink"
-          onClick={() => onDeleteRow(id)}
+          onClick={handleDelete}
+          disabled={isDeleting}
         >
           Delete
         </button>

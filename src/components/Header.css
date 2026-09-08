@@ -34,6 +34,7 @@
   margin-left: 0.4rem;
   color: var(--buttonText);
   font-size: 1rem;
+  white-space: nowrap;
   user-select: none;
 }
 
@@ -52,10 +53,17 @@
   justify-content: center;
 }
 
+.hamburger-container {
+  position: relative;
+}
+
 .hamburger-menu {
   position: absolute;
-  top: 3vw;
-  left: 0.3rem;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  width: max-content;
+  min-width: 12rem;
+  max-width: calc(100vw - 1rem);
   background-color: var(--header);
   border: 1px solid var(--border);
   border-radius: 0.5vw;

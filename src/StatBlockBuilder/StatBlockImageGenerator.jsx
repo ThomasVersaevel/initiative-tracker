@@ -181,13 +181,36 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 				</div>
 				{statBlock.legendary && (
 					<div className="stat-block-image-legendary-actions">
-						<h2 className="accent-color">Legendary Actions</h2>
+						<div className="stat-block-section-heading">
+							<h2 className="accent-color">Legendary Actions</h2>
+							<small>{statBlock.legendaryDetails.uses} per round</small>
+						</div>
 						{statBlock.legendaryDetails.actions.map((action) => (
 							<p key={action.id}>
 								<strong className="accent-color"><em>{action.name || "Unnamed action"}.</em></strong>{" "}
 								<FormattedText text={action.description} name={statBlock.name} />
 							</p>
 						))}
+					</div>
+				)}
+				{statBlock.lair && (
+					<div className="stat-block-image-lair-actions">
+						<div className="stat-block-section-heading">
+							<h2 className="accent-color">Lair Actions</h2>
+							<small>{statBlock.lairDetails.uses} per round</small>
+						</div>
+						{statBlock.lairDetails.actions.map((action) => (
+							<p key={action.id}>
+								<strong className="accent-color"><em>{action.name || "Unnamed action"}.</em></strong>{" "}
+								<FormattedText text={action.description} name={statBlock.name} />
+							</p>
+						))}
+					</div>
+				)}
+				{statBlock.inventory.trim() && (
+					<div className="stat-block-image-inventory">
+						<h2 className="accent-color">Inventory</h2>
+						<p className="stat-block-image-inventory-text">{statBlock.inventory}</p>
 					</div>
 				)}
 			</div>
