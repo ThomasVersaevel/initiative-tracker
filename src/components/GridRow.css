@@ -8,6 +8,8 @@
   opacity: 1;
   transform: translateX(0);
   transition: opacity 300ms ease, transform 300ms ease;
+  overflow: visible;
+  z-index: 2;
 }
 
 .grid-row.deleting {
@@ -202,7 +204,6 @@ input::-webkit-inner-spin-button {
 .save-row-popup {
   left: auto;
   right: 4px;
-  top: 90%;
 }
 
 .option {
@@ -242,12 +243,13 @@ input::-webkit-inner-spin-button {
 
 .name-popup {
   position: absolute;
-  top: 90%;
   left: 5%;
+  top: 0px;
   width: 200px;
-  background-color: var(--tableHeader);
-  z-index: 1000;
+  background-color: var(--main);
+  z-index: 9999;
   font-size: var(--font-size-small);
+  color: var(--buttonText);
   text-align: left;
   border-radius: 6px;
   padding: 4px;
@@ -258,7 +260,7 @@ input::-webkit-inner-spin-button {
   font-size: var(--font-size-tiny);
   float: right;
   background-color: var(--button);
-  color: var(--btn-text);
+  color: var(--buttonText);
   border: 1px solid var(--border);
   margin-right: 4px;
   border-radius: 4px;
@@ -280,7 +282,7 @@ input::-webkit-inner-spin-button {
 
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-bottom: 8px solid var(--tableHeader);
+    border-bottom: 8px solid var(--main);
 }
 
 

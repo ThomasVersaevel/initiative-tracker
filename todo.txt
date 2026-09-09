@@ -21,9 +21,13 @@ Todo 1.2:
 - database
     - This allows me to save stat blocks for quick ref and to put into the init tracker automatically on typing its name
 Todo 1.3
-    - Add saving the json of a stat block to DB, then in initative tracker allow auto importing it
+    - Add saving the json of a stat block to DB
     - Undo system
     - Reactions, bonus actions
     - Inverntory/loot
     - Lair actions
+    - Animations in initiative tracker
+
+Todo 1.4
+    - Stat blocks import into initiative tracker
 

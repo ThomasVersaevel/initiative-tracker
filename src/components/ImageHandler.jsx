@@ -12,18 +12,17 @@ export function ImageHandler({
   uploadedStationary,
 }) {
   const handleUpload = useCallback(() => {
-    if (selectedFile) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setUploadedImages((prevImages) => {
-          const tempImages = [...prevImages];
-          tempImages[highlightedRow] = reader.result;
-          return tempImages;
-        });
-      };
-      reader.readAsDataURL(selectedFile);
+    if (!selectedFile) {
+      return;
     }
-  }, [selectedFile, setUploadedImages, highlightedRow]);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setUploadedImages((prevImages) => [...prevImages, reader.result]);
+      setSelectedFile(null);
+    };
+    reader.readAsDataURL(selectedFile);
+  }, [selectedFile, setSelectedFile, setUploadedImages]);
 
   const handleStationaryUpload = useCallback(() => {
     if (selectedStationary) {
@@ -35,11 +34,11 @@ export function ImageHandler({
     }
   }, [selectedStationary, setUploadedStationary]);
 
-  const deleteImage = (nr) => {
-    if (nr === 1) {
-      setSelectedFile(null);
-    } else {
-      setSelectedStationary(null);
+  const deleteImage = (imageIndex) => {
+    if (imageIndex >= 0) {
+      setUploadedImages((prevImages) =>
+        prevImages.filter((_, index) => index !== imageIndex),
+      );
     }
   };
 
@@ -53,32 +52,32 @@ export function ImageHandler({
 
   return (
     <>
-      {selectedFile !== null && (
-        <div className="image-container">
-          <img
-            className="uploaded-image"
-            src={uploadedImages[highlightedRow]}
-            alt={""}
-          />
-          <div className="img-buttons">
-            <button
-              className="delete-img-button"
-              onClick={() => deleteImage(1)}
-            >
-              <img
-                className="button-img"
-                src="/images/trash-icon.png"
-                alt=""
-              ></img>
-            </button>
-            <label className="upload-img-button" htmlFor="file-upload">
-              <img
-                className="button-img"
-                src="/images/image-icon.png"
-                alt=""
-              ></img>
-            </label>
-          </div>
+      {uploadedImages.length > 0 && (
+        <div className="image-gallery">
+          {uploadedImages.map((imageSource, index) => (
+            <div className="image-container" key={`uploaded-image-${index}`}>
+              <img className="uploaded-image" src={imageSource} alt={""} />
+              <div className="img-buttons">
+                <button
+                  className="delete-img-button"
+                  onClick={() => deleteImage(index)}
+                >
+                  <img
+                    className="button-img"
+                    src="/images/trash-icon.png"
+                    alt=""
+                  ></img>
+                </button>
+                <label className="upload-img-button" htmlFor="file-upload">
+                  <img
+                    className="button-img"
+                    src="/images/image-icon.png"
+                    alt=""
+                  ></img>
+                </label>
+              </div>
+            </div>
+          ))}
         </div>
       )}
       {selectedStationary !== null && (
@@ -87,7 +86,7 @@ export function ImageHandler({
           <div className="img-buttons">
             <button
               className="delete-img-button"
-              onClick={() => deleteImage(2)}
+              onClick={() => setSelectedStationary(null)}
             >
               <img
                 className="button-img"

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import "./GridRow.css";
 import { Popup } from "./Popup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -50,7 +51,24 @@ export function GridRow({
   rowIndex,
   savedCharacterStats,
   onSaveCharacter,
+  onImportStaticImage,
 }) {
+  const nameCellRef = useRef(null);
+  const initiativeCellRef = useRef(null);
+
+  const getCellPopupStyle = (cellRef) => {
+    const rect = cellRef.current?.getBoundingClientRect();
+    if (!rect) {
+      return {};
+    }
+
+    return {
+      position: "fixed",
+      top: `${rect.top + rect.height + 4}px`,
+      left: `${rect.left + 4}px`,
+      width: "200px",
+    };
+  };
   const [values, setValues] = useState({
     ...initialValues,
     hp: initialValues.hp ?? 0,
@@ -105,11 +123,50 @@ export function GridRow({
 
   const importCharacterStats = (name) => {
     const lowerCaseName = name.trim().toLowerCase();
-    if (savedCharacterStats[lowerCaseName]) {
-      setValues((prev) => ({
-        ...prev,
-        ...savedCharacterStats[lowerCaseName],
-      }));
+    const importedStats = savedCharacterStats[lowerCaseName];
+
+    if (!importedStats) {
+      return;
+    }
+
+    const importedData = importedStats.data || importedStats;
+    const importedName = importedData.name || importedStats.name || name;
+    const importedHp = importedData.hp ?? importedStats.hp ?? 0;
+    const importedAc = importedData.ac ?? importedStats.ac ?? 0;
+    const importedSpeed =
+      importedData.speed ??
+      importedStats.speed ??
+      (Array.isArray(importedData.speeds)
+        ? importedData.speeds.find((speed) => speed.type === "walk")?.value || ""
+        : "");
+    const importedSpell = importedData.spell ?? importedStats.spell ?? "";
+    const importedCondition = importedData.condition ?? importedStats.condition ?? "";
+    const importedTimer = importedData.timer ?? importedStats.timer ?? 0;
+    const importedLegendary = importedData.legendary ?? importedStats.legendary ?? false;
+
+    const importedRowValues = {
+      charactername: importedName,
+      hp: importedHp,
+      ac: importedAc,
+      speed: importedSpeed,
+      spell: importedSpell,
+      condition: importedCondition,
+      timer: importedTimer,
+      legendary: importedLegendary,
+    };
+
+    setValues((prev) => ({
+      ...prev,
+      ...importedRowValues,
+    }));
+
+    Object.entries(importedRowValues).forEach(([field, value]) => {
+      updateValues(id, field, value);
+    });
+
+    const statBlockPayload = importedData.data || importedData;
+    if (statBlockPayload?.stats && typeof statBlockPayload === "object") {
+      onImportStaticImage?.(statBlockPayload);
     }
   };
 
@@ -282,6 +339,7 @@ export function GridRow({
     >
       <div
         className="cell initiative-cell"
+        ref={initiativeCellRef}
       >
         <input
           data-row={rowIndex}
@@ -304,54 +362,65 @@ export function GridRow({
             <FontAwesomeIcon icon={faFloppyDisk} />
           </button>
         )}
-        {savePromptOpen && (
-          <div className="name-popup save-row-popup">
-            Save row as character?
-            <br />
-            <button
-              className="name-popup-btn"
-              disabled={isSaving || !values.charactername.trim()}
-              onClick={saveRowAsCharacter}
+        {savePromptOpen &&
+          createPortal(
+            <div
+              className="name-popup save-row-popup"
+              style={getCellPopupStyle(initiativeCellRef)}
             >
-              {isSaving ? "Saving..." : "Yes"}
-            </button>
-            <button
-              className="name-popup-btn"
-              disabled={isSaving}
-              onClick={() => setSavePromptOpen(false)}
-            >
-              No
-            </button>
-          </div>
-        )}
+              Save row as character?
+              <br />
+              <button
+                className="name-popup-btn"
+                disabled={isSaving || !values.charactername.trim()}
+                onClick={saveRowAsCharacter}
+              >
+                {isSaving ? "Saving..." : "Yes"}
+              </button>
+              <button
+                className="name-popup-btn"
+                disabled={isSaving}
+                onClick={() => setSavePromptOpen(false)}
+              >
+                No
+              </button>
+            </div>,
+            document.body,
+          )}
       </div>
 
       <div
         className="cell"
+        ref={nameCellRef}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {nameRecognised && (
-          <div className="name-popup">
-            Import character?
-            <br />
-            <button
-              className="name-popup-btn"
-              onClick={() => {
-                setNameRecognised(false);
-                importCharacterStats(values.charactername);
-              }}
+        {nameRecognised &&
+          createPortal(
+            <div
+              className="name-popup"
+              style={getCellPopupStyle(nameCellRef)}
             >
-              Yes
-            </button>
-            <button
-              className="name-popup-btn"
-              onClick={() => setNameRecognised(false)}
-            >
-              No
-            </button>
-          </div>
-        )}
+              Import character?
+              <br />
+              <button
+                className="name-popup-btn"
+                onClick={() => {
+                  setNameRecognised(false);
+                  importCharacterStats(values.charactername);
+                }}
+              >
+                Yes
+              </button>
+              <button
+                className="name-popup-btn"
+                onClick={() => setNameRecognised(false)}
+              >
+                No
+              </button>
+            </div>,
+            document.body,
+          )}
         <input
           data-row={rowIndex}
           data-col={1}
