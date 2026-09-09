@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { createRoot } from "react-dom/client";
 import "./App.css";
 import { GridRow } from "./components/GridRow";
 import { Soundboard } from "./components/Soundboard";
@@ -14,7 +15,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { ImageHandler } from "./components/ImageHandler";
 import { LegendaryTracker } from "./components/LegendaryTracker";
-import { supabase } from "./Supabase";
+import { supabase, ensureAnonymousSession } from "./Supabase";
+import StatBlockImageGenerator from "./StatBlockBuilder/StatBlockImageGenerator";
 
 function InitiativeTracker({ setPage }) {
   const [turn, setTurn] = useState(1);
@@ -86,14 +88,58 @@ function InitiativeTracker({ setPage }) {
         return;
       }
 
-      setPcStats(
-        Object.fromEntries(
-          data.map((character) => [character.name.toLowerCase(), character]),
-        ),
+      const characterMap = Object.fromEntries(
+        data.map((character) => [character.name.toLowerCase(), character]),
       );
+
+      setPcStats((current) => ({ ...current, ...characterMap }));
+    };
+
+    const loadStatBlocks = async () => {
+      try {
+        const { configured, userId } = await ensureAnonymousSession();
+
+        let query = supabase.from("stat_blocks").select("id, name, data");
+        if (configured && userId) {
+          query = query.eq("user_id", userId);
+        }
+
+        const { data, error: statBlockError } = await query;
+        if (statBlockError) {
+          console.error("Failed to load stat blocks:", statBlockError);
+          return;
+        }
+
+        const statBlockMap = Object.fromEntries(
+          (data || []).map((block) => {
+            const statData = block.data || {};
+            return [
+              block.name.toLowerCase(),
+              {
+                ...statData,
+                id: block.id,
+                name: block.name,
+                hp: Number(statData.hp ?? statData.hp ?? 0) || 0,
+                ac: Number(statData.ac ?? 0) || 0,
+                speed:
+                  Array.isArray(statData.speeds)
+                    ? statData.speeds.find((speed) => speed.type === "walk")
+                        ?.value || ""
+                    : statData.speed || "",
+                portrait: statData.portrait || "",
+              },
+            ];
+          }),
+        );
+
+        setPcStats((current) => ({ ...current, ...statBlockMap }));
+      } catch (caughtError) {
+        console.error("Failed to load stat blocks:", caughtError);
+      }
     };
 
     loadCharacters();
+    loadStatBlocks();
   }, []);
 
   const updateValues = (id, name, value) => {
@@ -152,7 +198,6 @@ function InitiativeTracker({ setPage }) {
       return initiativeB - initiativeA; // Sort in descending order
     });
     setGridRows(sortedGridRows);
-    setUploadedImages(sortUploadedImages(sortedGridRows, uploadedImages));
   };
 
   const onDeleteRow = (id, checkOnly = false) => {
@@ -164,14 +209,6 @@ function InitiativeTracker({ setPage }) {
 
     setGridRows((prevGridRows) => prevGridRows.filter((row) => row.id !== id));
     return true;
-  };
-
-  const sortUploadedImages = (gridRows, uploadedImages) => {
-    const sortedUploadedImages = gridRows.map((row) => {
-      const image = uploadedImages[row.id];
-      return image;
-    });
-    return sortedUploadedImages;
   };
 
   const uploadImage = useCallback(
@@ -187,6 +224,45 @@ function InitiativeTracker({ setPage }) {
     },
     [setSelectedStationary],
   );
+
+  const addStaticImageFromStatBlock = useCallback(async (statBlock) => {
+    if (!statBlock || !statBlock.stats) {
+      return;
+    }
+
+    try {
+      const host = document.createElement("div");
+      host.style.position = "fixed";
+      host.style.left = "-10000px";
+      host.style.top = "-10000px";
+      host.style.width = `${statBlock.size?.width || 600}px`;
+      host.style.height = `${statBlock.size?.height || 700}px`;
+      document.body.appendChild(host);
+
+      const imageRef = { current: null };
+      const root = createRoot(host);
+      root.render(
+        <StatBlockImageGenerator
+          ref={imageRef}
+          statBlock={statBlock}
+          size={statBlock.size || { width: 600, height: 700 }}
+        />,
+      );
+
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+
+      const imageSource = await imageRef.current?.getImageDataUrl?.();
+
+      root.unmount();
+      host.remove();
+
+      if (imageSource) {
+        setUploadedImages((prevImages) => [...prevImages, imageSource]);
+      }
+    } catch (error) {
+      console.error("Failed to generate stat block image preview:", error);
+    }
+  }, []);
 
   const decreaseTimer = useCallback(() => {
     if (gridRows.some((row) => row.timer > 0)) {
@@ -325,12 +401,11 @@ function InitiativeTracker({ setPage }) {
         if (item.type.indexOf("image") !== -1) {
           const blob = item.getAsFile();
           const reader = new FileReader();
-          reader.onload = (event) => {
-            setUploadedImages((prevImages) => {
-              const tempImages = [...prevImages];
-              tempImages[highlightedRow] = event.target.result;
-              return tempImages;
-            });
+          reader.onload = (pasteEvent) => {
+            setUploadedImages((prevImages) => [
+              ...prevImages,
+              pasteEvent.target.result,
+            ]);
           };
           reader.readAsDataURL(blob);
         }
@@ -342,7 +417,7 @@ function InitiativeTracker({ setPage }) {
     return () => {
       document.removeEventListener("paste", handlePaste);
     };
-  }, [highlightedRow, setUploadedImages]);
+  }, [setUploadedImages]);
 
   return (
     <div className={`App ${theme}`}>
@@ -435,27 +510,26 @@ function InitiativeTracker({ setPage }) {
           </div>
 
           {gridRows.map((row, index) => (
-            <div key={row.id}>
-              <GridRow
-                columnSizes={columnSizes}
-                highlighted={index === highlightedRow}
-                shouldRoll={shouldRollHighlightedRow}
-                key={row.id}
-                id={row.id}
-                initialValues={row}
-                isNew={row.id === newRowId}
-                updateValues={updateValues}
-                onDeleteRow={onDeleteRow}
-                theme={theme}
-                savedCharacterStats={pcStats}
-                onSaveCharacter={saveCharacterFromRow}
-                showSpeed={showSpeed}
-                showSpellSave={showSpellSave}
-                showCondition={showCondition}
-                uploadedImages={uploadedImages}
-                rowIndex={index}
-              />
-            </div>
+            <GridRow
+              columnSizes={columnSizes}
+              highlighted={index === highlightedRow}
+              shouldRoll={shouldRollHighlightedRow}
+              key={row.id}
+              id={row.id}
+              initialValues={row}
+              isNew={row.id === newRowId}
+              updateValues={updateValues}
+              onDeleteRow={onDeleteRow}
+              theme={theme}
+              savedCharacterStats={pcStats}
+              onSaveCharacter={saveCharacterFromRow}
+              showSpeed={showSpeed}
+              showSpellSave={showSpellSave}
+              showCondition={showCondition}
+              uploadedImages={uploadedImages}
+              rowIndex={index}
+              onImportStaticImage={addStaticImageFromStatBlock}
+            />
           ))}
         </div>
         <div className="initiative-actions mt-3">

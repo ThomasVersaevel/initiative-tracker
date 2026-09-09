@@ -12,6 +12,15 @@ import {
 } from "./TypesUtils/Types";
 import { FormattedText } from "./FormattedText";
 
+const defaultStatLabels = {
+	str: "STR",
+	dex: "DEX",
+	con: "CON",
+	int: "INT",
+	wis: "WIS",
+	cha: "CHA",
+};
+
 const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 	{ statBlock, size },
 	ref,
@@ -90,7 +99,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 			<div className="stat-block-image-stats">
 				{Object.entries(statBlock.stats).map(([stat, values]) => (
 					<div key={stat}>
-						<strong>{values.label || ""}</strong>
+						<strong>{values.label || defaultStatLabels[stat] || stat}</strong>
 						<span>{values.value}</span>
 						<small>{values.save}</small>
 					</div>
@@ -130,7 +139,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 					</p>
 				</div>
 
-				<div className="stat-block-image-abilities">
+				{statBlock.abilities.abilities.length > 0 && <div className="stat-block-image-abilities">
 					{statBlock.abilities.abilities.length > 0 && <h2 className="accent-color">Abilities</h2>}
 						{statBlock.abilities.abilities.map((ability) => (
 						<p key={ability.id}>
@@ -138,9 +147,9 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 							<FormattedText text={ability.description} name={statBlock.name} />
 						</p>
 					))}
-				</div>
+				</div>}
 
-				<div className="stat-block-image-actions">
+				{((statBlock.attacks.multiattack.enabled && statBlock.attacks.multiattack.attacks.length > 0) || statBlock.attacks.attacks.length > 0) && <div className="stat-block-image-actions">
 				{((statBlock.attacks.multiattack.enabled && statBlock.attacks.multiattack.attacks.length > 0) || statBlock.attacks.attacks.length > 0) && <h2 className="accent-color">Actions</h2>}
 				{statBlock.attacks.multiattack.enabled &&
 					statBlock.attacks.multiattack.attacks.length > 0 && (
@@ -160,8 +169,8 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						<FormattedText text={attack.description} name={statBlock.name} />
 					</p>
 				))}
-				</div>
-				<div className="stat-block-image-bonus-actions">
+				</div>}
+				{statBlock.bonusActions.length > 0 && <div className="stat-block-image-bonus-actions">
 				{statBlock.bonusActions.length > 0 && <h2 className="accent-color">Bonus Actions</h2>}
 				{statBlock.bonusActions.map((action) => (
 					<p key={action.id}>
@@ -169,8 +178,8 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						<FormattedText text={action.description} name={statBlock.name} />
 					</p>
 				))}
-				</div>
-				<div className="stat-block-image-reactions">
+				</div>}
+				{statBlock.reactions.length > 0 && <div className="stat-block-image-reactions">
 				{statBlock.reactions.length > 0 && <h2 className="accent-color">Reactions</h2>}
 				{statBlock.reactions.map((reaction) => (
 					<p key={reaction.id}>
@@ -178,8 +187,8 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						<FormattedText text={reaction.description} name={statBlock.name} />
 					</p>
 				))}
-				</div>
-				{statBlock.legendary && (
+				</div>}
+				{statBlock.legendary && statBlock.legendaryDetails.actions.length > 0 && (
 					<div className="stat-block-image-legendary-actions">
 						<div className="stat-block-section-heading">
 							<h2 className="accent-color">Legendary Actions</h2>
@@ -193,7 +202,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						))}
 					</div>
 				)}
-				{statBlock.lair && (
+				{statBlock.lair && statBlock.lairDetails.actions.length > 0 && (
 					<div className="stat-block-image-lair-actions">
 						<div className="stat-block-section-heading">
 							<h2 className="accent-color">Lair Actions</h2>
@@ -207,7 +216,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						))}
 					</div>
 				)}
-				{statBlock.inventory.trim() && (
+				{String(statBlock.inventory ?? "").trim() && (
 					<div className="stat-block-image-inventory">
 						<h2 className="accent-color">Inventory</h2>
 						<p className="stat-block-image-inventory-text">{statBlock.inventory}</p>

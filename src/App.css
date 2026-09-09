@@ -96,8 +96,16 @@ body,
   border: 1px solid var(--border) !important;
 }
 
-.image-container {
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px;
+  justify-content: center;
   margin-top: 5vh;
+}
+
+.image-container {
   position: relative;
   display: inline-block;
 }

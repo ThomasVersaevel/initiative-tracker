@@ -46,15 +46,14 @@ export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
   };
 
   const addCustomSense = () => {
-    const name = customSense.trim();
+    const name = String(customSense ?? "").trim();
     if (!name) return;
+
+    const range = String(customSenseRange ?? "").trim();
 
     setTraits((current) => ({
       ...current,
-      senses: [
-        ...current.senses,
-        { name, range: customSenseRange.trim() },
-      ],
+      senses: [...current.senses, { name, range }],
     }));
     setCustomSense("");
     setCustomSenseRange("");
