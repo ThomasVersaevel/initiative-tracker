@@ -155,12 +155,14 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 					statBlock.attacks.multiattack.attacks.length > 0 && (
 						<p>
 							<strong className="accent-color">Multiattack.</strong> The {statBlock.name || "creature"} makes{" "}
+							{statBlock.attacks.multiattack.count || 0} attacks: {" "}
 							{statBlock.attacks.multiattack.attacks.map((selection) => {
 								const attack = statBlock.attacks.attacks.find(
 									(item) => item.id === selection.attackId,
 								);
-								return `${selection.count} ${attack?.name || "unnamed action"} action${selection.count === 1 ? "" : "s"}`;
-							}).join(" or ")}. 
+								const attackName = attack?.name || "unnamed action";
+								return `${selection.count} ${attackName} ${selection.count === 1 ? "attack" : "attacks"}`;
+							}).join(" and ")}.
 						</p>
 					)}
 				{statBlock.attacks.attacks.map((attack) => (

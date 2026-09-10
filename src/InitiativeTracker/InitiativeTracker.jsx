@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { createRoot } from "react-dom/client";
-import "./App.css";
-import { GridRow } from "./components/GridRow";
-import { Soundboard } from "./components/Soundboard";
-import { DiceRoller } from "./components/DiceRoller";
+import "../App.css";
+import { GridRow } from "./GridRow";
+import { Soundboard } from "./Soundboard";
+import { DiceRoller } from "./DiceRoller";
 import Cookies from "js-cookie";
-import { Header } from "./components/Header";
+import { Header } from "./Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
@@ -13,10 +13,10 @@ import {
   faDiceD20,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import { ImageHandler } from "./components/ImageHandler";
-import { LegendaryTracker } from "./components/LegendaryTracker";
-import { supabase, ensureAnonymousSession } from "./Supabase";
-import StatBlockImageGenerator from "./StatBlockBuilder/StatBlockImageGenerator";
+import { ImageHandler } from "./ImageHandler";
+import { LegendaryTracker } from "./LegendaryTracker";
+import { supabase, ensureAnonymousSession } from "../Supabase";
+import StatBlockImageGenerator from "../StatBlockBuilder/StatBlockImageGenerator";
 
 function InitiativeTracker({ setPage }) {
   const [turn, setTurn] = useState(1);

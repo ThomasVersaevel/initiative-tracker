@@ -127,21 +127,23 @@ const getInitialStatBlock = () => {
       legendaryDetails: {
         ...defaultStatBlock.legendaryDetails,
         ...(saved.legendaryDetails || {}),
-        uses: saved.legendaryDetails?.uses ?? defaultStatBlock.legendaryDetails.uses,
+        uses:
+          saved.legendaryDetails?.uses ??
+          defaultStatBlock.legendaryDetails.uses,
         resistances: Array.isArray(saved.legendaryDetails?.resistances)
           ? saved.legendaryDetails.resistances
           : saved.legendaryDetails?.resistance
             ? [{ id: 1, ...saved.legendaryDetails.resistance }]
             : defaultStatBlock.legendaryDetails.resistances,
       },
-          lairDetails: {
-            ...defaultStatBlock.lairDetails,
-            ...(saved.lairDetails || {}),
-            uses: saved.lairDetails?.uses ?? defaultStatBlock.lairDetails.uses,
-            actions: Array.isArray(saved.lairDetails?.actions)
-              ? saved.lairDetails.actions
-              : defaultStatBlock.lairDetails.actions,
-          },
+      lairDetails: {
+        ...defaultStatBlock.lairDetails,
+        ...(saved.lairDetails || {}),
+        uses: saved.lairDetails?.uses ?? defaultStatBlock.lairDetails.uses,
+        actions: Array.isArray(saved.lairDetails?.actions)
+          ? saved.lairDetails.actions
+          : defaultStatBlock.lairDetails.actions,
+      },
       size: {
         ...defaultStatBlock.size,
         ...(saved.size || {}),
@@ -496,9 +498,11 @@ function StatBlockBuilder({ setPage }) {
         <div className="title">
           <h1>Stat block builder</h1>
         </div>
-        <button className="menu-btn" onClick={() => setPage("token-stamp")}>
-          Token Stamp <FontAwesomeIcon icon={faArrowRight} />
-        </button>
+        <div>
+          <button className="menu-btn" onClick={() => setPage("token-stamp")}>
+            Token Stamp <FontAwesomeIcon icon={faArrowRight} />
+          </button>
+        </div>
       </div>
 
       <div className="App-body flex">
@@ -857,16 +861,18 @@ function StatBlockBuilder({ setPage }) {
                       <em>Multiattack.</em>
                     </strong>{" "}
                     The {statBlock.name || "creature"} makes{" "}
+                    {statBlock.attacks.multiattack.count || 0} attacks:{" "}
                     {statBlock.attacks.multiattack.attacks
                       .map((selection) => {
                         const attack = statBlock.attacks.attacks.find(
                           (item) => item.id === selection.attackId,
                         );
-                        return `${selection.count} ${
-                          attack?.name || "unnamed action"
-                        } attack${selection.count === 1 ? "" : "s"}`;
+                        const attackName = attack?.name || "unnamed action";
+                        return `${selection.count} ${attackName} ${
+                          selection.count === 1 ? "attack" : "attacks"
+                        }`;
                       })
-                      .join(" or ")}
+                      .join(" and ")}
                     .
                   </div>
                 )}
@@ -943,7 +949,9 @@ function StatBlockBuilder({ setPage }) {
             {statBlock.legendary && (
               <div className="stat-block-content-section stat-block-legendary-actions border-top-3">
                 <div className="stat-block-section-heading">
-                  <h2 className="stat-block-section-header">Legendary Actions</h2>
+                  <h2 className="stat-block-section-header">
+                    Legendary Actions
+                  </h2>
                   <small>{statBlock.legendaryDetails.uses} per round</small>
                 </div>
                 {statBlock.legendaryDetails.actions.map((action) => (

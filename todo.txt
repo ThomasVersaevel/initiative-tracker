@@ -27,7 +27,8 @@ Todo 1.3
     - Inverntory/loot
     - Lair actions
     - Animations in initiative tracker
+    - Stat blocks import into initiative tracker
 
 Todo 1.4
-    - Stat blocks import into initiative tracker
+    - The dnd beyond killer, character sheets...
 

@@ -173,6 +173,7 @@ export const defaultStatBlock = {
   attacks: {
     multiattack: {
       enabled: false,
+      count: 0,
       attacks: [],
     },
     attacks: [],

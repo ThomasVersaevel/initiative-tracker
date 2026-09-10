@@ -105,8 +105,8 @@ export function Header({
 
   return (
     <div className="App-header">
-      <button className="menu-btn" onClick={() => setPage("token-stamp")}>
-        <FontAwesomeIcon icon={faArrowLeft} /> Token Stamp
+      <button className="menu-btn" onClick={() => setPage("character-sheet")}>
+        <FontAwesomeIcon icon={faArrowLeft} /> Character Sheet
       </button>
 
       <div className="hamburger-container" onBlur={handleBlur} ref={menuRef}>
@@ -178,6 +178,12 @@ export function Header({
           ))}
         </select>
       </div>
+      <button
+        className="menu-btn"
+        onClick={() => setPage("character-sheet")}
+      >
+        Character Sheet
+      </button>
       <button
         className="menu-btn"
         onClick={() => setPage("stat-block-builder")}
