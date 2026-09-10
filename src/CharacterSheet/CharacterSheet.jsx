@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
   faArrowRight,
-  faDiceD20,
   faPlus,
   faMinus,
 } from "@fortawesome/free-solid-svg-icons";
@@ -50,12 +49,12 @@ const skillRows = [
 ];
 
 const savingThrows = [
-  { label: "STR", ability: "str", physical: true },
-  { label: "DEX", ability: "dex", physical: true },
-  { label: "CON", ability: "con", physical: true },
-  { label: "INT", ability: "int", mental: true },
-  { label: "WIS", ability: "wis", mental: true },
-  { label: "CHA", ability: "cha", mental: true },
+  { label: "Strength", ability: "str", physical: true },
+  { label: "Dexterity", ability: "dex", physical: true },
+  { label: "Constitution", ability: "con", physical: true },
+  { label: "Intelligence", ability: "int", mental: true },
+  { label: "Wisdom", ability: "wis", mental: true },
+  { label: "Charisma", ability: "cha", mental: true },
 ];
 
 function modifierForScore(score) {
@@ -70,14 +69,17 @@ export default function CharacterSheet({ setPage }) {
   const [stats, setStats] = useState(initialStats);
   const [heroPoints, setHeroPoints] = useState(5);
   const [hp, setHp] = useState(10);
-  const [maxHp, setMaxHp] = useState(10);
+  const maxHp = 10;
   const [ac] = useState(10);
   const [initiative] = useState(0);
   const [speed] = useState(30);
   const [proficiencyBonus] = useState(2);
   const [activeTab, setActiveTab] = useState("actions");
   const [lastRoll, setLastRoll] = useState(null);
+  const [isDiceFading, setIsDiceFading] = useState(false);
+  const [hpChange, setHpChange] = useState(1);
   const diceRef = useRef(null);
+  const diceCleanupTimerRef = useRef(null);
 
   useEffect(() => {
     if (!diceRef.current) {
@@ -85,7 +87,8 @@ export default function CharacterSheet({ setPage }) {
         id: "charsheet-dice",
         assetPath: "/assets/dice-box/",
         themeColor: "#2bbfff",
-        scale: 5,
+        offscreen: false,
+        scale: 6,
         startingHeight: 4,
         throwForce: 4,
         spinForce: 5,
@@ -96,12 +99,27 @@ export default function CharacterSheet({ setPage }) {
         .init()
         .then(() => {
           diceRef.current = dice;
+          dice.resizeWorld();
         })
         .catch(() => {
           // no-op if dice library cannot initialize here
         });
     }
+
   }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(diceCleanupTimerRef.current);
+  }, []);
+
+  const scheduleDiceCleanup = () => {
+    clearTimeout(diceCleanupTimerRef.current);
+    setIsDiceFading(true);
+    diceCleanupTimerRef.current = setTimeout(() => {
+      diceRef.current?.clear();
+      setIsDiceFading(false);
+    }, 550);
+  };
 
   const abilityEntries = useMemo(() => {
     return Object.entries(abilityMeta).map(([key, meta]) => {
@@ -121,6 +139,8 @@ export default function CharacterSheet({ setPage }) {
     const mod = modifierForScore(stats[abilityKey]);
     const roll = Math.floor(Math.random() * 20) + 1;
     setLastRoll(null);
+    clearTimeout(diceCleanupTimerRef.current);
+    setIsDiceFading(false);
 
     if (diceRef.current) {
       diceRef.current.roll("1d20").then((results) => {
@@ -131,6 +151,7 @@ export default function CharacterSheet({ setPage }) {
           modifier: mod,
           total: result + mod,
         });
+        scheduleDiceCleanup();
       });
     } else {
       setLastRoll({
@@ -145,6 +166,8 @@ export default function CharacterSheet({ setPage }) {
   const rollInitiative = () => {
     const roll = Math.floor(Math.random() * 20) + 1;
     setLastRoll(null);
+    clearTimeout(diceCleanupTimerRef.current);
+    setIsDiceFading(false);
 
     if (diceRef.current) {
       diceRef.current.roll("1d20").then((results) => {
@@ -155,6 +178,7 @@ export default function CharacterSheet({ setPage }) {
           modifier: initiative,
           total: result + initiative,
         });
+        scheduleDiceCleanup();
       });
     } else {
       setLastRoll({
@@ -173,13 +197,15 @@ export default function CharacterSheet({ setPage }) {
 
   return (
     <div className="character-sheet-page">
-      <div className="App-header">
+      <div className="App-header statblock-page-header">
         <button className="menu-btn" onClick={() => setPage("initiative-tracker")}>
           <FontAwesomeIcon icon={faArrowLeft} /> Initiative Tracker
         </button>
-
+        <div className="title">
+          <h1>Character Sheet</h1>
+        </div>
         <button className="menu-btn" onClick={() => setPage("token-stamp")}>
-          Token Stamp <FontAwesomeIcon icon={faArrowRight} />
+          <FontAwesomeIcon icon={faArrowRight} /> Token Stamp
         </button>
       </div>
 
@@ -207,7 +233,7 @@ export default function CharacterSheet({ setPage }) {
             <div className="ability-stack">
               {abilityEntries.map((ability) => (
                 <div className="ability-card" key={ability.key}>
-                  <div className="ability-label">{ability.label}</div>
+                  <div className="ability-label">{ability.full}</div>
                   <button
                     className="ability-modifier"
                     type="button"
@@ -230,11 +256,11 @@ export default function CharacterSheet({ setPage }) {
             <div className="core-info-strip">
               <div className="core-info-block">
                 <div className="core-label">Proficiency</div>
-                <div className="core-value">{sign(proficiencyBonus)}</div>
+                <div className="core-value stat-shape proficiency-shape">{sign(proficiencyBonus)}</div>
               </div>
               <div className="core-info-block">
                 <div className="core-label">Speed</div>
-                <div className="core-value">{speed} ft</div>
+                <div className="core-value stat-shape speed-shape">{speed} ft</div>
               </div>
               <div className="core-info-block">
                 <div className="core-label">Hero Points</div>
@@ -251,23 +277,29 @@ export default function CharacterSheet({ setPage }) {
               <div className="core-info-block">
                 <div className="core-label">Initiative</div>
                 <button type="button" className="initiative-button" onClick={rollInitiative}>
-                  <FontAwesomeIcon icon={faDiceD20} /> {sign(initiative)}
+                  {sign(initiative)}
                 </button>
               </div>
               <div className="core-info-block">
                 <div className="core-label">Armor Class</div>
-                <div className="core-value">{ac}</div>
+                <div className="core-value stat-shape armor-shape">{ac}</div>
               </div>
               <div className="core-info-block">
                 <div className="core-label">HP</div>
                 <div className="core-value hp-controls">
-                  <input type="number" value={hp} onChange={(e) => setHp(Number(e.target.value))} />
+                  <input className="hp-current" type="number" value={hp} onChange={(e) => setHp(Number(e.target.value))} />
                   <span>/</span>
-                  <input type="number" value={maxHp} onChange={(e) => setMaxHp(Number(e.target.value))} />
-                  <div className="hp-updown">
-                    <button type="button" onClick={() => setHp(hp + 1)}><FontAwesomeIcon icon={faPlus} /></button>
-                    <button type="button" onClick={() => setHp(hp - 1)}><FontAwesomeIcon icon={faMinus} /></button>
-                  </div>
+                  <input className="hp-max" type="number" value={maxHp} readOnly aria-label="Maximum hit points" />
+                  <button type="button" onClick={() => setHp(hp - hpChange)} aria-label="Decrease hit points"><FontAwesomeIcon icon={faMinus} /></button>
+                  <input
+                    className="hp-change"
+                    type="number"
+                    min="1"
+                    value={hpChange}
+                    onChange={(e) => setHpChange(Math.max(1, Number(e.target.value) || 1))}
+                    aria-label="Hit point change amount"
+                  />
+                  <button type="button" onClick={() => setHp(hp + hpChange)} aria-label="Increase hit points"><FontAwesomeIcon icon={faPlus} /></button>
                 </div>
               </div>
             </div>
@@ -280,16 +312,15 @@ export default function CharacterSheet({ setPage }) {
                 {savingThrows.map((item) => (
                   <div className="save-row" key={item.label}>
                     <button
-                      className="save-dice-button"
+                      className="skill-mod save-roll-button"
                       type="button"
                       onClick={() => rollAbility(item.ability, `${item.label} save`)}
                       aria-label={`Roll ${item.label} save`}
                     >
-                      <FontAwesomeIcon icon={faDiceD20} />
+                      {sign(modifierForScore(stats[item.ability]))}
                     </button>
-                    <span className="save-proc">○</span>
+                    <span className="save-proc skill-proficiency" aria-hidden="true"></span>
                     <span className="save-label">{item.label}</span>
-                    <span className="save-mod">{sign(modifierForScore(stats[item.ability]))}</span>
                   </div>
                 ))}
               </div>
@@ -376,7 +407,7 @@ export default function CharacterSheet({ setPage }) {
             </section>
           </section>
 
-          <div className="dicebox-overlay">
+          <div className={`dicebox-overlay ${isDiceFading ? "fading" : ""}`}>
             <div id="dice-box-char" />
           </div>
           {lastRoll && (
