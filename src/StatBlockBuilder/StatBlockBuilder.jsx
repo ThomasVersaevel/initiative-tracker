@@ -16,10 +16,12 @@ import SaveUploads from "./SaveUploads";
 import StatBlockImageGenerator from "./StatBlockImageGenerator";
 import { defaultStatBlock } from "./TypesUtils/Types.js";
 import {
+  formatResistanceEntry,
   formatSense,
   getAbilityModifier,
   getChallengeRating,
   normalizeStats,
+  normalizeTraitResistances,
 } from "./TypesUtils/Types.js";
 import "./StatBlockBuilder.css";
 import { AbilityStore } from "./ItemStores/AbilityStore.jsx";
@@ -105,6 +107,7 @@ const getInitialStatBlock = () => {
       traits: {
         ...defaultStatBlock.traits,
         ...(saved.traits || {}),
+        resistances: normalizeTraitResistances(saved.traits?.resistances),
       },
       attacks: {
         ...defaultStatBlock.attacks,
@@ -782,7 +785,9 @@ function StatBlockBuilder({ setPage }) {
               {statBlock.traits.resistances.length > 0 && (
                 <div>
                   <strong className="accent-color">Resistances:</strong>{" "}
-                  {statBlock.traits.resistances.join(", ")}
+                  {statBlock.traits.resistances
+                    .map(formatResistanceEntry)
+                    .join(", ")}
                 </div>
               )}
               {statBlock.traits.senses.length > 0 && (

@@ -7,6 +7,7 @@ import {
 import html2canvas from "html2canvas";
 import { speedOptions } from "./TypesUtils/StoreTypes";
 import {
+	formatResistanceEntry,
 	formatSense,
 	getChallengeRating,
 } from "./TypesUtils/Types";
@@ -119,7 +120,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						</p>
 					))}
 					{statBlock.traits.resistances.length > 0 && (
-					<p><strong className="accent-color">Resistances:</strong> {statBlock.traits.resistances.join(", ")}</p>
+					<p><strong className="accent-color">Resistances:</strong> {statBlock.traits.resistances.map(formatResistanceEntry).join(", ")}</p>
 					)}
 					{statBlock.traits.senses.length > 0 && (
 					<p><strong className="accent-color">Senses:</strong> {statBlock.traits.senses.map(formatSense).join(", ")}</p>

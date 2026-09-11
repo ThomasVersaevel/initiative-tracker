@@ -1376,6 +1376,12 @@ input {
   z-index: 5;
 }
 
+.trait-picker-option-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .trait-picker-option {
   display: flex;
   justify-content: space-between;
@@ -1393,6 +1399,36 @@ input {
 .trait-picker-option:hover,
 .trait-picker-option.selected {
   background: var(--background-light);
+}
+
+.trait-relation-picker {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px 6px;
+}
+
+.trait-relation-button {
+  flex: 1;
+  padding: 4px 8px;
+  color: var(--text-color);
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.trait-relation-button:hover {
+  background: var(--background-dark);
+}
+
+.trait-relation-button.selected {
+  color: var(--background-color);
+  background: var(--accent-color);
+  border-color: var(--accent-color);
 }
 
 .custom-sense-form,

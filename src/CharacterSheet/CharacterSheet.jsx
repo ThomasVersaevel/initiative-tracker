@@ -105,7 +105,6 @@ export default function CharacterSheet({ setPage }) {
           // no-op if dice library cannot initialize here
         });
     }
-
   }, []);
 
   useEffect(() => {
@@ -192,20 +191,26 @@ export default function CharacterSheet({ setPage }) {
 
   const updateStat = (key, nextValue) => {
     const value = Number.isNaN(Number(nextValue)) ? 1 : Number(nextValue);
-    setStats((current) => ({ ...current, [key]: Math.min(30, Math.max(1, value)) }));
+    setStats((current) => ({
+      ...current,
+      [key]: Math.min(30, Math.max(1, value)),
+    }));
   };
 
   return (
     <div className="character-sheet-page">
       <div className="App-header statblock-page-header">
-        <button className="menu-btn" onClick={() => setPage("initiative-tracker")}>
-          <FontAwesomeIcon icon={faArrowLeft} /> Initiative Tracker
+        <button className="menu-btn" onClick={() => setPage("token-stamp")}>
+          <FontAwesomeIcon icon={faArrowLeft} /> Token Stamp
         </button>
         <div className="title">
           <h1>Character Sheet</h1>
         </div>
-        <button className="menu-btn" onClick={() => setPage("token-stamp")}>
-          <FontAwesomeIcon icon={faArrowRight} /> Token Stamp
+        <button
+          className="menu-btn"
+          onClick={() => setPage("initiative-tracker")}
+        >
+          <FontAwesomeIcon icon={faArrowRight} /> Initiative Tracker
         </button>
       </div>
 
@@ -218,7 +223,9 @@ export default function CharacterSheet({ setPage }) {
               </div>
               <div>
                 <div className="character-name">Astra</div>
-                <div className="character-subline">Human · Fighter · Level 1</div>
+                <div className="character-subline">
+                  Human · Fighter · Level 1
+                </div>
               </div>
             </div>
 
@@ -256,27 +263,41 @@ export default function CharacterSheet({ setPage }) {
             <div className="core-info-strip">
               <div className="core-info-block">
                 <div className="core-label">Proficiency</div>
-                <div className="core-value stat-shape proficiency-shape">{sign(proficiencyBonus)}</div>
+                <div className="core-value stat-shape proficiency-shape">
+                  {sign(proficiencyBonus)}
+                </div>
               </div>
               <div className="core-info-block">
                 <div className="core-label">Speed</div>
-                <div className="core-value stat-shape speed-shape">{speed} ft</div>
+                <div className="core-value stat-shape speed-shape">
+                  {speed} ft
+                </div>
               </div>
               <div className="core-info-block">
                 <div className="core-label">Hero Points</div>
                 <div className="core-value hp-controls">
-                  <button type="button" onClick={() => setHeroPoints(heroPoints - 1)}>
+                  <button
+                    type="button"
+                    onClick={() => setHeroPoints(heroPoints - 1)}
+                  >
                     <FontAwesomeIcon icon={faMinus} />
                   </button>
                   <span className="hp-number">{heroPoints}</span>
-                  <button type="button" onClick={() => setHeroPoints(heroPoints + 1)}>
+                  <button
+                    type="button"
+                    onClick={() => setHeroPoints(heroPoints + 1)}
+                  >
                     <FontAwesomeIcon icon={faPlus} />
                   </button>
                 </div>
               </div>
               <div className="core-info-block">
                 <div className="core-label">Initiative</div>
-                <button type="button" className="initiative-button" onClick={rollInitiative}>
+                <button
+                  type="button"
+                  className="initiative-button"
+                  onClick={rollInitiative}
+                >
                   {sign(initiative)}
                 </button>
               </div>
@@ -287,19 +308,44 @@ export default function CharacterSheet({ setPage }) {
               <div className="core-info-block">
                 <div className="core-label">HP</div>
                 <div className="core-value hp-controls">
-                  <input className="hp-current" type="number" value={hp} onChange={(e) => setHp(Number(e.target.value))} />
+                  <input
+                    className="hp-current"
+                    type="number"
+                    value={hp}
+                    onChange={(e) => setHp(Number(e.target.value))}
+                  />
                   <span>/</span>
-                  <input className="hp-max" type="number" value={maxHp} readOnly aria-label="Maximum hit points" />
-                  <button type="button" onClick={() => setHp(hp - hpChange)} aria-label="Decrease hit points"><FontAwesomeIcon icon={faMinus} /></button>
+                  <input
+                    className="hp-max"
+                    type="number"
+                    value={maxHp}
+                    readOnly
+                    aria-label="Maximum hit points"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setHp(hp - hpChange)}
+                    aria-label="Decrease hit points"
+                  >
+                    <FontAwesomeIcon icon={faMinus} />
+                  </button>
                   <input
                     className="hp-change"
                     type="number"
                     min="1"
                     value={hpChange}
-                    onChange={(e) => setHpChange(Math.max(1, Number(e.target.value) || 1))}
+                    onChange={(e) =>
+                      setHpChange(Math.max(1, Number(e.target.value) || 1))
+                    }
                     aria-label="Hit point change amount"
                   />
-                  <button type="button" onClick={() => setHp(hp + hpChange)} aria-label="Increase hit points"><FontAwesomeIcon icon={faPlus} /></button>
+                  <button
+                    type="button"
+                    onClick={() => setHp(hp + hpChange)}
+                    aria-label="Increase hit points"
+                  >
+                    <FontAwesomeIcon icon={faPlus} />
+                  </button>
                 </div>
               </div>
             </div>
@@ -314,12 +360,17 @@ export default function CharacterSheet({ setPage }) {
                     <button
                       className="skill-mod save-roll-button"
                       type="button"
-                      onClick={() => rollAbility(item.ability, `${item.label} save`)}
+                      onClick={() =>
+                        rollAbility(item.ability, `${item.label} save`)
+                      }
                       aria-label={`Roll ${item.label} save`}
                     >
                       {sign(modifierForScore(stats[item.ability]))}
                     </button>
-                    <span className="save-proc skill-proficiency" aria-hidden="true"></span>
+                    <span
+                      className="save-proc skill-proficiency"
+                      aria-hidden="true"
+                    ></span>
                     <span className="save-label">{item.label}</span>
                   </div>
                 ))}
@@ -341,10 +392,16 @@ export default function CharacterSheet({ setPage }) {
               <div className="skill-list">
                 {skillRows.map((row) => (
                   <div className="skill-row" key={row.name}>
-                    <span className={`skill-proficiency ${row.prof ? "active" : ""}`}></span>
+                    <span
+                      className={`skill-proficiency ${row.prof ? "active" : ""}`}
+                    ></span>
                     <span className="skill-ability">{row.ability}</span>
                     <span className="skill-name">{row.name}</span>
-                    <button className="skill-mod" type="button" onClick={() => rollAbility(row.ability, row.name)}>
+                    <button
+                      className="skill-mod"
+                      type="button"
+                      onClick={() => rollAbility(row.ability, row.name)}
+                    >
                       {sign(modifierForScore(stats[row.ability]))}
                     </button>
                   </div>
@@ -414,7 +471,9 @@ export default function CharacterSheet({ setPage }) {
             <div className="roll-result" role="status">
               <span className="roll-result-name">{lastRoll.name}</span>
               <strong>{lastRoll.total}</strong>
-              <span>{lastRoll.roll} {sign(lastRoll.modifier)}</span>
+              <span>
+                {lastRoll.roll} {sign(lastRoll.modifier)}
+              </span>
             </div>
           )}
         </div>
