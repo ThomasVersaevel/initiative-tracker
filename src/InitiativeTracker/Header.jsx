@@ -1,8 +1,13 @@
 import React, { useState, useRef } from "react";
 import "./Header.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faArrowRight,
+  faVolumeHigh,
+} from "@fortawesome/free-solid-svg-icons";
 import { supabase } from "../Supabase";
+import { Soundboard } from "./Soundboard";
 
 const themes = [
   { label: "Default", value: "default" },
@@ -19,6 +24,8 @@ export function Header({
   setShowSpell,
   showCondition,
   setShowCondition,
+  showSoundboard,
+  setShowSoundboard,
   setPage,
   pcStats,
   setPcStats,
@@ -105,85 +112,106 @@ export function Header({
 
   return (
     <div className="App-header">
-      <button className="menu-btn" onClick={() => setPage("token-stamp")}>
-        <FontAwesomeIcon icon={faArrowLeft} /> Token Stamp
-      </button>
-
-      <div className="hamburger-container" onBlur={handleBlur} ref={menuRef}>
-        <button
-          className="hamburger"
-          onClick={() => setMenuOpen((prev) => !prev)}
-          aria-label="Toggle menu"
-          onBlur={handleBlur}
-        >
-          <span>☰</span>
+      <div className="header-left-cluster">
+        <button className="menu-btn left-nav-button" onClick={() => setPage("character-sheet")}>
+          <FontAwesomeIcon icon={faArrowLeft} /> Character Sheet
         </button>
-        {menuOpen && (
-          <div className="hamburger-menu">
-            <label className="form-check-label">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                checked={showSpeed}
-                onChange={() => setShowSpeed(!showSpeed)}
-              />
-              Show Speed
-            </label>
 
-            <label className="form-check-label">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                checked={showSpell}
-                onChange={() => setShowSpell(!showSpell)}
-              />
-              Show Spell Save
-            </label>
+        <div className="hamburger-container" onBlur={handleBlur} ref={menuRef}>
+          <button
+            className="hamburger"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label="Toggle menu"
+            onBlur={handleBlur}
+          >
+            <span>☰</span>
+          </button>
+          {menuOpen && (
+            <div className="hamburger-menu">
+              <label className="form-check-label">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={showSpeed}
+                  onChange={() => setShowSpeed(!showSpeed)}
+                />
+                Show Speed
+              </label>
 
-            <label className="form-check-label">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                checked={showCondition}
-                onChange={() => setShowCondition(!showCondition)}
-              />
-              Show Condition
-            </label>
+              <label className="form-check-label">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={showSpell}
+                  onChange={() => setShowSpell(!showSpell)}
+                />
+                Show Spell Save
+              </label>
 
-            <button
-              className="menu-btn"
-              onClick={() => {
-                console.log("opening modal");
-                setMenuOpen(false);
-                setShowModal(true);
-              }}
-            >
-              Add character stats
-            </button>
+              <label className="form-check-label">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  checked={showCondition}
+                  onChange={() => setShowCondition(!showCondition)}
+                />
+                Show Condition
+              </label>
+
+              <button
+                className="menu-btn"
+                onClick={() => {
+                  console.log("opening modal");
+                  setMenuOpen(false);
+                  setShowModal(true);
+                }}
+              >
+                Add character stats
+              </button>
+            </div>
+          )}
+        </div>
+
+        <button
+          className="sound-toggle-button"
+          onClick={() => setShowSoundboard(!showSoundboard)}
+          aria-label="Toggle soundboard"
+          title="Toggle soundboard"
+        >
+          <FontAwesomeIcon icon={faVolumeHigh} />
+        </button>
+        {showSoundboard && (
+          <div className="soundboard-panel">
+            <Soundboard />
           </div>
         )}
       </div>
+
       <div className="title">
         <h1>Take Initiative</h1>
       </div>
-      <div className="class-selector">
-        <select
-          className="form-control select"
-          onChange={(e) => onSelectTheme(e.target.value)}
+
+      <div className="header-right-cluster">
+        <div className="class-selector">
+          <select
+            className="form-control select"
+            onChange={(e) => onSelectTheme(e.target.value)}
+          >
+            {themes.map((option, index) => (
+              <option className="option" key={index} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          className="menu-btn"
+          onClick={() => setPage("stat-block-builder")}
         >
-          {themes.map((option, index) => (
-            <option className="option" key={index} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+          Stat Block Builder <FontAwesomeIcon icon={faArrowRight} />
+        </button>
       </div>
-      <button
-        className="menu-btn"
-        onClick={() => setPage("stat-block-builder")}
-      >
-        Stat Block Builder <FontAwesomeIcon icon={faArrowRight} />
-      </button>
       {showModal && (
         <div className="character-modal">
           <div className="modal-left">

@@ -57,6 +57,16 @@ export function AttackStore({
 		}));
 	};
 
+	const updateMultiattackTotal = (count) => {
+		setAttacks((current) => ({
+			...current,
+			multiattack: {
+				...current.multiattack,
+				count: Math.max(0, Number(count) || 0),
+			},
+		}));
+	};
+
 	const toggleMultiattackAttack = (attackId) => {
 		setAttacks((current) => {
 			const selected = current.multiattack.attacks.some(
@@ -118,6 +128,17 @@ export function AttackStore({
 
 				{attacks.multiattack.enabled && (
 					<div className="multiattack-options">
+						<label className="multiattack-total">
+							<span>Total attacks</span>
+							<input
+								type="number"
+								min="0"
+								value={attacks.multiattack.count}
+								onChange={(event) =>
+									updateMultiattackTotal(event.target.value)
+								}
+							/>
+						</label>
 						<strong>Included actions</strong>
 						{attacks.attacks.length === 0 && (
 							<span className="store-muted">Add an action below first.</span>
@@ -159,38 +180,38 @@ export function AttackStore({
 				{attacks.attacks.map((attack) => (
 					<div className="attack-editor" key={attack.id}>
 						<div className="attack-editor-header">
-								<strong>Action</strong>
-							<button
-								type="button"
-								className="attack-remove-button"
-								onClick={() => removeAttack(attack.id)}
-									title="Remove action"
-									aria-label="Remove action"
-							>
-								<FontAwesomeIcon icon={faTrash} />
-							</button>
-						</div>
-						<label>
-							Name
-							<input
-								type="text"
-								value={attack.name}
-								onChange={(event) =>
-									updateAttack(attack.id, "name", event.target.value)
-								}
-							/>
-						</label>
-						<label>
-							Description
-							<textarea
-								rows="3"
-								value={attack.description}
-								onChange={(event) =>
-									updateAttack(attack.id, "description", event.target.value)
-								}
-							/>
-						</label>
+							<strong>Action</strong>
+						<button
+							type="button"
+							className="attack-remove-button"
+							onClick={() => removeAttack(attack.id)}
+								title="Remove action"
+								aria-label="Remove action"
+						>
+							<FontAwesomeIcon icon={faTrash} />
+						</button>
 					</div>
+					<label>
+						Name
+						<input
+							type="text"
+							value={attack.name}
+							onChange={(event) =>
+								updateAttack(attack.id, "name", event.target.value)
+							}
+						/>
+					</label>
+					<label>
+						Description
+						<textarea
+							rows="3"
+							value={attack.description}
+							onChange={(event) =>
+								updateAttack(attack.id, "description", event.target.value)
+							}
+						/>
+					</label>
+				</div>
 				))}
 			</div>
 		</div>

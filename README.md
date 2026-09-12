@@ -17,6 +17,7 @@ Previous button to go back one row.
 Dynamically add and delete rows.
 Multiple color themes.
 Remembers setup from last session
+Allows saving and importing saved characters and monster stat-blocks.
 
 #### Stat block builder
 

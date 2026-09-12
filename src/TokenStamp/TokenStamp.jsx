@@ -379,11 +379,8 @@ export default function TokenStamp({ setPage }) {
         <div className="title">
           <h1>Token Stamp</h1>
         </div>
-        <button
-          className="menu-btn"
-          onClick={() => setPage("initiative-tracker")}
-        >
-          <FontAwesomeIcon icon={faArrowRight} /> Initiative tracker
+        <button className="menu-btn" onClick={() => setPage("character-sheet")}>
+          <FontAwesomeIcon icon={faArrowRight} /> Character Sheet
         </button>
       </div>
 

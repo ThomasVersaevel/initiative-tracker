@@ -128,6 +128,55 @@ export const getChallengeRating = (value) =>
   challengeRatings.find((rating) => rating.value === String(value)) ||
   challengeRatings[0];
 
+export const resistanceRelationLabels = {
+  resistance: "Resistance",
+  immunity: "Immunity",
+  vulnerability: "Vulnerability",
+};
+
+export const normalizeTraitResistances = (resistances = []) => {
+  if (!Array.isArray(resistances)) return [];
+
+  return resistances
+    .map((entry) => {
+      if (typeof entry === "string") {
+        return {
+          damageType: entry,
+          relation: "resistance",
+        };
+      }
+
+      if (!entry || typeof entry !== "object") return null;
+
+      const relation = entry.relation || "resistance";
+      const damageType = entry.damageType || entry.type || entry.name || "";
+
+      if (!damageType) return null;
+
+      return {
+        damageType,
+        relation: resistanceRelationLabels[relation]
+          ? relation
+          : "resistance",
+      };
+    })
+    .filter(Boolean);
+};
+
+export const formatResistanceEntry = (entry) => {
+  if (typeof entry === "string") {
+    return `Resistance: ${entry}`;
+  }
+
+  if (!entry || typeof entry !== "object") return "";
+
+  const damageType = entry.damageType || entry.type || entry.name || "";
+  const relation = entry.relation || "resistance";
+  const label = resistanceRelationLabels[relation] || "Resistance";
+
+  return `${label}: ${damageType}`;
+};
+
 export const formatSense = (sense) => {
   if (typeof sense === "string") return sense;
 
@@ -173,6 +222,7 @@ export const defaultStatBlock = {
   attacks: {
     multiattack: {
       enabled: false,
+      count: 0,
       attacks: [],
     },
     attacks: [],

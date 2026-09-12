@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import StatBlockBuilder from "./StatBlockBuilder/StatBlockBuilder";
-import InitiativeTracker from "./InitiativeTracker";
+import InitiativeTracker from "./InitiativeTracker/InitiativeTracker";
+import CharacterSheet from "./CharacterSheet/CharacterSheet";
 import TokenStamp from "./TokenStamp/TokenStamp";
 import { ensureAnonymousSession } from "./Supabase";
 
@@ -57,6 +58,19 @@ function App() {
             className="absolute inset-0 h-full w-full"
           >
             <TokenStamp setPage={changePage} />
+          </motion.div>
+        )}
+
+        {page === "character-sheet" && (
+          <motion.div
+            key="character-sheet"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ duration: 0.1, ease: "easeInOut" }}
+            className="absolute inset-0 h-full w-full"
+          >
+            <CharacterSheet setPage={changePage} />
           </motion.div>
         )}
       </AnimatePresence>

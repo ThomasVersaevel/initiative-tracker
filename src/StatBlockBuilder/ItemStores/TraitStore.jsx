@@ -2,7 +2,11 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { traitOptions } from "../TypesUtils/StoreTypes";
-import { challengeRatings } from "../TypesUtils/Types";
+import {
+  challengeRatings,
+  formatResistanceEntry,
+  normalizeTraitResistances,
+} from "../TypesUtils/Types";
 
 export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
   const [openCategory, setOpenCategory] = useState(null);
@@ -12,6 +16,12 @@ export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
     challengeRatings.find(
       (rating) => rating.value === String(traits.challengeRating),
     ) || challengeRatings[0];
+
+  const resistanceRelations = [
+    { value: "resistance", label: "Resistance" },
+    { value: "immunity", label: "Immunity" },
+    { value: "vulnerability", label: "Vulnerability" },
+  ];
 
   const toggleOption = (category, option) => {
     setTraits((current) => ({
@@ -59,6 +69,102 @@ export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
     setCustomSenseRange("");
     setOpenCategory(null);
   };
+
+  const updateResistanceRelation = (damageType, relation) => {
+    setTraits((current) => ({
+      ...current,
+      resistances: normalizeTraitResistances(current.resistances).map((entry) =>
+        entry.damageType === damageType ? { ...entry, relation } : entry,
+      ),
+    }));
+  };
+
+  const renderResistanceEditor = () => (
+    <div className="trait-select-field">
+      <span>Resistances</span>
+      <div className="trait-picker">
+        <button
+          type="button"
+          className="trait-picker-input"
+          aria-expanded={openCategory === "resistances"}
+          onClick={() =>
+            setOpenCategory((current) =>
+              current === "resistances" ? null : "resistances",
+            )
+          }
+        >
+          {traits.resistances.length > 0 ? (
+            normalizeTraitResistances(traits.resistances).map((entry) => (
+              <span className="trait-pill" key={entry.damageType}>
+                {formatResistanceEntry(entry)}
+              </span>
+            ))
+          ) : (
+            <span className="trait-picker-placeholder">Choose options</span>
+          )}
+          <span className="trait-picker-chevron">▾</span>
+        </button>
+
+        {openCategory === "resistances" && (
+          <div className="trait-picker-menu">
+            {traitOptions.resistances.map((option) => {
+              const selected = normalizeTraitResistances(traits.resistances).some(
+                (entry) => entry.damageType === option,
+              );
+              return (
+                <div className="trait-picker-option-wrap" key={option}>
+                  <button
+                    type="button"
+                    className={`trait-picker-option${selected ? " selected" : ""}`}
+                    onClick={() => {
+                      const currentEntries = normalizeTraitResistances(traits.resistances);
+                      const existing = currentEntries.find((entry) => entry.damageType === option);
+                      if (existing) {
+                        setTraits((current) => ({
+                          ...current,
+                          resistances: current.resistances.filter((entry) => {
+                            if (typeof entry === "string") return entry !== option;
+                            return entry.damageType !== option;
+                          }),
+                        }));
+                        return;
+                      }
+
+                      setTraits((current) => ({
+                        ...current,
+                        resistances: [
+                          ...normalizeTraitResistances(current.resistances),
+                          { damageType: option, relation: "resistance" },
+                        ],
+                      }));
+                    }}
+                  >
+                    <span>{option}</span>
+                    {selected && <span>✓</span>}
+                  </button>
+
+                  {selected && (
+                    <div className="trait-relation-picker">
+                      {resistanceRelations.map((relation) => (
+                        <button
+                          type="button"
+                          key={relation.value}
+                          className={`trait-relation-button${normalizeTraitResistances(traits.resistances).find((entry) => entry.damageType === option)?.relation === relation.value ? " selected" : ""}`}
+                          onClick={() => updateResistanceRelation(option, relation.value)}
+                        >
+                          {relation.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   const renderSenses = () => (
     <div className="trait-select-field">
@@ -233,7 +339,7 @@ export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
       </div>
 
       <div className="store-items">
-        {renderMultiSelect("resistances", "Resistances")}
+        {renderResistanceEditor()}
         {renderSenses()}
         {renderMultiSelect("languages", "Languages")}
 

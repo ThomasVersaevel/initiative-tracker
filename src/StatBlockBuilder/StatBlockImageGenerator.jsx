@@ -7,6 +7,7 @@ import {
 import html2canvas from "html2canvas";
 import { speedOptions } from "./TypesUtils/StoreTypes";
 import {
+	formatResistanceEntry,
 	formatSense,
 	getChallengeRating,
 } from "./TypesUtils/Types";
@@ -119,7 +120,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						</p>
 					))}
 					{statBlock.traits.resistances.length > 0 && (
-					<p><strong className="accent-color">Resistances:</strong> {statBlock.traits.resistances.join(", ")}</p>
+					<p><strong className="accent-color">Resistances:</strong> {statBlock.traits.resistances.map(formatResistanceEntry).join(", ")}</p>
 					)}
 					{statBlock.traits.senses.length > 0 && (
 					<p><strong className="accent-color">Senses:</strong> {statBlock.traits.senses.map(formatSense).join(", ")}</p>
@@ -155,12 +156,14 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 					statBlock.attacks.multiattack.attacks.length > 0 && (
 						<p>
 							<strong className="accent-color">Multiattack.</strong> The {statBlock.name || "creature"} makes{" "}
+							{statBlock.attacks.multiattack.count || 0} attacks: {" "}
 							{statBlock.attacks.multiattack.attacks.map((selection) => {
 								const attack = statBlock.attacks.attacks.find(
 									(item) => item.id === selection.attackId,
 								);
-								return `${selection.count} ${attack?.name || "unnamed action"} action${selection.count === 1 ? "" : "s"}`;
-							}).join(" or ")}. 
+								const attackName = attack?.name || "unnamed action";
+								return `${selection.count} ${attackName} ${selection.count === 1 ? "attack" : "attacks"}`;
+							}).join(" and ")}.
 						</p>
 					)}
 				{statBlock.attacks.attacks.map((attack) => (

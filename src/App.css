@@ -10,7 +10,7 @@
   --highlightedRow: #2e91fa;
   --row: #1a62ae;
   --main: #373c46;
-  --mainLight: #bec8df;
+  --mainLight: #646975;
   --header: #282c34;
   --titleText: #ffffff;
   --mainText: white;
@@ -70,12 +70,12 @@
 }
 
 :root {
-  --font-size-mini: 0.3vw;
-  --font-size-tiny: 0.6vw;
-  --font-size-small: 0.8vw;
-  --font-size-medium: 1vw;
-  --font-size: 1.2vw;
-  --font-size-large: 1.4vw;
+  --font-size-mini: 0.21vw;
+  --font-size-tiny: 0.42vw;
+  --font-size-small: 0.56vw;
+  --font-size-medium: 0.7vw;
+  --font-size: 0.84vw;
+  --font-size-large: 0.98vw;
   background-color: var(--main);
 }
 
@@ -266,17 +266,20 @@ body,
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   height: 7vh;
   font-size: calc(10px + 2vmin);
   color: var(--mainText);
   z-index: 10;
   top: 0;
+  padding: 0 1.5rem;
+  box-sizing: border-box;
 }
 
 .App-footer {
   background-color: var(--header);
-  min-height: 5vh;
+  min-height: 3vh;
+  height: 3vh;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -334,7 +337,8 @@ input[type="file"]::file-selector-button:hover {
   padding: 2rem 3rem 10rem 3rem;
   font-size: var(--font-size-large);
   text-align: left;
-  overflow-y: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding-top: 8vh;
   height: 100vh;
   box-sizing: border-box;
