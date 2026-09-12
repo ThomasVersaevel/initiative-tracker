@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import "../App.css";
 import { GridRow } from "./GridRow";
-import { Soundboard } from "./Soundboard";
 import { DiceRoller } from "./DiceRoller";
 import Cookies from "js-cookie";
 import { Header } from "./Header";
@@ -33,6 +32,7 @@ function InitiativeTracker({ setPage }) {
   const [showDiceRoller, setShowDiceRoller] = useState(
     JSON.parse(Cookies.get("showDiceroller") ?? "false"),
   );
+  const [showSoundboard, setShowSoundboard] = useState(false);
 
   const createRow = (id = 0) => ({
     initiative: 0,
@@ -429,6 +429,8 @@ function InitiativeTracker({ setPage }) {
         setShowSpell={setShowSpell}
         showCondition={showCondition}
         setShowCondition={setShowCondition}
+        showSoundboard={showSoundboard}
+        setShowSoundboard={setShowSoundboard}
         setPage={setPage}
         pcStats={pcStats}
         setPcStats={setPcStats}
@@ -557,33 +559,6 @@ function InitiativeTracker({ setPage }) {
           setUploadedStationary={setUploadedStationary}
           uploadedStationary={uploadedStationary}
         />
-      </div>
-      <div className="App-footer">
-        <div className="upload-container">
-          <label className="btn btn-secondary bot" htmlFor="file-upload">
-            <img
-              className="button-img"
-              src="/images/image-icon.png"
-              alt=""
-            ></img>
-            {gridRows[highlightedRow].charactername.length > 0
-              ? " " + gridRows[highlightedRow].charactername
-              : " Add"}
-          </label>
-        </div>
-        <div className="soundboard-container">
-          <Soundboard />
-        </div>
-        <div className="upload-container-right">
-          <label className="btn btn-secondary bot" htmlFor="stationary-upload">
-            {"Fixed "}
-            <img
-              className="button-img"
-              src="/images/image-icon.png"
-              alt=""
-            ></img>
-          </label>
-        </div>
       </div>
       <input
         id="file-upload"
