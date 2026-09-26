@@ -38,12 +38,6 @@ export function AttackStore({
 		setAttacks((current) => ({
 			...current,
 			attacks: current.attacks.filter((attack) => attack.id !== id),
-			multiattack: {
-				...current.multiattack,
-				attacks: current.multiattack.attacks.filter(
-					(selection) => selection.attackId !== id,
-				),
-			},
 		}));
 	};
 
@@ -67,38 +61,12 @@ export function AttackStore({
 		}));
 	};
 
-	const toggleMultiattackAttack = (attackId) => {
-		setAttacks((current) => {
-			const selected = current.multiattack.attacks.some(
-				(attack) => attack.attackId === attackId,
-			);
-			return {
-				...current,
-				multiattack: {
-					...current.multiattack,
-					attacks: selected
-						? current.multiattack.attacks.filter(
-								(attack) => attack.attackId !== attackId,
-							)
-						: [
-								...current.multiattack.attacks,
-								{ attackId, count: 1 },
-							],
-				},
-			};
-		});
-	};
-
-	const updateMultiattackCount = (attackId, count) => {
+	const updateMultiattackDescription = (description) => {
 		setAttacks((current) => ({
 			...current,
 			multiattack: {
 				...current.multiattack,
-				attacks: current.multiattack.attacks.map((attack) =>
-					attack.attackId === attackId
-						? { ...attack, count: Math.max(1, Number(count) || 1) }
-						: attack,
-				),
+				description,
 			},
 		}));
 	};
@@ -131,6 +99,7 @@ export function AttackStore({
 						<label className="multiattack-total">
 							<span>Total attacks</span>
 							<input
+								className="multiattack-total-input"
 								type="number"
 								min="0"
 								value={attacks.multiattack.count}
@@ -139,37 +108,16 @@ export function AttackStore({
 								}
 							/>
 						</label>
-						<strong>Included actions</strong>
-						{attacks.attacks.length === 0 && (
-							<span className="store-muted">Add an action below first.</span>
-						)}
-						{attacks.attacks.map((attack) => {
-							const selection = attacks.multiattack.attacks.find(
-								(item) => item.attackId === attack.id,
-							);
-							return (
-								<label key={attack.id} className="multiattack-option">
-									<input
-										type="checkbox"
-										checked={Boolean(selection)}
-										onChange={() => toggleMultiattackAttack(attack.id)}
-									/>
-									<span>{attack.name || "Unnamed"}</span>
-									{selection && (
-										<input
-											className="multiattack-count"
-											type="number"
-											min="1"
-											value={selection.count}
-											onChange={(event) =>
-												updateMultiattackCount(attack.id, event.target.value)
-											}
-											aria-label={`Number of ${attack.name || "action"} actions`}
-										/>
-									)}
-								</label>
-							);
-						})}
+						<label>
+							Multiattack description
+							<textarea
+								rows="3"
+								value={attacks.multiattack.description}
+								onChange={(event) =>
+									updateMultiattackDescription(event.target.value)
+								}
+							/>
+						</label>
 					</div>
 				)}
 

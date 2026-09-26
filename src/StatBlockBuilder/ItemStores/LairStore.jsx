@@ -1,6 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { NumericInput } from "../../NumericInput";
 
 const createAction = (id) => ({
   id,
@@ -55,8 +56,7 @@ export function LairStore({ setStorePanelOpen, lair, setLair }) {
           </div>
           <label className="legendary-store-uses">
             Number of uses
-            <input
-              type="number"
+            <NumericInput
               min="0"
               value={lair.uses}
               onChange={(event) =>

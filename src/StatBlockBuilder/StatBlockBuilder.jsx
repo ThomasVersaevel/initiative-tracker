@@ -16,10 +16,15 @@ import SaveUploads from "./SaveUploads";
 import StatBlockImageGenerator from "./StatBlockImageGenerator";
 import { defaultStatBlock } from "./TypesUtils/Types.js";
 import {
-  formatResistanceEntry,
   formatSense,
+  formatMultiattackDescription,
+  formatSignedModifier,
   getAbilityModifier,
   getChallengeRating,
+  getInitiativeModifier,
+  getTraitResistanceGroups,
+  formatTraitSkill,
+  normalizeTraitSkills,
   normalizeStats,
   normalizeTraitResistances,
 } from "./TypesUtils/Types.js";
@@ -30,6 +35,7 @@ import { FormattedText } from "./FormattedText";
 import { BonusActionStore } from "./ItemStores/BonusActionStore.jsx";
 import { ReactionStore } from "./ItemStores/ReactionStore.jsx";
 import { LairStore } from "./ItemStores/LairStore.jsx";
+import { NumericInput } from "../NumericInput";
 
 const STAT_BLOCK_STORAGE_KEY = "statBlockBuilderState";
 const MAX_HISTORY_ENTRIES = 50;
@@ -107,6 +113,7 @@ const getInitialStatBlock = () => {
       traits: {
         ...defaultStatBlock.traits,
         ...(saved.traits || {}),
+        skills: normalizeTraitSkills(saved.traits?.skills),
         resistances: normalizeTraitResistances(saved.traits?.resistances),
       },
       attacks: {
@@ -607,10 +614,9 @@ function StatBlockBuilder({ setPage }) {
                   <span>HP</span>
                 </div>
 
-                <input
+                <NumericInput
                   className="two-digit-field"
                   name="hp"
-                  type="number"
                   value={statBlock.hp}
                   onChange={(e) => updateField("hp", Number(e.target.value))}
                 />
@@ -622,10 +628,9 @@ function StatBlockBuilder({ setPage }) {
                   <span>AC</span>
                 </div>
 
-                <input
+                <NumericInput
                   className="two-digit-field"
                   name="ac"
-                  type="number"
                   value={statBlock.ac}
                   onChange={(e) => updateField("ac", Number(e.target.value))}
                 />
@@ -644,10 +649,9 @@ function StatBlockBuilder({ setPage }) {
                       <FontAwesomeIcon icon={option.icon} />
                     </div>
 
-                    <input
+                    <NumericInput
                       className="two-digit-field"
                       name={`speed-${speed.type}`}
-                      type="number"
                       value={speed.value}
                       onChange={(e) =>
                         setSpeeds((current) =>
@@ -705,10 +709,9 @@ function StatBlockBuilder({ setPage }) {
                     stat.toUpperCase()
                   )}
 
-                  <input
+                  <NumericInput
                     className="margin-bottom-4"
                     name={stat}
-                    type="number"
                     value={statBlock.stats[stat].value}
                     onChange={(e) =>
                       updateStat(
@@ -753,42 +756,28 @@ function StatBlockBuilder({ setPage }) {
             </div>
 
             <div className="border-top-3 trait-display-row">
-              {statBlock.legendary && (
-                <>
-                  {statBlock.legendaryDetails.resistances.map((resistance) => (
-                    <div
-                      className="legendary-resistance-display"
-                      key={resistance.id}
-                    >
-                      <strong className="accent-color">
-                        Legendary Resistance:{" "}
-                      </strong>
-                      <strong className="accent-color">
-                        {resistance.amount}/day
-                      </strong>{" "}
-                      <FormattedText
-                        text={resistance.description}
-                        name={statBlock.name}
-                        amount={resistance.amount}
-                      />
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    className="button add-button width-100"
-                    onClick={() => setStorePanelOpen("legendary-resistance")}
-                  >
-                    Add Legendary Resistance <FontAwesomeIcon icon={faPlus} />
-                  </button>
-                </>
-              )}
-              {statBlock.traits.resistances.length > 0 && (
+              <div>
+                <strong className="accent-color">Initiative:</strong>{" "}
+                {formatSignedModifier(
+                  getInitiativeModifier(
+                    statBlock.traits.initiative,
+                    statBlock.stats.dex.value,
+                  ),
+                )}
+              </div>
+              {statBlock.traits.skills.length > 0 && (
                 <div>
-                  <strong className="accent-color">Resistances:</strong>{" "}
-                  {statBlock.traits.resistances
-                    .map(formatResistanceEntry)
-                    .join(", ")}
+                  <strong className="accent-color">Skills:</strong>{" "}
+                  {statBlock.traits.skills.map(formatTraitSkill).join(", ")}
                 </div>
+              )}
+              {getTraitResistanceGroups(statBlock.traits.resistances).map(
+                ({ relation, label, damageTypes }) => (
+                  <div key={relation}>
+                    <strong className="accent-color">{label}:</strong>{" "}
+                    {damageTypes.join(", ")}
+                  </div>
+                ),
               )}
               {statBlock.traits.senses.length > 0 && (
                 <div>
@@ -829,8 +818,37 @@ function StatBlockBuilder({ setPage }) {
               </button>
             </div>
             <div className="stat-block-content-section stat-block-abilities border-top-3">
-              {statBlock.abilities.abilities.length > 0 && (
+              {(statBlock.abilities.abilities.length > 0 || statBlock.legendary) && (
                 <h2 className="stat-block-section-header">Abilities</h2>
+              )}
+              {statBlock.legendary && (
+                <>
+                  {statBlock.legendaryDetails.resistances.map((resistance) => (
+                    <div
+                      className="legendary-resistance-display"
+                      key={resistance.id}
+                    >
+                      <strong className="accent-color">
+                        Legendary Resistance:{" "}
+                      </strong>
+                      <strong className="accent-color">
+                        {resistance.amount}/day
+                      </strong>{" "}
+                      <FormattedText
+                        text={resistance.description}
+                        name={statBlock.name}
+                        amount={resistance.amount}
+                      />
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className="button add-button width-100"
+                    onClick={() => setStorePanelOpen("legendary-resistance")}
+                  >
+                    Add Legendary Resistance <FontAwesomeIcon icon={faPlus} />
+                  </button>
+                </>
               )}
               {statBlock.abilities.abilities.map((ability) => (
                 <div className="stat-block-section-item" key={ability.id}>
@@ -854,31 +872,20 @@ function StatBlockBuilder({ setPage }) {
               </button>
             </div>
             <div className="stat-block-content-section stat-block-actions border-top-3">
-              {((statBlock.attacks.multiattack.enabled &&
-                statBlock.attacks.multiattack.attacks.length > 0) ||
+              {(statBlock.attacks.multiattack.enabled ||
                 statBlock.attacks.attacks.length > 0) && (
                 <h2 className="stat-block-section-header">Actions</h2>
               )}
-              {statBlock.attacks.multiattack.enabled &&
-                statBlock.attacks.multiattack.attacks.length > 0 && (
+              {statBlock.attacks.multiattack.enabled && (
                   <div className="attack-multiattack-text">
                     <strong className="accent-color">
                       <em>Multiattack.</em>
                     </strong>{" "}
-                    The {statBlock.name || "creature"} makes{" "}
-                    {statBlock.attacks.multiattack.count || 0} attacks:{" "}
-                    {statBlock.attacks.multiattack.attacks
-                      .map((selection) => {
-                        const attack = statBlock.attacks.attacks.find(
-                          (item) => item.id === selection.attackId,
-                        );
-                        const attackName = attack?.name || "unnamed action";
-                        return `${selection.count} ${attackName} ${
-                          selection.count === 1 ? "attack" : "attacks"
-                        }`;
-                      })
-                      .join(" and ")}
-                    .
+                    {formatMultiattackDescription(
+                      statBlock.attacks.multiattack.description,
+                      statBlock.name,
+                      statBlock.attacks.multiattack.count,
+                    )}
                   </div>
                 )}
               {statBlock.attacks.attacks.map((attack) => (
@@ -1053,6 +1060,10 @@ function StatBlockBuilder({ setPage }) {
             options={traitOptions}
             traits={statBlock.traits}
             setTraits={setTraits}
+            initiativeModifier={getInitiativeModifier(
+              statBlock.traits.initiative,
+              statBlock.stats.dex.value,
+            )}
           />
         )}
         {storePanelOpen === "ability" && (

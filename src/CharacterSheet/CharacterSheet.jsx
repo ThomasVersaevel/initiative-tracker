@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import DiceBox from "@3d-dice/dice-box";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { NumericInput } from "../NumericInput";
 import {
   faArrowLeft,
   faArrowRight,
@@ -248,9 +249,8 @@ export default function CharacterSheet({ setPage }) {
                   >
                     {sign(ability.mod)}
                   </button>
-                  <input
+                  <NumericInput
                     className="ability-override"
-                    type="number"
                     min="1"
                     max="30"
                     value={ability.score}
@@ -308,9 +308,8 @@ export default function CharacterSheet({ setPage }) {
               <div className="core-info-block">
                 <div className="core-label">HP</div>
                 <div className="core-value hp-controls">
-                  <input
+                  <NumericInput
                     className="hp-current"
-                    type="number"
                     value={hp}
                     onChange={(e) => setHp(Number(e.target.value))}
                   />
@@ -329,9 +328,8 @@ export default function CharacterSheet({ setPage }) {
                   >
                     <FontAwesomeIcon icon={faMinus} />
                   </button>
-                  <input
+                  <NumericInput
                     className="hp-change"
-                    type="number"
                     min="1"
                     value={hpChange}
                     onChange={(e) =>
@@ -382,7 +380,7 @@ export default function CharacterSheet({ setPage }) {
               </div>
 
               <h3>Proficiencies</h3>
-              <div className="proficiency-list">
+              <div className="proficiency-lis t">
                 <span>Simple weapons</span>
               </div>
             </section>

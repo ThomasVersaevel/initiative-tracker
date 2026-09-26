@@ -7,9 +7,14 @@ import {
 import html2canvas from "html2canvas";
 import { speedOptions } from "./TypesUtils/StoreTypes";
 import {
-	formatResistanceEntry,
 	formatSense,
+	formatSignedModifier,
+	formatTraitSkill,
 	getChallengeRating,
+	getInitiativeModifier,
+	getTraitResistanceGroups,
+	formatMultiattackDescription,
+	normalizeTraitSkills,
 } from "./TypesUtils/Types";
 import { FormattedText } from "./FormattedText";
 
@@ -64,7 +69,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 			}}
 		>
 			<div className="stat-block-image-heading">
-				<div>
+				<div className="stat-block-image-identity">
 					<h1>{statBlock.name || "Unnamed Creature"}</h1>
 					<div className="stat-block-image-creature-details">
 						{statBlock.legendary && "Legendary "}
@@ -72,55 +77,69 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						{statBlock.creatureType || "Monster"}
 					</div>
 				</div>
+				<div className="stat-block-image-basic-values">
+					<span aria-label={`Hit points: ${statBlock.hp}`}>
+						<FontAwesomeIcon icon={faHeart} aria-hidden="true" /> {statBlock.hp}
+					</span>
+					<span aria-label={`Armor class: ${statBlock.ac}`}>
+						<FontAwesomeIcon icon={faShield} aria-hidden="true" /> {statBlock.ac}
+					</span>
+				</div>
+				<div className="stat-block-image-speeds">
+					{orderedSpeeds.map((speed) => (
+						<span
+							key={speed.type}
+							aria-label={`${speed.type} speed: ${speed.value}`}
+						>
+							<FontAwesomeIcon
+								icon={speedOptions.find((option) => option.type === speed.type)?.icon}
+								aria-hidden="true"
+							/>
+							{speed.value}
+						</span>
+					))}
+				</div>
 				{statBlock.portrait && (
 					<img src={statBlock.portrait} alt="" className="stat-block-image-portrait" />
 				)}
-			</div>
-
-			<div className="stat-block-image-basics">
-				<span>
-					<FontAwesomeIcon icon={faHeart} aria-hidden="true" /> HP {statBlock.hp}
-				</span>
-				<span>
-					<FontAwesomeIcon icon={faShield} aria-hidden="true" /> AC {statBlock.ac}
-				</span>
-				{orderedSpeeds.map((speed) => (
-					<span key={speed.type}>
-						<FontAwesomeIcon
-							icon={speedOptions.find((option) => option.type === speed.type)?.icon}
-							aria-hidden="true"
-						/>
-						{speed.type === "walk"
-							? "Speed"
-							: `${speed.type.charAt(0).toUpperCase()}${speed.type.slice(1)}`} {speed.value}
-					</span>
-				))}
 			</div>
 
 			<div className="stat-block-image-stats">
 				{Object.entries(statBlock.stats).map(([stat, values]) => (
 					<div key={stat}>
 						<strong>{values.label || defaultStatLabels[stat] || stat}</strong>
-						<span>{values.value}</span>
-						<small>{values.save}</small>
+						<span className="stat-block-image-score">
+							<span>{values.value}</span>
+							<small>{values.save}</small>
+						</span>
 					</div>
 				))}
 			</div>
 
 			<div className="stat-block-image-copy">
 				<div className="stat-block-image-traits">
-					{statBlock.legendary && statBlock.legendaryDetails.resistances.map((resistance) => (
-						<p key={resistance.id}>
-							<strong className="accent-color">Legendary Resistance</strong>; <strong>{resistance.amount}/day</strong>{" "}
-							<FormattedText
-								text={resistance.description}
-								name={statBlock.name}
-								amount={resistance.amount}
-							/>
+					<p>
+						<strong className="accent-color">Initiative:</strong>{" "}
+						{formatSignedModifier(
+							getInitiativeModifier(
+								statBlock.traits.initiative,
+								statBlock.stats.dex.value,
+							),
+						)}
+					</p>
+					{normalizeTraitSkills(statBlock.traits.skills).length > 0 && (
+						<p>
+							<strong className="accent-color">Skills:</strong>{" "}
+							{normalizeTraitSkills(statBlock.traits.skills).map(formatTraitSkill).join(", ")}
 						</p>
-					))}
-					{statBlock.traits.resistances.length > 0 && (
-					<p><strong className="accent-color">Resistances:</strong> {statBlock.traits.resistances.map(formatResistanceEntry).join(", ")}</p>
+					)}
+					{getTraitResistanceGroups(statBlock.traits.resistances).map(
+						({ relation, label, damageTypes }) => (
+							<p key={relation}>
+								<strong className="accent-color">{label}:</strong>{" "}
+								{damageTypes.join(", ")}
+							</p>
+						),
 					)}
 					{statBlock.traits.senses.length > 0 && (
 					<p><strong className="accent-color">Senses:</strong> {statBlock.traits.senses.map(formatSense).join(", ")}</p>
@@ -140,8 +159,18 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 					</p>
 				</div>
 
-				{statBlock.abilities.abilities.length > 0 && <div className="stat-block-image-abilities">
-					{statBlock.abilities.abilities.length > 0 && <h2 className="accent-color">Abilities</h2>}
+				{(statBlock.abilities.abilities.length > 0 || statBlock.legendary) && <div className="stat-block-image-abilities">
+					<h2>Abilities</h2>
+					{statBlock.legendary && statBlock.legendaryDetails.resistances.map((resistance) => (
+						<p key={resistance.id}>
+							<strong className="accent-color">Legendary Resistance</strong>; <strong>{resistance.amount}/day</strong>{" "}
+							<FormattedText
+								text={resistance.description}
+								name={statBlock.name}
+								amount={resistance.amount}
+							/>
+						</p>
+					))}
 						{statBlock.abilities.abilities.map((ability) => (
 						<p key={ability.id}>
 							<strong className="accent-color">{ability.name || "Unnamed ability"}.</strong>{" "}
@@ -150,20 +179,16 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 					))}
 				</div>}
 
-				{((statBlock.attacks.multiattack.enabled && statBlock.attacks.multiattack.attacks.length > 0) || statBlock.attacks.attacks.length > 0) && <div className="stat-block-image-actions">
-				{((statBlock.attacks.multiattack.enabled && statBlock.attacks.multiattack.attacks.length > 0) || statBlock.attacks.attacks.length > 0) && <h2 className="accent-color">Actions</h2>}
-				{statBlock.attacks.multiattack.enabled &&
-					statBlock.attacks.multiattack.attacks.length > 0 && (
+				{(statBlock.attacks.multiattack.enabled || statBlock.attacks.attacks.length > 0) && <div className="stat-block-image-actions">
+				{(statBlock.attacks.multiattack.enabled || statBlock.attacks.attacks.length > 0) && <h2>Actions</h2>}
+				{statBlock.attacks.multiattack.enabled && (
 						<p>
-							<strong className="accent-color">Multiattack.</strong> The {statBlock.name || "creature"} makes{" "}
-							{statBlock.attacks.multiattack.count || 0} attacks: {" "}
-							{statBlock.attacks.multiattack.attacks.map((selection) => {
-								const attack = statBlock.attacks.attacks.find(
-									(item) => item.id === selection.attackId,
-								);
-								const attackName = attack?.name || "unnamed action";
-								return `${selection.count} ${attackName} ${selection.count === 1 ? "attack" : "attacks"}`;
-							}).join(" and ")}.
+							<strong className="accent-color">Multiattack.</strong>{" "}
+							{formatMultiattackDescription(
+								statBlock.attacks.multiattack.description,
+								statBlock.name,
+								statBlock.attacks.multiattack.count,
+							)}
 						</p>
 					)}
 				{statBlock.attacks.attacks.map((attack) => (
@@ -174,7 +199,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 				))}
 				</div>}
 				{statBlock.bonusActions.length > 0 && <div className="stat-block-image-bonus-actions">
-				{statBlock.bonusActions.length > 0 && <h2 className="accent-color">Bonus Actions</h2>}
+				{statBlock.bonusActions.length > 0 && <h2>Bonus Actions</h2>}
 				{statBlock.bonusActions.map((action) => (
 					<p key={action.id}>
 						<strong className="accent-color"><em>{action.name || "Unnamed bonus action"}.</em></strong>{" "}
@@ -183,7 +208,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 				))}
 				</div>}
 				{statBlock.reactions.length > 0 && <div className="stat-block-image-reactions">
-				{statBlock.reactions.length > 0 && <h2 className="accent-color">Reactions</h2>}
+				{statBlock.reactions.length > 0 && <h2>Reactions</h2>}
 				{statBlock.reactions.map((reaction) => (
 					<p key={reaction.id}>
 						<strong className="accent-color"><em>{reaction.name || "Unnamed reaction"}.</em></strong>{" "}
@@ -194,7 +219,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 				{statBlock.legendary && statBlock.legendaryDetails.actions.length > 0 && (
 					<div className="stat-block-image-legendary-actions">
 						<div className="stat-block-section-heading">
-							<h2 className="accent-color">Legendary Actions</h2>
+							<h2>Legendary Actions</h2>
 							<small>{statBlock.legendaryDetails.uses} per round</small>
 						</div>
 						{statBlock.legendaryDetails.actions.map((action) => (
@@ -208,7 +233,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 				{statBlock.lair && statBlock.lairDetails.actions.length > 0 && (
 					<div className="stat-block-image-lair-actions">
 						<div className="stat-block-section-heading">
-							<h2 className="accent-color">Lair Actions</h2>
+							<h2>Lair Actions</h2>
 							<small>{statBlock.lairDetails.uses} per round</small>
 						</div>
 						{statBlock.lairDetails.actions.map((action) => (
@@ -221,7 +246,7 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 				)}
 				{String(statBlock.inventory ?? "").trim() && (
 					<div className="stat-block-image-inventory">
-						<h2 className="accent-color">Inventory</h2>
+						<h2>Inventory</h2>
 						<p className="stat-block-image-inventory-text">{statBlock.inventory}</p>
 					</div>
 				)}
