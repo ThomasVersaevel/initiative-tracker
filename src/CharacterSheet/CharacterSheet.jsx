@@ -220,12 +220,12 @@ export default function CharacterSheet({ setPage }) {
           <section className="character-top-row">
             <div className="character-ident">
               <div className="character-image">
-                <img alt="Dikke bilal" src="/images/default-avatar.png" />
+                <img alt="Dikke bilal" src="/images/dikke_bilal.png" />
               </div>
               <div>
                 <div className="character-name">Dikke Bilal</div>
                 <div className="character-subline">
-                  Human · Fighter · Level 1
+                  Subek · Cook · Level 1
                 </div>
               </div>
             </div>

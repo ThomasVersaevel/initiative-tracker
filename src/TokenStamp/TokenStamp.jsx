@@ -62,15 +62,33 @@ const fileToDataUrl = (file, onLoad) => {
   reader.readAsDataURL(file);
 };
 
-const createTokenDataUrl = (canvas) => {
+const createTokenDataUrl = (canvas, cropToToken = false) => {
+  const outputSize = cropToToken ? TOKEN_DIAMETER : SIZE;
+  const cropOffset = cropToToken ? SIZE / 2 - BORDER_RADIUS : 0;
   const output = document.createElement("canvas");
-  output.width = SIZE;
-  output.height = SIZE;
+  output.width = outputSize;
+  output.height = outputSize;
   const outputContext = output.getContext("2d");
-  outputContext.drawImage(canvas, 0, 0);
+  outputContext.drawImage(
+    canvas,
+    cropOffset,
+    cropOffset,
+    outputSize,
+    outputSize,
+    0,
+    0,
+    outputSize,
+    outputSize,
+  );
   outputContext.globalCompositeOperation = "destination-in";
   outputContext.beginPath();
-  outputContext.arc(SIZE / 2, SIZE / 2, BORDER_RADIUS, 0, Math.PI * 2);
+  outputContext.arc(
+    outputSize / 2,
+    outputSize / 2,
+    BORDER_RADIUS,
+    0,
+    Math.PI * 2,
+  );
   outputContext.fill();
   return output.toDataURL("image/png");
 };
@@ -350,7 +368,7 @@ export default function TokenStamp({ setPage }) {
   const download = () => {
     const link = document.createElement("a");
     link.download = "dnd-token.png";
-    link.href = createTokenDataUrl(canvasRef.current);
+    link.href = createTokenDataUrl(canvasRef.current, true);
     link.click();
   };
 

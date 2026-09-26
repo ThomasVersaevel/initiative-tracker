@@ -487,32 +487,19 @@ function StatBlockBuilder({ setPage }) {
 
   return (
     <div className={`stat-block-normal ${statBlock.theme}`}>
-      <div className="App-header statblock-header-left-controls">
-        <div>
-          <button
-            className="menu-btn"
-            onClick={() => setPage("initiative-tracker")}
-          >
-            <FontAwesomeIcon icon={faArrowLeft} /> Initiative Tracker
-          </button>
-          {/* <span
-            className="statblock-upload-info"
-            tabIndex="0"
-            role="img"
-            aria-label="You can also upload your own stat block"
-            data-tooltip="you can also upload your own stat block"
-          >
-            <FontAwesomeIcon icon={faCircleInfo} aria-hidden="true" />
-          </span> */}
-        </div>
+      <div className="App-header">
+        <button
+          className="menu-btn"
+          onClick={() => setPage("initiative-tracker")}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} /> Initiative Tracker
+        </button>
         <div className="title">
           <h1>Stat block builder</h1>
         </div>
-        <div>
-          <button className="menu-btn" onClick={() => setPage("token-stamp")}>
-            Token Stamp <FontAwesomeIcon icon={faArrowRight} />
-          </button>
-        </div>
+        <button className="menu-btn" onClick={() => setPage("token-stamp")}>
+          Token Stamp <FontAwesomeIcon icon={faArrowRight} />
+        </button>
       </div>
 
       <div className="App-body flex">
