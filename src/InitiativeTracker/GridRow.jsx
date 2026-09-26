@@ -4,6 +4,7 @@ import "./GridRow.css";
 import { Popup } from "./Popup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFloppyDisk } from "@fortawesome/free-solid-svg-icons";
+import { NumericInput } from "../NumericInput";
 
 const condition = [
   "blinded",
@@ -341,13 +342,12 @@ export function GridRow({
         className="cell initiative-cell"
         ref={initiativeCellRef}
       >
-        <input
+        <NumericInput
           data-row={rowIndex}
           data-col={0}
           onKeyDown={handleNavigation}
           className="form-control grid-row-input"
           name="initiative"
-          type="number"
           value={values.initiative}
           onChange={handleInputChange}
         />
@@ -460,13 +460,12 @@ export function GridRow({
       <div className="cell no-padding">
         {values.isGroup ? (
           values.hpGroup.map((hpValue, idx) => (
-            <input
+            <NumericInput
               data-row={rowIndex}
               data-col={2}
               onKeyDown={handleNavigation}
               key={idx}
               className="form-control grid-row-input text-medium no-padding"
-              type="number"
               value={hpValue}
               onChange={(e) => {
                 const newHpGroup = [...values.hpGroup];
@@ -482,7 +481,7 @@ export function GridRow({
             />
           ))
         ) : (
-          <input
+          <NumericInput
             data-row={rowIndex}
             data-col={2}
             className="form-control grid-row-input"
@@ -557,7 +556,6 @@ export function GridRow({
             onKeyDown={handleNavigation}
             className="form-control grid-row-input"
             name="spell"
-            type="number"
             value={values.spell}
             onChange={handleInputChange}
           />
@@ -587,13 +585,12 @@ export function GridRow({
             </select>
           </div>
           <div className="cell">
-            <input
+            <NumericInput
               data-row={rowIndex}
               data-col={7}
               onKeyDown={handleNavigation}
               className="form-control grid-row-input"
               name="timer"
-              type="number"
               value={values.timer}
               onChange={handleInputChange}
             />

@@ -14,20 +14,21 @@
   line-height: 1.2;
 }
 
-.header-left-cluster {
+.header-left-cluster,
+.header-right-cluster {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
   flex: 0 0 auto;
+}
+
+.header-left-cluster {
+  gap: 0.45rem;
   margin-left: 0;
   justify-content: flex-start;
 }
 
 .header-right-cluster {
-  display: flex;
-  align-items: center;
   gap: 0.75rem;
-  flex: 0 0 auto;
   justify-content: flex-end;
   margin-right: 0;
 }
@@ -138,7 +139,7 @@
   border: 1px solid var(--border);
   border-radius: 0.5rem;
   padding: 0.3rem 0.5rem;
-  font-size: var(--font-size-small);
+  font-size: var(--font-size-medium);
   cursor: pointer;
   height: 2rem;
   white-space: nowrap;

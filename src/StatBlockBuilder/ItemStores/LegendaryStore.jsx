@@ -1,6 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { NumericInput } from "../../NumericInput";
 
 const createAction = (id) => ({
 	id,
@@ -99,8 +100,7 @@ export function LegendaryStore({
 			</div>
 			<label className="legendary-store-uses">
 				Number of uses
-				<input
-					type="number"
+								<NumericInput
 					min="0"
 					value={legendary.uses}
 					onChange={(event) =>
@@ -170,8 +170,7 @@ export function LegendaryStore({
 					</div>
 					<label>
 						Amount
-						<input
-							type="number"
+							<NumericInput
 							min="0"
 							max="10"
 							value={resistance.amount}

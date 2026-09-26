@@ -9,7 +9,11 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { supabase, ensureAnonymousSession } from "../Supabase";
-import { defaultStatBlock, normalizeStats } from "./TypesUtils/Types.js";
+import {
+  defaultStatBlock,
+  normalizeStats,
+  normalizeTraitSkills,
+} from "./TypesUtils/Types.js";
 
 const SaveUploads = ({
   setStatBlock,
@@ -103,6 +107,7 @@ const SaveUploads = ({
           traits: {
             ...defaultStatBlock.traits,
             ...(imported.traits || {}),
+            skills: normalizeTraitSkills(imported.traits?.skills),
           },
           attacks: {
             ...defaultStatBlock.attacks,
@@ -354,6 +359,7 @@ const SaveUploads = ({
       traits: {
         ...defaultStatBlock.traits,
         ...(imported.traits || {}),
+        skills: normalizeTraitSkills(imported.traits?.skills),
       },
       attacks: {
         ...defaultStatBlock.attacks,

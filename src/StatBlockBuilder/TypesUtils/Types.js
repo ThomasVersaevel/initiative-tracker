@@ -48,6 +48,18 @@ export const getAbilityModifier = (value) => {
   return modifier >= 0 ? `+${modifier}` : `${modifier}`;
 };
 
+export const getInitiativeModifier = (initiative, dexterity) => {
+  if (initiative === null || initiative === undefined || initiative === "") {
+    return Number.parseInt(getAbilityModifier(dexterity), 10);
+  }
+
+  const modifier = Number.parseInt(initiative, 10);
+  return Number.isNaN(modifier) ? 0 : modifier;
+};
+
+export const formatSignedModifier = (value) =>
+  `${value >= 0 ? "+" : ""}${value}`;
+
 export const normalizeStats = (stats = {}) => {
   const statEntries = Object.entries(defaultStats).map(([stat, defaults]) => {
     const savedStat = stats[stat] || {};
@@ -163,6 +175,25 @@ export const normalizeTraitResistances = (resistances = []) => {
     .filter(Boolean);
 };
 
+export const getTraitResistanceGroups = (resistances = []) => {
+  const groupLabels = {
+    resistance: "Resistances",
+    immunity: "Immunities",
+    vulnerability: "Vulnerabilities",
+  };
+  const normalizedResistances = normalizeTraitResistances(resistances);
+
+  return Object.entries(groupLabels)
+    .map(([relation, label]) => ({
+      relation,
+      label,
+      damageTypes: normalizedResistances
+        .filter((entry) => entry.relation === relation)
+        .map((entry) => entry.damageType),
+    }))
+    .filter((group) => group.damageTypes.length > 0);
+};
+
 export const formatResistanceEntry = (entry) => {
   if (typeof entry === "string") {
     return `Resistance: ${entry}`;
@@ -182,6 +213,27 @@ export const formatSense = (sense) => {
 
   return sense.range ? `${sense.name} ${sense.range} ft.` : sense.name;
 };
+
+export const normalizeTraitSkills = (skills = []) => {
+  if (!Array.isArray(skills)) return [];
+
+  return skills
+    .map((skill) => {
+      const name = typeof skill === "string" ? skill : skill?.name;
+      const modifier = Number.parseInt(
+        typeof skill === "string" ? 0 : skill?.modifier ?? 0,
+        10,
+      );
+
+      return name
+        ? { name, modifier: Number.isNaN(modifier) ? 0 : modifier }
+        : null;
+    })
+    .filter(Boolean);
+};
+
+export const formatTraitSkill = (skill) =>
+  `${skill.name} ${skill.modifier >= 0 ? "+" : ""}${skill.modifier}`;
 
 export const formatLegendaryText = (text, name, amount) =>
   text
@@ -209,6 +261,8 @@ export const defaultStatBlock = {
   stats: defaultStats,
 
   traits: {
+    initiative: null,
+    skills: [],
     resistances: [],
     senses: [],
     languages: [],
@@ -223,6 +277,7 @@ export const defaultStatBlock = {
     multiattack: {
       enabled: false,
       count: 0,
+      description: "The <name> makes # attacks in any combination.",
       attacks: [],
     },
     attacks: [],
@@ -257,3 +312,12 @@ export const defaultStatBlock = {
 
   theme: "default",
 };
+
+export const formatMultiattackDescription = (
+  description,
+  name,
+  count,
+) =>
+  (description || defaultStatBlock.attacks.multiattack.description)
+    .replaceAll("<name>", name || "creature")
+    .replaceAll("#", String(count ?? 0));

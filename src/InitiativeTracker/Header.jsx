@@ -8,6 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { supabase } from "../Supabase";
 import { Soundboard } from "./Soundboard";
+import { NumericInput } from "../NumericInput";
 
 const themes = [
   { label: "Default", value: "default" },
@@ -224,16 +225,14 @@ export function Header({
               onChange={(e) => setCharacterName(e.target.value)}
             />
             AC:
-            <input
+            <NumericInput
               className="modal-input"
-              type="number"
               value={characterAC}
               onChange={(e) => setCharacterAC(e.target.value)}
             />
             HP:
-            <input
+            <NumericInput
               className="modal-input"
-              type="number"
               value={characterHP}
               onChange={(e) => setCharacterHP(e.target.value)}
             />

@@ -1,17 +1,24 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { traitOptions } from "../TypesUtils/StoreTypes";
+import { skillOptions, traitOptions } from "../TypesUtils/StoreTypes";
+import { NumericInput } from "../../NumericInput";
 import {
   challengeRatings,
   formatResistanceEntry,
   normalizeTraitResistances,
 } from "../TypesUtils/Types";
 
-export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
+export function TraitStore({
+  setStorePanelOpen,
+  traits,
+  setTraits,
+  initiativeModifier,
+}) {
   const [openCategory, setOpenCategory] = useState(null);
   const [customSense, setCustomSense] = useState("");
   const [customSenseRange, setCustomSenseRange] = useState("");
+  const [skillToAdd, setSkillToAdd] = useState("");
   const selectedChallengeRating =
     challengeRatings.find(
       (rating) => rating.value === String(traits.challengeRating),
@@ -76,6 +83,32 @@ export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
       resistances: normalizeTraitResistances(current.resistances).map((entry) =>
         entry.damageType === damageType ? { ...entry, relation } : entry,
       ),
+    }));
+  };
+
+  const addSkill = (name) => {
+    if (!name || traits.skills.some((skill) => skill.name === name)) return;
+
+    setTraits((current) => ({
+      ...current,
+      skills: [...current.skills, { name, modifier: 0 }],
+    }));
+    setSkillToAdd("");
+  };
+
+  const updateSkillModifier = (name, modifier) => {
+    setTraits((current) => ({
+      ...current,
+      skills: current.skills.map((skill) =>
+        skill.name === name ? { ...skill, modifier } : skill,
+      ),
+    }));
+  };
+
+  const removeSkill = (name) => {
+    setTraits((current) => ({
+      ...current,
+      skills: current.skills.filter((skill) => skill.name !== name),
     }));
   };
 
@@ -219,11 +252,11 @@ export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
                 value={customSense}
                 onChange={(e) => setCustomSense(e.target.value)}
               />
-              <input
-                type="number"
+              <NumericInput
                 min="0"
                 placeholder="Range (ft.)"
                 value={customSenseRange}
+                allowEmpty
                 onChange={(e) => setCustomSenseRange(e.target.value)}
               />
               <button
@@ -245,11 +278,11 @@ export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
             return (
               <label key={name}>
                 <span>{name} range (ft.)</span>
-                <input
-                  type="number"
+                <NumericInput
                   min="0"
                   placeholder="Optional"
                   value={typeof sense === "string" ? "" : sense.range}
+                  allowEmpty
                   onChange={(e) => updateSenseRange(name, e.target.value)}
                 />
               </label>
@@ -339,6 +372,68 @@ export function TraitStore({ setStorePanelOpen, traits, setTraits }) {
       </div>
 
       <div className="store-items">
+        <label className="trait-select-field">
+          <span>Initiative modifier</span>
+          <NumericInput
+            step="1"
+            value={initiativeModifier}
+            onChange={(event) =>
+              setTraits((current) => ({
+                ...current,
+                initiative: Number(event.target.value),
+              }))
+            }
+          />
+        </label>
+        <div className="trait-select-field">
+          <span>Skills</span>
+          <select
+            className="trait-picker-input"
+            aria-label="Add skill check"
+            value={skillToAdd}
+            onChange={(event) => addSkill(event.target.value)}
+          >
+            <option value="">Add a skill check</option>
+            {skillOptions.map((skill) => (
+              <option
+                key={skill}
+                value={skill}
+                disabled={traits.skills.some((entry) => entry.name === skill)}
+              >
+                {skill}
+              </option>
+            ))}
+          </select>
+          {traits.skills.length > 0 && (
+            <div className="trait-skill-fields">
+              {traits.skills.map((skill) => (
+                <label key={skill.name}>
+                  <span>{skill.name}</span>
+                  <NumericInput
+                    step="1"
+                    value={skill.modifier}
+                    aria-label={`${skill.name} modifier`}
+                    onChange={(event) =>
+                      updateSkillModifier(
+                        skill.name,
+                        Number(event.target.value),
+                      )
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="btn remove-button"
+                    aria-label={`Remove ${skill.name}`}
+                    title={`Remove ${skill.name}`}
+                    onClick={() => removeSkill(skill.name)}
+                  >
+                    x
+                  </button>
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
         {renderResistanceEditor()}
         {renderSenses()}
         {renderMultiSelect("languages", "Languages")}

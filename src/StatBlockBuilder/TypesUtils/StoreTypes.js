@@ -74,6 +74,27 @@ export const languageOptions = [
   "Undercommon",
 ];
 
+export const skillOptions = [
+  "Acrobatics",
+  "Animal Handling",
+  "Arcana",
+  "Athletics",
+  "Deception",
+  "History",
+  "Insight",
+  "Intimidation",
+  "Investigation",
+  "Medicine",
+  "Nature",
+  "Perception",
+  "Performance",
+  "Persuasion",
+  "Religion",
+  "Sleight of Hand",
+  "Stealth",
+  "Survival",
+];
+
 export const traitOptions = {
   resistances: resistanceOptions,
   senses: sensesOptions,
