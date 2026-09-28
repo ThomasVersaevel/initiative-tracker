@@ -4,11 +4,23 @@ import StatBlockBuilder from "./StatBlockBuilder/StatBlockBuilder";
 import InitiativeTracker from "./InitiativeTracker/InitiativeTracker";
 import CharacterSheet from "./CharacterSheet/CharacterSheet";
 import TokenStamp from "./TokenStamp/TokenStamp";
+import DiceStudio from "./DiceStudio/DiceStudio";
 import { ensureAnonymousSession } from "./Supabase";
+
+const PAGE_IDS = [
+  "initiative-tracker",
+  "stat-block-builder",
+  "token-stamp",
+  "character-sheet",
+  "dice-studio",
+];
 
 function App() {
   const [page, setPage] = useState(
-    () => localStorage.getItem("currentPage") || "initiative-tracker",
+    () => {
+      const savedPage = localStorage.getItem("currentPage");
+      return PAGE_IDS.includes(savedPage) ? savedPage : "initiative-tracker";
+    },
   );
 
   useEffect(() => {
@@ -16,8 +28,11 @@ function App() {
   }, []);
 
   const changePage = (newPage) => {
-    localStorage.setItem("currentPage", newPage);
-    setPage(newPage);
+    const nextPage = PAGE_IDS.includes(newPage)
+      ? newPage
+      : "initiative-tracker";
+    localStorage.setItem("currentPage", nextPage);
+    setPage(nextPage);
   };
 
   return (
@@ -71,6 +86,19 @@ function App() {
             className="absolute inset-0 h-full w-full"
           >
             <CharacterSheet setPage={changePage} />
+          </motion.div>
+        )}
+
+        {page === "dice-studio" && (
+          <motion.div
+            key="dice-studio"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ duration: 0.1, ease: "easeInOut" }}
+            className="absolute inset-0 h-full w-full"
+          >
+            <DiceStudio setPage={changePage} />
           </motion.div>
         )}
       </AnimatePresence>

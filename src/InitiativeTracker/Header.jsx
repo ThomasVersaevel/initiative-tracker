@@ -114,8 +114,8 @@ export function Header({
   return (
     <div className="App-header">
       <div className="header-left-cluster">
-        <button className="menu-btn left-nav-button" onClick={() => setPage("character-sheet")}>
-          <FontAwesomeIcon icon={faArrowLeft} /> Character Sheet
+        <button className="menu-btn left-nav-button" onClick={() => setPage("dice-studio")}>
+          <FontAwesomeIcon icon={faArrowLeft} /> Dice Studio
         </button>
 
         <div className="hamburger-container" onBlur={handleBlur} ref={menuRef}>
