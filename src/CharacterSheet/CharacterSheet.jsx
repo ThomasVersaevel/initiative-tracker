@@ -209,9 +209,9 @@ export default function CharacterSheet({ setPage }) {
         </div>
         <button
           className="menu-btn"
-          onClick={() => setPage("initiative-tracker")}
+          onClick={() => setPage("dice-studio")}
         >
-          <FontAwesomeIcon icon={faArrowRight} /> Initiative Tracker
+          <FontAwesomeIcon icon={faArrowRight} /> Dice Studio
         </button>
       </div>
 
