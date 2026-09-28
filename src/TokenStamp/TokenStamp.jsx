@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Header } from "../Header";
 import {
-  faArrowLeft,
-  faArrowRight,
   faEyeDropper,
   faFillDrip,
   faUpload,
@@ -387,20 +386,13 @@ export default function TokenStamp({ setPage }) {
 
   return (
     <div className="token-stamp">
-      <div className="App-header statblock-page-header">
-        <button
-          className="menu-btn"
-          onClick={() => setPage("stat-block-builder")}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} /> Stat Block Builder
-        </button>
-        <div className="title">
-          <h1>Token Stamp</h1>
-        </div>
-        <button className="menu-btn" onClick={() => setPage("character-sheet")}>
-          <FontAwesomeIcon icon={faArrowRight} /> Character Sheet
-        </button>
-      </div>
+      <Header
+        title="Token Stamp"
+        setPage={setPage}
+        previousPage={{ page: "stat-block-builder", label: "Stat Block Builder" }}
+        nextPage={{ page: "character-sheet", label: "Character Sheet" }}
+        className="statblock-page-header"
+      />
 
       <section className="App-body token-stamp-body">
         <div className="preview" style={{ gridColumn: "1" }}>

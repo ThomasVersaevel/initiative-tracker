@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "./DiceStudio.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { Header } from "../Header";
 
 const MAX_OUTCOMES = 2000;
 function analyzeDice(notation) {
@@ -145,20 +144,13 @@ export default function DiceStudio({ setPage }) {
 
   return (
     <div className="dice-studio">
-      <div className="App-header statblock-page-header">
-        <button className="menu-btn" onClick={() => setPage("character-sheet")}>
-          <FontAwesomeIcon icon={faArrowLeft} /> Character Sheet
-        </button>
-        <div className="title">
-          <h1>Dice Studio</h1>
-        </div>
-        <button
-          className="menu-btn"
-          onClick={() => setPage("initiative-tracker")}
-        >
-          <FontAwesomeIcon icon={faArrowRight} /> Initiative Tracker
-        </button>
-      </div>
+      <Header
+        title="Dice Studio"
+        setPage={setPage}
+        previousPage={{ page: "character-sheet", label: "Character Sheet" }}
+        nextPage={{ page: "initiative-tracker", label: "Initiative Tracker" }}
+        className="statblock-page-header"
+      />
 
       <div className="dice-studio__content">
         <form className="dice-studio__form" onSubmit={computeRolls}>

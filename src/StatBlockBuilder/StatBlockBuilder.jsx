@@ -1,12 +1,10 @@
 import React, { useEffect, useReducer, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowLeft,
   faHeart,
   faShield,
   faPlus,
   faUpload,
-  faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { SpeedStore } from "./ItemStores/SpeedStore";
 import { speedOptions, traitOptions } from "./TypesUtils/StoreTypes";
@@ -36,6 +34,7 @@ import { BonusActionStore } from "./ItemStores/BonusActionStore.jsx";
 import { ReactionStore } from "./ItemStores/ReactionStore.jsx";
 import { LairStore } from "./ItemStores/LairStore.jsx";
 import { NumericInput } from "../NumericInput";
+import { Header } from "../Header";
 
 const STAT_BLOCK_STORAGE_KEY = "statBlockBuilderState";
 const MAX_HISTORY_ENTRIES = 50;
@@ -487,20 +486,12 @@ function StatBlockBuilder({ setPage }) {
 
   return (
     <div className={`stat-block-normal ${statBlock.theme}`}>
-      <div className="App-header">
-        <button
-          className="menu-btn"
-          onClick={() => setPage("initiative-tracker")}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} /> Initiative Tracker
-        </button>
-        <div className="title">
-          <h1>Stat block builder</h1>
-        </div>
-        <button className="menu-btn" onClick={() => setPage("token-stamp")}>
-          Token Stamp <FontAwesomeIcon icon={faArrowRight} />
-        </button>
-      </div>
+      <Header
+        title="Stat block builder"
+        setPage={setPage}
+        previousPage={{ page: "initiative-tracker", label: "Initiative Tracker" }}
+        nextPage={{ page: "token-stamp", label: "Token Stamp" }}
+      />
 
       <div className="App-body flex">
         <div
