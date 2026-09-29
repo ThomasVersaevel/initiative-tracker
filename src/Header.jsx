@@ -2,6 +2,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import "./Header.css";
+import { AccountControl } from "./AccountControl";
 
 export function Header({
   title,
@@ -30,6 +31,7 @@ export function Header({
         </div>
 
         <div className="header-right-cluster">
+          <AccountControl />
           {rightContent}
           {nextPage && (
             <button className="menu-btn" onClick={() => setPage(nextPage.page)}>

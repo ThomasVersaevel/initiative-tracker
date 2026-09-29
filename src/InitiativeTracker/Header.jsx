@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { Header as PageHeader } from "../Header";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
-import { supabase } from "../Supabase";
+import { supabase, ensureAnonymousSession } from "../Supabase";
 import { Soundboard } from "./Soundboard";
 import { NumericInput } from "../NumericInput";
 
@@ -50,15 +50,28 @@ export function Header({
   };
 
   const saveCharacterStats = async (character) => {
+    const { configured, userId, error: sessionError } =
+      await ensureAnonymousSession();
+    if (!configured || sessionError || !userId) {
+      alert("Unable to save character.");
+      return false;
+    }
+
+    const ownedCharacter = { ...character, user_id: userId };
     const query =
       editingCharacterId !== null
         ? supabase
             .from("characters")
-            .update(character)
+            .update(ownedCharacter)
             .eq("id", editingCharacterId)
+            .eq("user_id", userId)
             .select()
             .single()
-        : supabase.from("characters").insert(character).select().single();
+        : supabase
+            .from("characters")
+            .insert(ownedCharacter)
+            .select()
+            .single();
     const { data, error } = await query;
 
     if (error) {
@@ -89,10 +102,18 @@ export function Header({
 
   const deleteCharacterStats = async (name) => {
     const character = pcStats[name];
+    const { configured, userId, error: sessionError } =
+      await ensureAnonymousSession();
+    if (!configured || sessionError || !userId) {
+      alert("Unable to delete character.");
+      return;
+    }
+
     const { error } = await supabase
       .from("characters")
       .delete()
-      .eq("id", character.id);
+      .eq("id", character.id)
+      .eq("user_id", userId);
 
     if (error) {
       console.error("Failed to delete character:", error);

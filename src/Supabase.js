@@ -13,14 +13,14 @@ export const supabase = createClient(supabaseUrl, supabaseKey, {
   },
 });
 
+export const isSupabaseConfigured = Boolean(
+  process.env.REACT_APP_SUPABASE_URL &&
+    process.env.REACT_APP_SUPABASE_PUBLISHABLE_KEY,
+);
+
 export const ensureAnonymousSession = async () => {
   try {
-    const hasConfig = Boolean(
-      process.env.REACT_APP_SUPABASE_URL &&
-        process.env.REACT_APP_SUPABASE_PUBLISHABLE_KEY,
-    );
-
-    if (!hasConfig) {
+    if (!isSupabaseConfigured) {
       return { configured: false, userId: null, error: null };
     }
 
