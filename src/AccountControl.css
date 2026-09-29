@@ -1,0 +1,184 @@
+.account-trigger {
+  font-size: 0.9rem;
+}
+
+.account-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.62);
+}
+
+.account-dialog {
+  width: min(100%, 26rem);
+  max-height: min(90vh, 42rem);
+  overflow-y: auto;
+  padding: 1.25rem;
+  color: var(--mainText);
+  background: var(--header);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.4);
+}
+
+.account-dialog-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.account-dialog-heading h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.account-close {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  color: var(--mainText);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.account-form,
+.account-form label,
+.account-signed-in {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 1rem;
+}
+
+.account-form label {
+  gap: 0.3rem;
+}
+
+.account-form input {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.6rem;
+  color: var(--mainText);
+  background: var(--main);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  font-size: 1.2rem;
+}
+
+.account-form input:focus-visible,
+.account-close:focus-visible,
+.account-mode-toggle:focus-visible,
+.account-dialog button:focus-visible,
+.account-privacy summary:focus-visible {
+  outline: 2px solid var(--button);
+  outline-offset: 2px;
+}
+
+.account-submit {
+  width: 100%;
+  min-height: 2.5rem;
+  font-size: 0.95rem;
+}
+
+.account-mode-toggle {
+  align-self: center;
+  padding: 0;
+  color: var(--mainText);
+  background: transparent;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.account-message {
+  margin: 0.75rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.account-signed-in p {
+  overflow-wrap: anywhere;
+}
+
+.account-privacy {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  line-height: 1.5;
+  font-size: 0.9rem;
+}
+
+.account-privacy summary {
+  cursor: pointer;
+}
+
+.account-privacy p {
+  margin: 0.65rem 0 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .account-trigger {
+    font-size: 0.8rem;
+    padding-inline: 0.4rem;
+  }
+}
+
+.account-action,
+.account-delete-button {
+  width: 100%;
+  min-height: 2.5rem;
+  font-size: 0.95rem;
+}
+
+.account-delete-confirmation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+}
+
+.account-delete-confirmation p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.account-delete-confirmation label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.account-delete-confirmation input {
+  min-height: 2.5rem;
+  padding: 0.45rem 0.6rem;
+  color: var(--mainText);
+  background: var(--main);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+}
+
+.account-delete-button {
+  background: #9b2c2c;
+  color: white;
+}
+
+.account-delete-button:hover:not(:disabled) {
+  background: #7f1d1d;
+}
+
+.account-delete-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

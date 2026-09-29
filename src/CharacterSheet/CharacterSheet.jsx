@@ -2,9 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import DiceBox from "@3d-dice/dice-box";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NumericInput } from "../NumericInput";
+import { Header } from "../Header";
 import {
-  faArrowLeft,
-  faArrowRight,
   faPlus,
   faMinus,
 } from "@fortawesome/free-solid-svg-icons";
@@ -200,20 +199,13 @@ export default function CharacterSheet({ setPage }) {
 
   return (
     <div className="character-sheet-page">
-      <div className="App-header statblock-page-header">
-        <button className="menu-btn" onClick={() => setPage("token-stamp")}>
-          <FontAwesomeIcon icon={faArrowLeft} /> Token Stamp
-        </button>
-        <div className="title">
-          <h1>Character Sheet</h1>
-        </div>
-        <button
-          className="menu-btn"
-          onClick={() => setPage("dice-studio")}
-        >
-          <FontAwesomeIcon icon={faArrowRight} /> Dice Studio
-        </button>
-      </div>
+      <Header
+        title="Character Sheet"
+        setPage={setPage}
+        previousPage={{ page: "token-stamp", label: "Token Stamp" }}
+        nextPage={{ page: "dice-studio", label: "Dice Studio" }}
+        className="statblock-page-header"
+      />
 
       <div className="App-body">
         <div className="character-sheet">

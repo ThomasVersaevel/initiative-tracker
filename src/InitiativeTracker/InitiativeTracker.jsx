@@ -80,66 +80,72 @@ function InitiativeTracker({ setPage }) {
   const [pcStats, setPcStats] = useState({});
 
   useEffect(() => {
-    const loadCharacters = async () => {
-      const { data, error } = await supabase.from("characters").select("*");
+    let isActive = true;
 
-      if (error) {
-        console.error("Failed to load characters:", error);
+    const loadSavedItems = async () => {
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+      const userId = sessionData.session?.user?.id;
+      if (!isActive) return;
+      if (sessionError || !userId) {
+        setPcStats({});
         return;
       }
 
-      const characterMap = Object.fromEntries(
-        data.map((character) => [character.name.toLowerCase(), character]),
-      );
+      const [charactersResult, statBlocksResult] = await Promise.all([
+        supabase.from("characters").select("*").eq("user_id", userId),
+        supabase
+          .from("stat_blocks")
+          .select("id, name, data")
+          .eq("user_id", userId),
+      ]);
+      if (!isActive) return;
 
-      setPcStats((current) => ({ ...current, ...characterMap }));
-    };
-
-    const loadStatBlocks = async () => {
-      try {
-        const { configured, userId } = await ensureAnonymousSession();
-
-        let query = supabase.from("stat_blocks").select("id, name, data");
-        if (configured && userId) {
-          query = query.eq("user_id", userId);
-        }
-
-        const { data, error: statBlockError } = await query;
-        if (statBlockError) {
-          console.error("Failed to load stat blocks:", statBlockError);
-          return;
-        }
-
-        const statBlockMap = Object.fromEntries(
-          (data || []).map((block) => {
-            const statData = block.data || {};
-            return [
-              block.name.toLowerCase(),
-              {
-                ...statData,
-                id: block.id,
-                name: block.name,
-                hp: Number(statData.hp ?? statData.hp ?? 0) || 0,
-                ac: Number(statData.ac ?? 0) || 0,
-                speed:
-                  Array.isArray(statData.speeds)
-                    ? statData.speeds.find((speed) => speed.type === "walk")
-                        ?.value || ""
-                    : statData.speed || "",
-                portrait: statData.portrait || "",
-              },
-            ];
-          }),
-        );
-
-        setPcStats((current) => ({ ...current, ...statBlockMap }));
-      } catch (caughtError) {
-        console.error("Failed to load stat blocks:", caughtError);
+      if (charactersResult.error) {
+        console.error("Failed to load characters:", charactersResult.error);
       }
+      if (statBlocksResult.error) {
+        console.error("Failed to load stat blocks:", statBlocksResult.error);
+      }
+
+      const characterMap = Object.fromEntries(
+        (charactersResult.data || []).map((character) => [
+          character.name.toLowerCase(),
+          character,
+        ]),
+      );
+      const statBlockMap = Object.fromEntries(
+        (statBlocksResult.data || []).map((block) => {
+          const statData = block.data || {};
+          return [
+            block.name.toLowerCase(),
+            {
+              ...statData,
+              id: block.id,
+              name: block.name,
+              hp: Number(statData.hp ?? 0) || 0,
+              ac: Number(statData.ac ?? 0) || 0,
+              speed: Array.isArray(statData.speeds)
+                ? statData.speeds.find((speed) => speed.type === "walk")
+                    ?.value || ""
+                : statData.speed || "",
+              portrait: statData.portrait || "",
+            },
+          ];
+        }),
+      );
+      setPcStats({ ...characterMap, ...statBlockMap });
     };
 
-    loadCharacters();
-    loadStatBlocks();
+    const { data: authListener } = supabase.auth.onAuthStateChange(() => {
+      setTimeout(loadSavedItems, 0);
+    });
+    loadSavedItems();
+
+    return () => {
+      isActive = false;
+      authListener.subscription.unsubscribe();
+    };
   }, []);
 
   const updateValues = (id, name, value) => {
@@ -151,10 +157,15 @@ function InitiativeTracker({ setPage }) {
   };
 
   const saveCharacterFromRow = async (row) => {
+    const { configured, userId, error: sessionError } =
+      await ensureAnonymousSession();
+    if (!configured || sessionError || !userId) return false;
+
     const character = {
       name: row.charactername.trim(),
       ac: Number(row.ac) || 0,
       hp: Number(row.hp) || 0,
+      user_id: userId,
     };
     const { data, error } = await supabase
       .from("characters")

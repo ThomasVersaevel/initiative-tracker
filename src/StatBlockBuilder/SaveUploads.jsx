@@ -182,7 +182,8 @@ const SaveUploads = ({
           data: statBlock,
           created_at: new Date().toISOString(),
         })
-        .eq("id", existingRows[0].id);
+        .eq("id", existingRows[0].id)
+        .eq("user_id", userId);
 
       if (updateError) {
         console.error("Failed to update stat block:", updateError);
@@ -326,6 +327,21 @@ const SaveUploads = ({
     fetchStatBlocks();
     /* eslint-disable react-hooks/exhaustive-deps */
   }, [debouncedSearchQuery, sortBy, pageNumber]);
+
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
+      if (!["SIGNED_IN", "SIGNED_OUT", "USER_UPDATED"].includes(event)) {
+        return;
+      }
+
+      setStatBlocks([]);
+      setTotalPages(0);
+      setTimeout(fetchStatBlocks, 0);
+    });
+
+    return () => authListener.subscription.unsubscribe();
+    /* eslint-disable react-hooks/exhaustive-deps */
+  }, []);
 
   useEffect(() => {
     return () => {

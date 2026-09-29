@@ -69,6 +69,7 @@
   white-space: nowrap;
   user-select: none;
 }
+
 .sound-toggle-button,
 .hamburger {
   background: var(--main);
@@ -86,7 +87,7 @@
 }
 
 .sound-toggle-button {
-  font-size: 1.0rem;
+  font-size: 1rem;
 }
 
 .sound-toggle-button:hover,
@@ -169,7 +170,6 @@
   flex-direction: row;
   justify-content: center;
   transform: translate(-50%, -50%);
-  z-index: 1000;
   border-radius: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   border: 1px solid var(--border);
@@ -235,8 +235,6 @@
 .delete-character {
   width: 24px;
   height: 24px;
-
   border: none;
-
   cursor: pointer;
 }
