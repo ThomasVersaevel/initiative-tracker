@@ -28,7 +28,7 @@ const defaultStatLabels = {
 };
 
 const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
-	{ statBlock, size },
+	{ statBlock, size, className = "" },
 	ref,
 ) {
 	const previewRef = useRef(null);
@@ -62,10 +62,9 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 	return (
 		<div
 			ref={previewRef}
-			className={`stat-block-image ${statBlock.theme}`}
+			className={`stat-block-normal stat-block-image ${statBlock.theme} ${className}`.trim()}
 			style={{
 				width: `${size?.width || 600}px`,
-				minHeight: `${size?.height || 700}px`,
 			}}
 		>
 			<div className="stat-block-image-heading">

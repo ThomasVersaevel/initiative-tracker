@@ -253,7 +253,7 @@ export function AccountControl() {
 
                 {showDeleteConfirmation ? (
                   <div className="account-delete-confirmation">
-                    <p>This permanently deletes your account and saved characters and stat blocks.</p>
+                    <p>This permanently deletes your account, initiative tracker, characters, and stat blocks.</p>
                     <label>
                       Type DELETE to confirm
                       <input
@@ -366,8 +366,9 @@ export function AccountControl() {
               <summary>Privacy notice</summary>
               <p>
                 Your email address and password are used only to create and
-                authenticate your account. Saved characters and stat blocks
-                are linked to your account so they can be saved and loaded.
+                authenticate your account. Your initiative tracker, saved
+                characters, and stat blocks are linked to your account so they
+                can be saved and loaded.
                 Supabase processes this information to provide the app's
                 account and storage features. It is not used for advertising,
                 analytics, or unrelated purposes, and this app does not store

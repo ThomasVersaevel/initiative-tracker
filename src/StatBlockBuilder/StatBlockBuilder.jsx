@@ -157,10 +157,6 @@ const getInitialStatBlock = () => {
         ...defaultStatBlock.size,
         ...(saved.size || {}),
       },
-      imageSize: {
-        ...defaultStatBlock.imageSize,
-        ...(saved.imageSize || saved.size || {}),
-      },
     };
   } catch {
     return structuredClone(defaultStatBlock);
@@ -1039,7 +1035,7 @@ function StatBlockBuilder({ setPage }) {
           <StatBlockImageGenerator
             ref={imageGeneratorRef}
             statBlock={statBlock}
-            imageSize={statBlock.imageSize}
+            size={statBlock.size}
           />
         </div>
       </div>

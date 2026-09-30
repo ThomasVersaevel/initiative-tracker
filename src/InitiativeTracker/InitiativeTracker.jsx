@@ -17,6 +17,22 @@ import { LegendaryTracker } from "./LegendaryTracker";
 import { supabase, ensureAnonymousSession } from "../Supabase";
 import StatBlockImageGenerator from "../StatBlockBuilder/StatBlockImageGenerator";
 
+const createRow = (id = 0) => ({
+  initiative: 0,
+  charactername: "",
+  legendary: false,
+  group: false,
+  speed: "",
+  hp: 0,
+  hpGroup: [0, 0, 0, 0],
+  ac: "",
+  spell: "",
+  condition: "",
+  timer: 0,
+  id,
+  isGroup: false,
+});
+
 function InitiativeTracker({ setPage }) {
   const [turn, setTurn] = useState(1);
 
@@ -33,22 +49,8 @@ function InitiativeTracker({ setPage }) {
     JSON.parse(Cookies.get("showDiceroller") ?? "false"),
   );
   const [showSoundboard, setShowSoundboard] = useState(false);
-
-  const createRow = (id = 0) => ({
-    initiative: 0,
-    charactername: "",
-    legendary: false,
-    group: false,
-    speed: "",
-    hp: 0,
-    hpGroup: [0, 0, 0, 0],
-    ac: "",
-    spell: "",
-    condition: "",
-    timer: 0,
-    id,
-    isGroup: false,
-  });
+  const [trackerUserId, setTrackerUserId] = useState(null);
+  const [trackerReady, setTrackerReady] = useState(false);
 
   const [gridRows, setGridRows] = useState(() => {
     const savedRows = Cookies.get("gridRows");
@@ -81,6 +83,67 @@ function InitiativeTracker({ setPage }) {
 
   useEffect(() => {
     let isActive = true;
+    let loadId = 0;
+
+    const loadInitiativeTracker = async () => {
+      const currentLoadId = ++loadId;
+      const { data: sessionData, error: sessionError } =
+        await supabase.auth.getSession();
+      if (!isActive || currentLoadId !== loadId) return;
+
+      const user = sessionData.session?.user;
+      if (sessionError || !user || user.is_anonymous) {
+        setTrackerUserId(null);
+        setTrackerReady(true);
+        return;
+      }
+
+      setTrackerReady(false);
+      const { data, error } = await supabase
+        .from("initiative_trackers")
+        .select("data")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (!isActive || currentLoadId !== loadId) return;
+      if (error) {
+        console.error("Failed to load initiative tracker:", error);
+        setTrackerUserId(null);
+        setTrackerReady(true);
+        return;
+      }
+
+      if (data?.data && typeof data.data === "object") {
+        const savedTracker = data.data;
+        if (Array.isArray(savedTracker.gridRows)) {
+          setGridRows(
+            savedTracker.gridRows.map((row, index) => ({
+              ...createRow(index),
+              ...row,
+              id: index,
+              hpGroup: row.hpGroup ?? [0, 0, 0, 0],
+              hp: row.hp ?? 0,
+              isGroup: row.isGroup ?? false,
+            })),
+          );
+        }
+        if (typeof savedTracker.showSpeed === "boolean") {
+          setShowSpeed(savedTracker.showSpeed);
+        }
+        if (typeof savedTracker.showSpellSave === "boolean") {
+          setShowSpell(savedTracker.showSpellSave);
+        }
+        if (typeof savedTracker.showCondition === "boolean") {
+          setShowCondition(savedTracker.showCondition);
+        }
+        if (typeof savedTracker.showDiceRoller === "boolean") {
+          setShowDiceRoller(savedTracker.showDiceRoller);
+        }
+      }
+
+      setTrackerUserId(user.id);
+      setTrackerReady(true);
+    };
 
     const loadSavedItems = async () => {
       const { data: sessionData, error: sessionError } =
@@ -138,9 +201,12 @@ function InitiativeTracker({ setPage }) {
     };
 
     const { data: authListener } = supabase.auth.onAuthStateChange(() => {
+      setTrackerReady(false);
       setTimeout(loadSavedItems, 0);
+      setTimeout(loadInitiativeTracker, 0);
     });
     loadSavedItems();
+    loadInitiativeTracker();
 
     return () => {
       isActive = false;
@@ -242,12 +308,12 @@ function InitiativeTracker({ setPage }) {
     }
 
     try {
+      const trackerImageWidth = Math.min(900, window.innerWidth - 32);
       const host = document.createElement("div");
       host.style.position = "fixed";
       host.style.left = "-10000px";
       host.style.top = "-10000px";
-      host.style.width = `${statBlock.size?.width || 600}px`;
-      host.style.height = `${statBlock.size?.height || 700}px`;
+      host.style.width = `${trackerImageWidth}px`;
       document.body.appendChild(host);
 
       const imageRef = { current: null };
@@ -256,7 +322,10 @@ function InitiativeTracker({ setPage }) {
         <StatBlockImageGenerator
           ref={imageRef}
           statBlock={statBlock}
-          size={statBlock.size || { width: 600, height: 700 }}
+          size={{
+            width: trackerImageWidth,
+          }}
+          className="initiative-tracker-stat-block-image"
         />,
       );
 
@@ -268,7 +337,10 @@ function InitiativeTracker({ setPage }) {
       host.remove();
 
       if (imageSource) {
-        setUploadedImages((prevImages) => [...prevImages, imageSource]);
+        setUploadedImages((prevImages) => [
+          ...prevImages,
+          { src: imageSource, className: "uploaded-stat-block-image" },
+        ]);
       }
     } catch (error) {
       console.error("Failed to generate stat block image preview:", error);
@@ -377,6 +449,41 @@ function InitiativeTracker({ setPage }) {
       expires: 18,
     });
   }, [gridRows, showSpeed, showSpellSave, showCondition, showDiceRoller]);
+
+  useEffect(() => {
+    if (!trackerReady || !trackerUserId) return undefined;
+
+    const saveTimeout = setTimeout(async () => {
+      const { error } = await supabase.from("initiative_trackers").upsert(
+        {
+          user_id: trackerUserId,
+          data: {
+            gridRows,
+            showSpeed,
+            showSpellSave,
+            showCondition,
+            showDiceRoller,
+          },
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" },
+      );
+
+      if (error) {
+        console.error("Failed to save initiative tracker:", error);
+      }
+    }, 2000);
+
+    return () => clearTimeout(saveTimeout);
+  }, [
+    gridRows,
+    showSpeed,
+    showSpellSave,
+    showCondition,
+    showDiceRoller,
+    trackerReady,
+    trackerUserId,
+  ]);
 
   const columnSizes = [
     "1fr", // Initiative

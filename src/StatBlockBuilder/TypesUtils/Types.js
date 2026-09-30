@@ -310,10 +310,6 @@ export const defaultStatBlock = {
     width: 600,
     height: 700,
   },
-  imageSize: {
-    width: 600,
-    height: 700,
-  },
 
   theme: "default",
 };
