@@ -179,6 +179,7 @@ function StatBlockBuilder({ setPage }) {
   const [storePanelOpen, setStorePanelOpen] = useState("");
   const imageGeneratorRef = useRef(null);
   const inventoryRef = useRef(null);
+  const tacticsRef = useRef(null);
 
   const setStatBlock = (update) => {
     const activeElement = document.activeElement;
@@ -226,11 +227,13 @@ function StatBlockBuilder({ setPage }) {
   }, [statBlock]);
 
   useEffect(() => {
-    if (!inventoryRef.current) return;
+    [inventoryRef.current, tacticsRef.current].forEach((textarea) => {
+      if (!textarea) return;
 
-    inventoryRef.current.style.height = "auto";
-    inventoryRef.current.style.height = `${inventoryRef.current.scrollHeight}px`;
-  }, [statBlock.inventory]);
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    });
+  }, [statBlock.inventory, statBlock.tactics]);
 
   const resizing = useRef(false);
 
@@ -990,15 +993,29 @@ function StatBlockBuilder({ setPage }) {
                 </button>
               </div>
             )}
-            <div className="stat-block-content-section stat-block-inventory border-top-3">
-              <h2 className="stat-block-section-header">Inventory</h2>
-              <textarea
-                ref={inventoryRef}
-                rows="1"
-                value={statBlock.inventory}
-                onChange={(e) => updateField("inventory", e.target.value)}
-                placeholder="Loot expected to be found on this monster"
-              />
+            <div className="stat-block-inventory-tactics border-top-3">
+              <div className="stat-block-content-section stat-block-inventory">
+                <h2 className="stat-block-section-header">Tactics</h2>
+                <textarea
+                  ref={tacticsRef}
+                  rows="1"
+                  value={statBlock.tactics}
+                  onChange={(e) => updateField("tactics", e.target.value)}
+                  aria-label="Tactics"
+                   placeholder="Fights till the death"
+                />
+              </div>
+              <div className="stat-block-content-section stat-block-inventory">
+                <h2 className="stat-block-section-header">Inventory</h2>
+                <textarea
+                  ref={inventoryRef}
+                  rows="1"
+                  value={statBlock.inventory}
+                  onChange={(e) => updateField("inventory", e.target.value)}
+                  placeholder="Loot expected to be found on this monster"
+                  aria-label="Inventory"
+                />
+              </div>
             </div>
           </form>
 

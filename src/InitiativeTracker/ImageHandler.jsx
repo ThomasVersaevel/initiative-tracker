@@ -54,9 +54,13 @@ export function ImageHandler({
     <>
       {uploadedImages.length > 0 && (
         <div className="image-gallery">
-          {uploadedImages.map((imageSource, index) => (
+          {uploadedImages.map((image, index) => (
             <div className="image-container" key={`uploaded-image-${index}`}>
-              <img className="uploaded-image" src={imageSource} alt={""} />
+              <img
+                className={`uploaded-image ${image.className || ""}`.trim()}
+                src={image.src || image}
+                alt=""
+              />
               <div className="img-buttons">
                 <button
                   className="delete-img-button"

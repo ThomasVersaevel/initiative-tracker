@@ -28,7 +28,7 @@ const defaultStatLabels = {
 };
 
 const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
-	{ statBlock, size },
+	{ statBlock, size, className = "" },
 	ref,
 ) {
 	const previewRef = useRef(null);
@@ -62,10 +62,9 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 	return (
 		<div
 			ref={previewRef}
-			className={`stat-block-image ${statBlock.theme}`}
+			className={`stat-block-normal stat-block-image ${statBlock.theme} ${className}`.trim()}
 			style={{
 				width: `${size?.width || 600}px`,
-				minHeight: `${size?.height || 700}px`,
 			}}
 		>
 			<div className="stat-block-image-heading">
@@ -244,10 +243,17 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						))}
 					</div>
 				)}
-				{String(statBlock.inventory ?? "").trim() && (
-					<div className="stat-block-image-inventory">
-						<h2>Inventory</h2>
-						<p className="stat-block-image-inventory-text">{statBlock.inventory}</p>
+				{(String(statBlock.tactics ?? "").trim() ||
+					String(statBlock.inventory ?? "").trim()) && (
+					<div className="stat-block-image-tactics-inventory">
+						<div className="stat-block-image-inventory">
+							<h2>Tactics</h2>
+							<p className="stat-block-image-inventory-text">{statBlock.tactics}</p>
+						</div>
+						<div className="stat-block-image-inventory">
+							<h2>Inventory</h2>
+							<p className="stat-block-image-inventory-text">{statBlock.inventory}</p>
+						</div>
 					</div>
 				)}
 			</div>

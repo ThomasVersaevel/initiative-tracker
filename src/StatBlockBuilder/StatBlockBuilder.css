@@ -85,7 +85,6 @@
 .stat-block-image {
   box-sizing: border-box;
   width: 600px;
-  min-height: 700px;
   padding: 5px;
   color: var(--text-color);
   background:
@@ -104,6 +103,11 @@
   font-size: 0.9rem;
 }
 
+.stat-block-image.initiative-tracker-stat-block-image {
+  padding: 2px;
+  font-size: 14px;
+}
+
 .stat-block-image-heading {
   display: flex;
   flex-wrap: wrap;
@@ -111,6 +115,11 @@
   gap: 8px 12px;
   padding-bottom: 10px;
   border-bottom: 3px solid var(--accent-color);
+}
+
+.initiative-tracker-stat-block-image .stat-block-image-heading {
+  gap: 4px 8px;
+  padding-bottom: 4px;
 }
 
 .stat-block-image-identity {
@@ -123,6 +132,10 @@
 .stat-block-image-heading h1 {
   margin: 0;
   font-size: 1.6rem;
+}
+
+.initiative-tracker-stat-block-image .stat-block-image-heading h1 {
+  font-size: 24px;
 }
 
 .stat-block-image-creature-details {
@@ -145,6 +158,11 @@
   gap: 10px;
   font-size: 1.15rem;
   font-weight: 700;
+}
+
+.initiative-tracker-stat-block-image .stat-block-image-basic-values,
+.initiative-tracker-stat-block-image .stat-block-image-speeds {
+  font-size: 22px;
 }
 
 .stat-block-image-speeds {
@@ -179,6 +197,11 @@
   text-align: center;
 }
 
+.initiative-tracker-stat-block-image .stat-block-image-stats {
+  gap: 4px;
+  padding: 6px 0;
+}
+
 .stat-block-image-stats div {
   display: flex;
   flex-direction: column;
@@ -198,12 +221,21 @@
   background: rgba(76, 48, 24, 0.1);
 }
 
+.initiative-tracker-stat-block-image .stat-block-image-score {
+  gap: 4px;
+  padding: 2px 5px;
+}
+
 .stat-block-image-stats small {
   opacity: 0.75;
 }
 
 .stat-block-image-copy p {
   margin: 10px 0;
+}
+
+.initiative-tracker-stat-block-image .stat-block-image-copy p {
+  margin: 3px 0;
 }
 
 .stat-block-image-abilities,
@@ -419,11 +451,30 @@
 }
 
 .stat-block-image-inventory {
-  border-top: 3px solid var(--accent-color);
+  min-width: 0;
 }
 
 .stat-block-image-inventory-text {
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.stat-block-image-tactics-inventory,
+.stat-block-inventory-tactics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stat-block-image-tactics-inventory {
+  border-top: 3px solid var(--accent-color);
+}
+
+.stat-block-inventory-tactics {
+  gap: 8px;
+}
+
+.stat-block-inventory-tactics > .stat-block-content-section {
+  min-width: 0;
 }
 
 .stat-block-inventory textarea {
@@ -458,6 +509,17 @@
 .stat-block-image-inventory h2 {
   margin-top: 8px;
   font-size: 1.1rem;
+}
+
+.initiative-tracker-stat-block-image .stat-block-image-abilities h2,
+.initiative-tracker-stat-block-image .stat-block-image-actions h2,
+.initiative-tracker-stat-block-image .stat-block-image-bonus-actions h2,
+.initiative-tracker-stat-block-image .stat-block-image-reactions h2,
+.initiative-tracker-stat-block-image .stat-block-image-legendary-actions h2,
+.initiative-tracker-stat-block-image .stat-block-image-lair-actions h2,
+.initiative-tracker-stat-block-image .stat-block-image-inventory h2 {
+  margin-top: 4px;
+  font-size: 22px;
 }
 
 .legendary-actions-add-button {

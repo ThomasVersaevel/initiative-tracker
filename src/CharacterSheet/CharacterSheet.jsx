@@ -225,7 +225,13 @@ export default function CharacterSheet({ setPage }) {
             <div className="character-actions">
               <button className="sheet-button">Short Rest</button>
               <button className="sheet-button">Long Rest</button>
-              <button className="sheet-button">Edit Sheet</button>
+              <button
+                className="sheet-button edit-sheet-button"
+                type="button"
+                onClick={() => setPage("character-sheet-editor")}
+              >
+                Edit Sheet
+              </button>
             </div>
           </section>
 

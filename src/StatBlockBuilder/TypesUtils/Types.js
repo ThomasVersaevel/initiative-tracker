@@ -250,6 +250,7 @@ export const defaultStatBlock = {
   legendary: false,
   lair: false,
   inventory: "",
+  tactics: "",
 
   speeds: [
     {

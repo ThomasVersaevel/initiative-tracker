@@ -133,7 +133,12 @@ body,
 }
 
 .uploaded-image {
-  max-height: 50vh;
+  max-height: 65vh;
+}
+
+.uploaded-stat-block-image {
+  width: min(573px, calc(63.7vw - 20.4px));
+  max-height: none;
 }
 
 .delete-img-button {

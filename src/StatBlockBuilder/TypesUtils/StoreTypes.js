@@ -41,6 +41,12 @@ export const resistanceOptions = [
   "psychic",
   "necrotic",
   "radiant",
+  "bludgeoning",
+  "non-magical bludgeoning",
+  "slashing",
+  "non-magical slashing",
+  "piercing",
+  "non-magical piercing",
 ];
 
 export const sensesOptions = [
