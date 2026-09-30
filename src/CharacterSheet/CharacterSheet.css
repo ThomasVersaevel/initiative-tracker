@@ -99,6 +99,12 @@
   background: #405a79;
 }
 
+.edit-sheet-button {
+  min-width: 120px;
+  padding: 8px 18px;
+  margin: 0 10px 0 16px;
+}
+
 .character-stats-row {
   display: flex;
   gap: 8px;

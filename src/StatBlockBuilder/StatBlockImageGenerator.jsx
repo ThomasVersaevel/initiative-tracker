@@ -244,10 +244,17 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						))}
 					</div>
 				)}
-				{String(statBlock.inventory ?? "").trim() && (
-					<div className="stat-block-image-inventory">
-						<h2>Inventory</h2>
-						<p className="stat-block-image-inventory-text">{statBlock.inventory}</p>
+				{(String(statBlock.tactics ?? "").trim() ||
+					String(statBlock.inventory ?? "").trim()) && (
+					<div className="stat-block-image-tactics-inventory">
+						<div className="stat-block-image-inventory">
+							<h2>Tactics</h2>
+							<p className="stat-block-image-inventory-text">{statBlock.tactics}</p>
+						</div>
+						<div className="stat-block-image-inventory">
+							<h2>Inventory</h2>
+							<p className="stat-block-image-inventory-text">{statBlock.inventory}</p>
+						</div>
 					</div>
 				)}
 			</div>

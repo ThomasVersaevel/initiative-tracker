@@ -419,11 +419,30 @@
 }
 
 .stat-block-image-inventory {
-  border-top: 3px solid var(--accent-color);
+  min-width: 0;
 }
 
 .stat-block-image-inventory-text {
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.stat-block-image-tactics-inventory,
+.stat-block-inventory-tactics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.stat-block-image-tactics-inventory {
+  border-top: 3px solid var(--accent-color);
+}
+
+.stat-block-inventory-tactics {
+  gap: 8px;
+}
+
+.stat-block-inventory-tactics > .stat-block-content-section {
+  min-width: 0;
 }
 
 .stat-block-inventory textarea {

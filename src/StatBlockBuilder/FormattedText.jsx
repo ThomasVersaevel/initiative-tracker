@@ -1,7 +1,7 @@
 import React from "react";
 import { formatLegendaryText } from "./TypesUtils/Types";
 
-const boldExpression = /\b\d+d\d+(?:\s*[+-]\s*\d+)?(?![A-Za-z])|\bDC\s+\d+\s+[A-Za-z]+\b/gi;
+const boldExpression = /\b\d+d\d+(?:\s*[+-]\s*\d+)?(?![A-Za-z])|\bDC\s+\d+\s+[A-Za-z]+\b|\b(?:Str|Dex|Con|Int|Wis|Cha)\b/gi
 const dcExpression = /^DC\s+\d+\s+[A-Za-z]+$/;
 
 export function FormattedText({ text = "", name, amount }) {

@@ -250,6 +250,7 @@ export const defaultStatBlock = {
   legendary: false,
   lair: false,
   inventory: "",
+  tactics: "",
 
   speeds: [
     {
@@ -306,6 +307,10 @@ export const defaultStatBlock = {
   },
 
   size: {
+    width: 600,
+    height: 700,
+  },
+  imageSize: {
     width: 600,
     height: 700,
   },

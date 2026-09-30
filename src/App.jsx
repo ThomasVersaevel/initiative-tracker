@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import StatBlockBuilder from "./StatBlockBuilder/StatBlockBuilder";
 import InitiativeTracker from "./InitiativeTracker/InitiativeTracker";
 import CharacterSheet from "./CharacterSheet/CharacterSheet";
+import CharacterSheetEditor from "./CharacterSheet/CharacterSheetEditor";
 import TokenStamp from "./TokenStamp/TokenStamp";
 import DiceStudio from "./DiceStudio/DiceStudio";
 import { ensureAnonymousSession } from "./Supabase";
@@ -12,6 +13,7 @@ const PAGE_IDS = [
   "stat-block-builder",
   "token-stamp",
   "character-sheet",
+  "character-sheet-editor",
   "dice-studio",
 ];
 
@@ -86,6 +88,19 @@ function App() {
             className="absolute inset-0 h-full w-full"
           >
             <CharacterSheet setPage={changePage} />
+          </motion.div>
+        )}
+
+        {page === "character-sheet-editor" && (
+          <motion.div
+            key="character-sheet-editor"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ duration: 0.1, ease: "easeInOut" }}
+            className="absolute inset-0 h-full w-full"
+          >
+            <CharacterSheetEditor onBack={() => changePage("character-sheet")} />
           </motion.div>
         )}
 
