@@ -102,6 +102,7 @@ export function AttackStore({
 								className="multiattack-total-input"
 								type="number"
 								min="0"
+								onWheel={(event) => event.currentTarget.blur()}
 								value={attacks.multiattack.count}
 								onChange={(event) =>
 									updateMultiattackTotal(event.target.value)

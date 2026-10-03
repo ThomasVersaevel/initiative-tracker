@@ -67,6 +67,19 @@ export function LairStore({ setStorePanelOpen, lair, setLair }) {
               }
             />
           </label>
+          <label className="legendary-store-uses">
+            Initiative count
+            <NumericInput
+              min="0"
+              value={lair.initiativeCount}
+              onChange={(event) =>
+                setLair((current) => ({
+                  ...current,
+                  initiativeCount: Math.max(0, Number(event.target.value) || 0),
+                }))
+              }
+            />
+          </label>
           {lair.actions.map((action) => (
             <div className="attack-editor" key={action.id}>
               <div className="attack-editor-header">

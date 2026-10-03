@@ -149,6 +149,9 @@ const getInitialStatBlock = () => {
         ...defaultStatBlock.lairDetails,
         ...(saved.lairDetails || {}),
         uses: saved.lairDetails?.uses ?? defaultStatBlock.lairDetails.uses,
+        initiativeCount:
+          saved.lairDetails?.initiativeCount ??
+          defaultStatBlock.lairDetails.initiativeCount,
         actions: Array.isArray(saved.lairDetails?.actions)
           ? saved.lairDetails.actions
           : defaultStatBlock.lairDetails.actions,
@@ -971,7 +974,9 @@ function StatBlockBuilder({ setPage }) {
               <div className="stat-block-content-section stat-block-lair-actions border-top-3">
                 <div className="stat-block-section-heading">
                   <h2 className="stat-block-section-header">Lair Actions</h2>
-                  <small>{statBlock.lairDetails.uses} per round</small>
+                  <small>
+                    {statBlock.lairDetails.uses} per round · At initiative count {statBlock.lairDetails.initiativeCount}
+                  </small>
                 </div>
                 {statBlock.lairDetails.actions.map((action) => (
                   <div className="attack-display-item" key={action.id}>

@@ -150,6 +150,7 @@ export default function CharacterSheetEditor({ onBack }) {
   const backgroundEquipment = backgrounds[character.background]?.equipment ?? [];
   const combinedEquipment = useMemo(
     () => [...classEquipment, ...backgroundEquipment],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [character.className, character.background],
   );
   const pointTotal = Object.values(character.scores).reduce(
@@ -230,7 +231,7 @@ export default function CharacterSheetEditor({ onBack }) {
                 </select>
               </Field>
               <Field label="Class level">
-                <input type="number" min="1" max="20" value={character.classLevel} onChange={(event) => update("classLevel", Math.min(20, Math.max(1, Number(event.target.value) || 1)))} />
+                <input type="number" min="1" max="20" value={character.classLevel} onWheel={(event) => event.currentTarget.blur()} onChange={(event) => update("classLevel", Math.min(20, Math.max(1, Number(event.target.value) || 1)))} />
               </Field>
               <Field label="Subclass">
                 <input value={character.subclass} onChange={(event) => update("subclass", event.target.value)} placeholder="Choose when available" />
@@ -276,7 +277,7 @@ export default function CharacterSheetEditor({ onBack }) {
                   </select>
                 </Field>
                 <Field label="Speed (ft.)">
-                  <input type="number" min="0" value={character.speciesSpeed} onChange={(event) => update("speciesSpeed", Math.max(0, Number(event.target.value) || 0))} />
+                  <input type="number" min="0" value={character.speciesSpeed} onWheel={(event) => event.currentTarget.blur()} onChange={(event) => update("speciesSpeed", Math.max(0, Number(event.target.value) || 0))} />
                 </Field>
               </div>
               <Field label="Languages">
@@ -391,7 +392,7 @@ export default function CharacterSheetEditor({ onBack }) {
                         {standardArray.map((score) => <option key={score} value={score} disabled={usedScores.includes(score)}>{score}</option>)}
                       </select>
                     ) : (
-                      <input id={`score-${key}`} type="number" min={character.abilityMethod === "point-buy" ? 8 : 1} max={character.abilityMethod === "point-buy" ? 15 : 30} value={character.scores[key]} onChange={(event) => updateScore(key, Math.min(character.abilityMethod === "point-buy" ? 15 : 30, Math.max(character.abilityMethod === "point-buy" ? 8 : 1, Number(event.target.value) || 1)))} />
+                      <input id={`score-${key}`} type="number" min={character.abilityMethod === "point-buy" ? 8 : 1} max={character.abilityMethod === "point-buy" ? 15 : 30} value={character.scores[key]} onWheel={(event) => event.currentTarget.blur()} onChange={(event) => updateScore(key, Math.min(character.abilityMethod === "point-buy" ? 15 : 30, Math.max(character.abilityMethod === "point-buy" ? 8 : 1, Number(event.target.value) || 1)))} />
                     )}
                     <span className="editor-adjusted-score">Final {finalScore}</span>
                     <strong>{modifier(finalScore) >= 0 ? "+" : ""}{modifier(finalScore)}</strong>
@@ -436,7 +437,7 @@ export default function CharacterSheetEditor({ onBack }) {
                 {character.equipment.map((item) => (
                   <li key={item.id}>
                     <span>{item.name}</span>
-                    <label>Qty <input type="number" min="1" value={item.quantity} onChange={(event) => update("equipment", character.equipment.map((current) => current.id === item.id ? { ...current, quantity: Math.max(1, Number(event.target.value) || 1) } : current))} /></label>
+                    <label>Qty <input type="number" min="1" value={item.quantity} onWheel={(event) => event.currentTarget.blur()} onChange={(event) => update("equipment", character.equipment.map((current) => current.id === item.id ? { ...current, quantity: Math.max(1, Number(event.target.value) || 1) } : current))} /></label>
                     <button type="button" aria-label={`Remove ${item.name}`} onClick={() => update("equipment", character.equipment.filter((current) => current.id !== item.id))}>Remove</button>
                   </li>
                 ))}

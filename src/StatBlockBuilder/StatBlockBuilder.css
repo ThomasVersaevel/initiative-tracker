@@ -1367,9 +1367,13 @@ input {
 }
 
 .store-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   border-bottom: 2px solid var(--accent-color);
   padding-bottom: 12px;
   margin-bottom: 15px;
+  background: var(--background-color);
 }
 
 .store-header h2 {
