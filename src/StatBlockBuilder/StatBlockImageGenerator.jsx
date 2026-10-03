@@ -229,11 +229,11 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						))}
 					</div>
 				)}
-				{statBlock.lair && statBlock.lairDetails.actions.length > 0 && (
+				{statBlock.lair && (
 					<div className="stat-block-image-lair-actions">
 						<div className="stat-block-section-heading">
 							<h2>Lair Actions</h2>
-							<small>{statBlock.lairDetails.uses} per round</small>
+							<small>{statBlock.lairDetails.uses} per round · At initiative count {statBlock.lairDetails.initiativeCount}</small>
 						</div>
 						{statBlock.lairDetails.actions.map((action) => (
 							<p key={action.id}>

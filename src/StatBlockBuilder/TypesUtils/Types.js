@@ -303,6 +303,7 @@ export const defaultStatBlock = {
 
   lairDetails: {
     uses: 3,
+    initiativeCount: 20,
     actions: [],
   },
 

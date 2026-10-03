@@ -8,6 +8,7 @@ export function NumericInput({
   ...inputProps
 }) {
   const [draft, setDraft] = useState(value ?? "");
+  const inputType = inputProps.type ?? "number";
 
   useEffect(() => {
     setDraft(value ?? "");
@@ -32,13 +33,21 @@ export function NumericInput({
     onBlur?.(event);
   };
 
+  const handleWheel = (event) => {
+    inputProps.onWheel?.(event);
+    if (inputType === "number" && !event.defaultPrevented) {
+      event.currentTarget.blur();
+    }
+  };
+
   return (
     <input
       {...inputProps}
-      type="number"
+      type={inputType}
       value={draft}
       onChange={handleChange}
       onBlur={handleBlur}
+      onWheel={handleWheel}
     />
   );
 }

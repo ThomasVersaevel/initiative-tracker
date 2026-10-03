@@ -76,6 +76,7 @@ export function GridRow({
     hpGroup: initialValues.hpGroup ?? [0, 0, 0, 0],
     isGroup: initialValues.isGroup ?? false,
   });
+  const hpRef = useRef(initialValues.hp ?? 0);
 
   const [nameRecognised, setNameRecognised] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -156,6 +157,7 @@ export function GridRow({
       legendary: importedLegendary,
     };
 
+    hpRef.current = importedHp;
     setValues((prev) => ({
       ...prev,
       ...importedRowValues,
@@ -198,7 +200,7 @@ export function GridRow({
   };
 
   const applyHpMath = (rawValue) => {
-    const currentHp = parseInt(values.hp, 10);
+    const currentHp = parseInt(hpRef.current, 10);
     const trimmed = String(rawValue).trim();
 
     let newHp = currentHp;
@@ -217,32 +219,23 @@ export function GridRow({
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
-      const newHp = applyHpMath(event.target.value);
-
-      setValues((prev) => ({
-        ...prev,
-        hp: newHp,
-      }));
-
-      updateValues(id, "hp", newHp);
-
-      if (newHp > maxHp) {
-        setMaxHp(newHp);
-      }
-
+      event.preventDefault();
       event.target.blur();
     }
   };
 
   const handleGroupToggle = (checked) => {
+    const nextHp = checked ? 0 : (values.hpGroup?.[0] ?? 0);
+    hpRef.current = nextHp;
     setValues((prev) => ({
       ...prev,
       isGroup: checked,
-      hp: checked ? 0 : (prev.hpGroup?.[0] ?? 0),
+      hp: nextHp,
       hpGroup: checked ? prev.hpGroup : [prev.hp, prev.hp, prev.hp, prev.hp],
     }));
 
     updateValues(id, "isGroup", checked);
+    updateValues(id, "hp", nextHp);
   };
 
   useEffect(() => {
@@ -294,6 +287,7 @@ export function GridRow({
   };
 
   useEffect(() => {
+    hpRef.current = initialValues.hp ?? 0;
     setValues({
       ...initialValues,
       hp: initialValues.hp ?? 0,
@@ -492,15 +486,10 @@ export function GridRow({
               handleNavigation(e);
               handleKeyDown(e);
             }}
-            onChange={(e) => {
-              setValues((prev) => ({
-                ...prev,
-                hp: e.target.value,
-              }));
-            }}
             onBlur={(e) => {
               const newHp = applyHpMath(e.target.value);
 
+              hpRef.current = newHp;
               setValues((prev) => ({
                 ...prev,
                 hp: newHp,
