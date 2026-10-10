@@ -115,7 +115,7 @@ function formatNumber(value) {
   return value.toLocaleString(undefined, { maximumFractionDigits: 2 });
 }
 
-export default function DiceStudio({ setPage }) {
+export default function DiceStudio({ setPage, compact = false }) {
   const [notation, setNotation] = useState("10d8");
   const [results, setResults] = useState([]);
   const [formError, setFormError] = useState("");
@@ -143,16 +143,22 @@ export default function DiceStudio({ setPage }) {
   };
 
   return (
-    <div className="dice-studio">
-      <Header
-        title="Dice Studio"
-        setPage={setPage}
-        previousPage={{ page: "character-sheet", label: "Character Sheet" }}
-        nextPage={{ page: "initiative-tracker", label: "Initiative Tracker" }}
-        className="statblock-page-header"
-      />
+    <div className={`dice-studio${compact ? " dice-studio--embedded" : ""}`}>
+      {!compact && (
+        <Header
+          title="Dice Studio"
+          setPage={setPage}
+          previousPage={{ page: "character-sheet", label: "Character Sheet" }}
+          nextPage={{ page: "initiative-tracker", label: "Initiative Tracker" }}
+          className="statblock-page-header"
+        />
+      )}
 
-      <div className="dice-studio__content">
+      <div
+        className={`dice-studio__content${
+          compact ? " dice-studio__content--embedded" : ""
+        }`}
+      >
         <form className="dice-studio__form" onSubmit={computeRolls}>
           <label className="dice-studio__field">
             <span className="dice-studio__label">

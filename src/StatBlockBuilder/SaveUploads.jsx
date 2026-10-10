@@ -14,6 +14,12 @@ import {
   normalizeStats,
   normalizeTraitSkills,
 } from "./TypesUtils/Types.js";
+import DiceStudio from "../DiceStudio/DiceStudio";
+
+const LIBRARY_TABS = [
+  { id: "saved-blocks", label: "Saved Stat Blocks" },
+  { id: "dice-studio", label: "Dice Studio" },
+];
 
 const SaveUploads = ({
   setStatBlock,
@@ -40,8 +46,34 @@ const SaveUploads = ({
   const [pendingImportBlock, setPendingImportBlock] = useState(null);
   const [pendingDeleteBlock, setPendingDeleteBlock] = useState(null);
   const debounceTimerRef = useRef(null);
+  const [activeLibraryTab, setActiveLibraryTab] = useState("saved-blocks");
+  const libraryTabRefs = useRef([]);
 
   const isLoadingLibrary = isLoading;
+
+  const handleLibraryTabKeyDown = (event) => {
+    const currentIndex = LIBRARY_TABS.findIndex(
+      ({ id }) => id === activeLibraryTab,
+    );
+    let nextIndex = currentIndex;
+
+    if (event.key === "ArrowRight") {
+      nextIndex = (currentIndex + 1) % LIBRARY_TABS.length;
+    } else if (event.key === "ArrowLeft") {
+      nextIndex = (currentIndex - 1 + LIBRARY_TABS.length) % LIBRARY_TABS.length;
+    } else if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = LIBRARY_TABS.length - 1;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    const nextTab = LIBRARY_TABS[nextIndex];
+    setActiveLibraryTab(nextTab.id);
+    libraryTabRefs.current[nextIndex]?.focus();
+  };
 
   const formatSavedDate = (dateString) => {
     if (!dateString) {
@@ -61,7 +93,7 @@ const SaveUploads = ({
     }
   };
 
-  const ITEMS_PER_PAGE = 12;
+  const ITEMS_PER_PAGE = 24;
 
   const closeImagePreview = () => setImagePreview("");
 
@@ -447,79 +479,110 @@ const SaveUploads = ({
 
   return (
     <div className="save-buttons">
-      <section className="side-panel-section">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".json,application/json"
-          onChange={handleFileUpload}
-          style={{ display: "none" }}
-        />
+      <div className="save-button-controls">
+        <section className="side-panel-section">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json,application/json"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+          />
 
-        <button
-          type="button"
-          className="btn btn-secondary import"
-          onClick={() => fileInputRef.current.click()}
-        >
-          Import Statblock JSON
-        </button>
-
-        <button
-          className="btn btn-secondary bot"
-          type="submit"
-          name="action"
-          value="save"
-          onClick={(e) => handleSubmit(e)}
-        >
-          Save Statblock
-        </button>
-
-        <button
-          className="btn btn-secondary bot"
-          type="submit"
-          name="action"
-          value="download-image"
-          onClick={(e) => handleSubmit(e)}
-        >
-          Download Statblock image
-        </button>
-
-        <button
-          className="btn btn-secondary bot"
-          type="submit"
-          name="action"
-          value="download-json"
-          onClick={(e) => handleSubmit(e)}
-        >
-          Download Stat JSON data
-        </button>
-      </section>
-
-      <section className="side-panel-section">
-        <div className="undo-redo-controls">
           <button
             type="button"
-            className="btn btn-secondary"
-            onClick={undo}
-            disabled={!canUndo}
+            className="btn btn-secondary import"
+            onClick={() => fileInputRef.current.click()}
           >
-            <FontAwesomeIcon icon={faArrowRotateLeft} aria-hidden="true" /> Undo
+            Import Statblock JSON
           </button>
+
           <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={redo}
-            disabled={!canRedo}
+            className="btn btn-secondary bot"
+            type="submit"
+            name="action"
+            value="save"
+            onClick={(e) => handleSubmit(e)}
           >
-            <FontAwesomeIcon icon={faArrowRotateRight} aria-hidden="true" />{" "}
-            Redo
+            Save Statblock
           </button>
+
+          <button
+            className="btn btn-secondary bot"
+            type="submit"
+            name="action"
+            value="download-image"
+            onClick={(e) => handleSubmit(e)}
+          >
+            Download Statblock image
+          </button>
+
+          <button
+            className="btn btn-secondary bot"
+            type="submit"
+            name="action"
+            value="download-json"
+            onClick={(e) => handleSubmit(e)}
+          >
+            Download Stat JSON data
+          </button>
+        </section>
+
+        <section className="side-panel-section">
+          <div className="undo-redo-controls">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={undo}
+              disabled={!canUndo}
+            >
+              <FontAwesomeIcon icon={faArrowRotateLeft} aria-hidden="true" /> Undo
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={redo}
+              disabled={!canRedo}
+            >
+              <FontAwesomeIcon icon={faArrowRotateRight} aria-hidden="true" />{" "}
+              Redo
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <div
+        className={`side-panel-section library-panel${
+          activeLibraryTab === "dice-studio"
+            ? " library-panel--dice-studio"
+            : ""
+        }`}
+      >
+        <div className="library-tabs" role="tablist" aria-label="Library tools">
+          {LIBRARY_TABS.map(({ id, label }, index) => (
+            <button
+              aria-controls={`${id}-panel`}
+              aria-selected={activeLibraryTab === id}
+              className={`library-tab${
+                activeLibraryTab === id ? " active" : ""
+              }`}
+              id={`${id}-tab`}
+              key={id}
+              onClick={() => setActiveLibraryTab(id)}
+              onKeyDown={handleLibraryTabKeyDown}
+              ref={(element) => {
+                libraryTabRefs.current[index] = element;
+              }}
+              role="tab"
+              tabIndex={activeLibraryTab === id ? 0 : -1}
+              type="button"
+            >
+              {label}
+            </button>
+          ))}
         </div>
-      </section>
 
-      <section className="side-panel-section library-panel">
-        <h3 className="library-heading">Saved Stat Blocks</h3>
-
+        <section className="side-panel-section library-content">
         {pendingImportBlock && (
           <div className="library-import-modal" role="dialog" aria-modal="true">
             <div className="library-import-modal-content">
@@ -574,6 +637,14 @@ const SaveUploads = ({
           </div>
         )}
 
+        <div
+          aria-labelledby="saved-blocks-tab"
+          className="library-tab-panel"
+          hidden={activeLibraryTab !== "saved-blocks"}
+          id="saved-blocks-panel"
+          role="tabpanel"
+          tabIndex={0}
+        >
         <div className="library-search">
           <input
             type="text"
@@ -702,7 +773,20 @@ const SaveUploads = ({
         ) : !isLoadingLibrary ? (
           <div className="library-empty">No results</div>
         ) : null}
-      </section>
+        </div>
+
+        <div
+          aria-labelledby="dice-studio-tab"
+          className="library-tab-panel"
+          hidden={activeLibraryTab !== "dice-studio"}
+          id="dice-studio-panel"
+          role="tabpanel"
+          tabIndex={0}
+        >
+          <DiceStudio compact />
+        </div>
+        </section>
+      </div>
 
       {(isGeneratingPreview || imagePreview) && (
         <div
