@@ -37,6 +37,4 @@ Todo 1.4
 Todo 1.5
     - Themes for stat blocks
     - Dice studio app
-
-
     - Accounts and login management.

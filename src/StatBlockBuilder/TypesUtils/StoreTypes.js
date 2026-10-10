@@ -37,6 +37,7 @@ export const resistanceOptions = [
   "thunder",
   "acid",
   "fire",
+  "cold",
   "poison",
   "psychic",
   "necrotic",

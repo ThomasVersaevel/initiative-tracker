@@ -61,7 +61,7 @@ const SaveUploads = ({
     }
   };
 
-  const ITEMS_PER_PAGE = 12;
+  const ITEMS_PER_PAGE = 27;
 
   const closeImagePreview = () => setImagePreview("");
 
@@ -447,75 +447,77 @@ const SaveUploads = ({
 
   return (
     <div className="save-buttons">
-      <section className="side-panel-section">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".json,application/json"
-          onChange={handleFileUpload}
-          style={{ display: "none" }}
-        />
+      <div className="save-button-controls">
+        <section className="side-panel-section">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json,application/json"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+          />
 
-        <button
-          type="button"
-          className="btn btn-secondary import"
-          onClick={() => fileInputRef.current.click()}
-        >
-          Import Statblock JSON
-        </button>
-
-        <button
-          className="btn btn-secondary bot"
-          type="submit"
-          name="action"
-          value="save"
-          onClick={(e) => handleSubmit(e)}
-        >
-          Save Statblock
-        </button>
-
-        <button
-          className="btn btn-secondary bot"
-          type="submit"
-          name="action"
-          value="download-image"
-          onClick={(e) => handleSubmit(e)}
-        >
-          Download Statblock image
-        </button>
-
-        <button
-          className="btn btn-secondary bot"
-          type="submit"
-          name="action"
-          value="download-json"
-          onClick={(e) => handleSubmit(e)}
-        >
-          Download Stat JSON data
-        </button>
-      </section>
-
-      <section className="side-panel-section">
-        <div className="undo-redo-controls">
           <button
             type="button"
-            className="btn btn-secondary"
-            onClick={undo}
-            disabled={!canUndo}
+            className="btn btn-secondary import"
+            onClick={() => fileInputRef.current.click()}
           >
-            <FontAwesomeIcon icon={faArrowRotateLeft} aria-hidden="true" /> Undo
+            Import Statblock JSON
           </button>
+
           <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={redo}
-            disabled={!canRedo}
+            className="btn btn-secondary bot"
+            type="submit"
+            name="action"
+            value="save"
+            onClick={(e) => handleSubmit(e)}
           >
-            <FontAwesomeIcon icon={faArrowRotateRight} aria-hidden="true" />{" "}
-            Redo
+            Save Statblock
           </button>
-        </div>
-      </section>
+
+          <button
+            className="btn btn-secondary bot"
+            type="submit"
+            name="action"
+            value="download-image"
+            onClick={(e) => handleSubmit(e)}
+          >
+            Download Statblock image
+          </button>
+
+          <button
+            className="btn btn-secondary bot"
+            type="submit"
+            name="action"
+            value="download-json"
+            onClick={(e) => handleSubmit(e)}
+          >
+            Download Stat JSON data
+          </button>
+        </section>
+
+        <section className="side-panel-section">
+          <div className="undo-redo-controls">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={undo}
+              disabled={!canUndo}
+            >
+              <FontAwesomeIcon icon={faArrowRotateLeft} aria-hidden="true" /> Undo
+            </button>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={redo}
+              disabled={!canRedo}
+            >
+              <FontAwesomeIcon icon={faArrowRotateRight} aria-hidden="true" />{" "}
+              Redo
+            </button>
+          </div>
+        </section>
+      </div>
 
       <section className="side-panel-section library-panel">
         <h3 className="library-heading">Saved Stat Blocks</h3>

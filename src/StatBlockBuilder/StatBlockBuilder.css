@@ -841,10 +841,17 @@ input {
 
 .save-buttons {
   display: flex;
-  flex-direction: column;
+  align-items: flex-start;
   gap: 16px;
   margin-left: 16px;
   height: auto;
+}
+
+.save-button-controls {
+  display: flex;
+  flex: 0 0 240px;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .side-panel-section {
@@ -865,6 +872,8 @@ input {
 
 .library-panel {
   position: relative;
+  flex: 1 1 auto;
+  min-width: 280px;
 }
 
 .library-heading {
@@ -953,7 +962,7 @@ input {
 .library-search-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 8px 10px;
+  padding: 4px 6px;
   color: var(--text-color);
   background: var(--light-grey);
   border: 1px solid var(--border);
@@ -1022,8 +1031,12 @@ input {
 
 .library-cards-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-rows: repeat(9, minmax(64px, auto));
+  grid-auto-columns: minmax(240px, 280px);
+  grid-auto-flow: column;
+  max-width: 100%;
   gap: 10px;
+  overflow-x: auto;
 }
 
 .library-card {
@@ -1054,10 +1067,9 @@ input {
     box-shadow 0.15s ease;
 }
 
-.library-card-main:hover,
-.library-card-main:focus-visible {
-  transform: translateY(-1px);
-  outline: none;
+.library-card:hover,
+.library-card:focus-visible {
+  border: 2px solid var(--button);
 }
 
 .library-card-icon {
