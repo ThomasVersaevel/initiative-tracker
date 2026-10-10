@@ -874,6 +874,68 @@ input {
   position: relative;
   flex: 1 1 auto;
   min-width: 280px;
+  min-height: 0;
+  gap: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+.library-panel--dice-studio {
+  flex: 0 1 540px;
+  width: min(100%, 540px);
+}
+
+.library-tabs {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+  margin-bottom: -1px;
+}
+
+.library-tab {
+  padding: 8px 10px;
+  color: var(--buttonText);
+  background: var(--tableHeader);
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.library-tab.active {
+  background: var(--header);
+}
+
+.library-tab:hover {
+  background: var(--row);
+}
+
+.library-content {
+  position: relative;
+  border-radius: 0 4px 4px;
+}
+
+.library-tab:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+.library-tab-panel[hidden] {
+  display: none;
+}
+
+.library-tab-panel[role="tabpanel"]:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.library-tab-panel:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 .library-heading {
@@ -1031,11 +1093,11 @@ input {
 
 .library-cards-grid {
   display: grid;
-  grid-template-rows: repeat(9, minmax(64px, auto));
+  grid-template-rows: repeat(8, minmax(64px, auto));
   grid-auto-columns: minmax(240px, 280px);
   grid-auto-flow: column;
   max-width: 100%;
-  gap: 10px;
+  gap: 16px;
   overflow-x: auto;
 }
 
@@ -1143,8 +1205,8 @@ input {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 12px;
+  margin-top: 10px;
 }
 
 .pagination-btn {

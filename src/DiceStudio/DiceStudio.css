@@ -6,6 +6,11 @@
   background: var(--main);
   color: var(--mainText);
 }
+.dice-studio--embedded {
+  height: auto;
+  overflow: visible;
+  background: transparent;
+}
 .dice-studio * {
   box-sizing: border-box;
 }
@@ -13,6 +18,10 @@
 .dice-studio__content {
   width: min(100%, 1420px);
   margin: 100px auto;
+}
+.dice-studio__content--embedded {
+  width: 100%;
+  margin: 0;
 }
 .dice-studio__eyebrow {
   margin: 0 0 8px;
@@ -166,6 +175,7 @@
 }
 .dice-studio__chart-heading h2 {
   margin: 0;
+  color: var(--mainText);
   font-size: 19px;
   font-weight: 500;
 }
@@ -228,6 +238,46 @@
   background: var(--border);
   content: "";
 }
+.dice-studio--embedded .dice-studio__form {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.dice-studio--embedded .dice-studio__field,
+.dice-studio--embedded .dice-studio__compute {
+  width: 100%;
+}
+.dice-studio--embedded .dice-studio__field {
+  flex: none;
+}
+.dice-studio--embedded .dice-studio__input {
+  min-height: 70px;
+}
+.dice-studio--embedded .dice-studio__results,
+.dice-studio--embedded .dice-studio__stats,
+.dice-studio--embedded .dice-studio__stat--combined {
+  grid-template-columns: minmax(0, 1fr);
+}
+.dice-studio--embedded .dice-studio__results {
+  gap: 12px;
+  margin-top: 12px;
+}
+.dice-studio--embedded .dice-studio__stat {
+  padding: 12px;
+}
+.dice-studio--embedded .dice-studio__stat-value {
+  font-size: 20px;
+}
+.dice-studio--embedded .dice-studio__chart-panel {
+  padding: 12px;
+}
+.dice-studio--embedded .dice-studio__chart {
+  height: 190px;
+}
+.dice-studio--embedded .dice-studio__chart-heading h2 {
+  color: #fff;
+}
 @media (max-width: 520px) {
   .dice-studio__form {
     flex-direction: column;
@@ -242,6 +292,9 @@
   }
   .dice-studio__input {
     width: 50%;
+  }
+  .dice-studio--embedded .dice-studio__input {
+    width: 100%;
   }
   .dice-studio__results--multiple {
     grid-template-columns: minmax(0, 1fr);
