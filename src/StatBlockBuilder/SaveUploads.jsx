@@ -583,60 +583,6 @@ const SaveUploads = ({
         </div>
 
         <section className="side-panel-section library-content">
-        {pendingImportBlock && (
-          <div className="library-import-modal" role="dialog" aria-modal="true">
-            <div className="library-import-modal-content">
-              <p>
-                Import <strong>{pendingImportBlock.name || "Unnamed"}</strong>? <br />
-                This will replace your current stat block.
-              </p>
-              <div className="library-import-modal-actions">
-                <button
-                  type="button"
-                  className="btn btn-primary bot"
-                  onClick={() => setPendingImportBlock(null)}
-                >
-                  No
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary bot"
-                  onClick={confirmImportFromLibrary}
-                >
-                  Yes
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {pendingDeleteBlock && (
-          <div className="library-import-modal" role="dialog" aria-modal="true">
-            <div className="library-import-modal-content">
-              <p>
-                Delete <strong>{pendingDeleteBlock.name || "Unnamed"}</strong>? <br />
-                This removes it from your saved stat blocks.
-              </p>
-              <div className="library-import-modal-actions">
-                <button
-                  type="button"
-                  className="btn btn-primary bot"
-                  onClick={() => setPendingDeleteBlock(null)}
-                >
-                  No
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary bot"
-                  onClick={confirmDeleteFromLibrary}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         <div
           aria-labelledby="saved-blocks-tab"
           className="library-tab-panel"
@@ -699,45 +645,111 @@ const SaveUploads = ({
           <>
             <div className="library-cards-grid">
               {statBlocks.map((block) => (
-                <div key={block.id} className="library-card">
-                  <button
-                    type="button"
-                    className="library-card-main"
-                    onClick={() => handleImportFromLibrary(block)}
-                    title={`Import ${block.name}`}
-                  >
-                    <span className="library-card-icon" aria-hidden="true">
-                      <FontAwesomeIcon icon={faArrowLeft} />
-                    </span>
-                    <span className="library-card-body">
-                      <span className="library-card-name">
-                        {block.name || "Unnamed"}
+                <div key={block.id} className="library-card-container">
+                  <div className="library-card">
+                    <button
+                      type="button"
+                      className="library-card-main"
+                      onClick={() => handleImportFromLibrary(block)}
+                      title={`Import ${block.name}`}
+                    >
+                      <span className="library-card-icon" aria-hidden="true">
+                        <FontAwesomeIcon icon={faArrowLeft} />
                       </span>
-                      <span className="library-card-meta">
-                        <span className="library-card-cr">
-                          CR {block.data?.traits?.challengeRating ?? "—"}
+                      <span className="library-card-body">
+                        <span className="library-card-name">
+                          {block.name || "Unnamed"}
                         </span>
-                        {block.created_at && (
-                          <span className="library-card-date">
-                            {formatSavedDate(block.created_at)}
+                        <span className="library-card-meta">
+                          <span className="library-card-cr">
+                            CR {block.data?.traits?.challengeRating ?? "—"}
                           </span>
-                        )}
+                          {block.created_at && (
+                            <span className="library-card-date">
+                              {formatSavedDate(block.created_at)}
+                            </span>
+                          )}
+                        </span>
                       </span>
-                    </span>
-                  </button>
+                    </button>
 
-                  <button
-                    type="button"
-                    className="library-card-delete"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleDeleteFromLibrary(block);
-                    }}
-                    title={`Delete ${block.name}`}
-                    aria-label={`Delete ${block.name}`}
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
+                    <button
+                      type="button"
+                      className="library-card-delete"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleDeleteFromLibrary(block);
+                      }}
+                      title={`Delete ${block.name}`}
+                      aria-label={`Delete ${block.name}`}
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </div>
+
+                  {pendingImportBlock?.id === block.id && (
+                    <div
+                      className="library-import-modal"
+                      role="dialog"
+                      aria-modal="true"
+                    >
+                      <div className="library-import-modal-content">
+                        <p>
+                          Import <strong>{block.name || "Unnamed"}</strong>?{" "}
+                          <br />
+                          This will replace your current stat block.
+                        </p>
+                        <div className="library-import-modal-actions">
+                          <button
+                            type="button"
+                            className="btn btn-primary bot"
+                            onClick={() => setPendingImportBlock(null)}
+                          >
+                            No
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-primary bot"
+                            onClick={confirmImportFromLibrary}
+                          >
+                            Yes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {pendingDeleteBlock?.id === block.id && (
+                    <div
+                      className="library-import-modal"
+                      role="dialog"
+                      aria-modal="true"
+                    >
+                      <div className="library-import-modal-content">
+                        <p>
+                          Delete <strong>{block.name || "Unnamed"}</strong>?{" "}
+                          <br />
+                          This removes it from your saved stat blocks.
+                        </p>
+                        <div className="library-import-modal-actions">
+                          <button
+                            type="button"
+                            className="btn btn-primary bot"
+                            onClick={() => setPendingDeleteBlock(null)}
+                          >
+                            No
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-primary bot"
+                            onClick={confirmDeleteFromLibrary}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
