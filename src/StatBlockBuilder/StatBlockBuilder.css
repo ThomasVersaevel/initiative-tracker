@@ -150,6 +150,28 @@
   object-fit: contain;
 }
 
+.stat-block-image-combat-values {
+  display: contents;
+}
+
+.stat-block-image-layout-1 .stat-block-image-identity {
+  order: 1;
+  max-width: none;
+}
+
+.stat-block-image-layout-1 .stat-block-image-portrait {
+  order: 2;
+}
+
+.stat-block-image-layout-1 .stat-block-image-combat-values {
+  display: flex;
+  flex: 1 0 100%;
+  order: 3;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
 .stat-block-image-basic-values {
   display: flex;
   flex: 0 0 auto;
@@ -1311,7 +1333,7 @@ input {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: min(700px, 100%);
+  max-width: min(90vw, 1300px);
   max-height: 95vh;
   padding: 20px;
   overflow: auto;
@@ -1335,6 +1357,20 @@ input {
   font-size: 1.5rem;
   letter-spacing: 0;
   text-align: center;
+}
+
+.stat-block-image-layout-options {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.stat-block-image-layout-options button[aria-pressed="true"] {
+  color: var(--buttonText);
+  background-color: var(--button);
+  border-color: var(--button);
 }
 
 .stat-block-image-modal-close {
@@ -1397,11 +1433,39 @@ input {
 
 .stat-block-image-modal-preview {
   display: block;
-  width: min(600px, 100%);
+  flex: 1 1 auto;
+  width: 600px;
+  max-width: calc(100% - 56px);
   height: auto;
   border: 1px solid var(--background-darker);
   border-radius: 4px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.stat-block-image-preview-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.stat-block-image-width-options {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+}
+
+.stat-block-image-width-options button {
+  min-width: 40px;
+}
+
+.stat-block-image-width-options span {
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .stat-block-image-modal-actions {

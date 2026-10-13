@@ -28,7 +28,7 @@ const defaultStatLabels = {
 };
 
 const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
-	{ statBlock, size, className = "" },
+	{ statBlock, size, imageLayout = 2, imageWidth, className = "" },
 	ref,
 ) {
 	const previewRef = useRef(null);
@@ -62,9 +62,9 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 	return (
 		<div
 			ref={previewRef}
-			className={`stat-block-normal stat-block-image ${statBlock.theme} ${className}`.trim()}
+			className={`stat-block-normal stat-block-image stat-block-image-layout-${imageLayout} ${statBlock.theme} ${className}`.trim()}
 			style={{
-				width: `${size?.width || 600}px`,
+				width: `${imageWidth || size?.width || 600}px`,
 			}}
 		>
 			<div className="stat-block-image-heading">
@@ -76,27 +76,29 @@ const StatBlockImageGenerator = forwardRef(function StatBlockImageGenerator(
 						{statBlock.creatureType || "Monster"}
 					</div>
 				</div>
-				<div className="stat-block-image-basic-values">
-					<span aria-label={`Hit points: ${statBlock.hp}`}>
-						<FontAwesomeIcon icon={faHeart} aria-hidden="true" /> {statBlock.hp}
-					</span>
-					<span aria-label={`Armor class: ${statBlock.ac}`}>
-						<FontAwesomeIcon icon={faShield} aria-hidden="true" /> {statBlock.ac}
-					</span>
-				</div>
-				<div className="stat-block-image-speeds">
-					{orderedSpeeds.map((speed) => (
-						<span
-							key={speed.type}
-							aria-label={`${speed.type} speed: ${speed.value}`}
-						>
-							<FontAwesomeIcon
-								icon={speedOptions.find((option) => option.type === speed.type)?.icon}
-								aria-hidden="true"
-							/>
-							{speed.value}
+				<div className="stat-block-image-combat-values">
+					<div className="stat-block-image-basic-values">
+						<span aria-label={`Hit points: ${statBlock.hp}`}>
+							<FontAwesomeIcon icon={faHeart} aria-hidden="true" /> {statBlock.hp}
 						</span>
-					))}
+						<span aria-label={`Armor class: ${statBlock.ac}`}>
+							<FontAwesomeIcon icon={faShield} aria-hidden="true" /> {statBlock.ac}
+						</span>
+					</div>
+					<div className="stat-block-image-speeds">
+						{orderedSpeeds.map((speed) => (
+							<span
+								key={speed.type}
+								aria-label={`${speed.type} speed: ${speed.value}`}
+							>
+								<FontAwesomeIcon
+									icon={speedOptions.find((option) => option.type === speed.type)?.icon}
+									aria-hidden="true"
+								/>
+								{speed.value}
+							</span>
+						))}
+					</div>
 				</div>
 				{statBlock.portrait && (
 					<img src={statBlock.portrait} alt="" className="stat-block-image-portrait" />

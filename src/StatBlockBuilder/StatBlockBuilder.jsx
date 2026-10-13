@@ -180,6 +180,10 @@ function StatBlockBuilder({ setPage }) {
   );
   const statBlock = history.present;
   const [storePanelOpen, setStorePanelOpen] = useState("");
+  const [imageLayout, setImageLayout] = useState(2);
+  const [imageWidth, setImageWidth] = useState(
+    history.present.size.width || 600,
+  );
   const imageGeneratorRef = useRef(null);
   const inventoryRef = useRef(null);
   const tacticsRef = useRef(null);
@@ -228,6 +232,10 @@ function StatBlockBuilder({ setPage }) {
       // Keep editing available if browser storage is unavailable or full.
     }
   }, [statBlock]);
+
+  useEffect(() => {
+    setImageWidth(statBlock.size.width || 600);
+  }, [statBlock.size.width]);
 
   useEffect(() => {
     [inventoryRef.current, tacticsRef.current].forEach((textarea) => {
@@ -1031,6 +1039,10 @@ function StatBlockBuilder({ setPage }) {
           setStatBlock={setStatBlock}
           statBlock={statBlock}
           imageGeneratorRef={imageGeneratorRef}
+          imageLayout={imageLayout}
+          setImageLayout={setImageLayout}
+          imageWidth={imageWidth}
+          setImageWidth={setImageWidth}
           canUndo={history.past.length > 0}
           canRedo={history.future.length > 0}
           undo={undo}
@@ -1041,6 +1053,8 @@ function StatBlockBuilder({ setPage }) {
             ref={imageGeneratorRef}
             statBlock={statBlock}
             size={statBlock.size}
+            imageLayout={imageLayout}
+            imageWidth={imageWidth}
           />
         </div>
       </div>

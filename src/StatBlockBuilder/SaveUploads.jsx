@@ -7,6 +7,8 @@ import {
   faSpinner,
   faArrowLeft,
   faTrash,
+  faPlus,
+  faMinus,
 } from "@fortawesome/free-solid-svg-icons";
 import { supabase, ensureAnonymousSession } from "../Supabase";
 import {
@@ -20,11 +22,18 @@ const LIBRARY_TABS = [
   { id: "saved-blocks", label: "Saved Stat Blocks" },
   { id: "dice-studio", label: "Dice Studio" },
 ];
+const IMAGE_WIDTH_STEP = 50;
+const MIN_IMAGE_WIDTH = 300;
+const MAX_IMAGE_WIDTH = 1200;
 
 const SaveUploads = ({
   setStatBlock,
   statBlock,
   imageGeneratorRef,
+  imageLayout,
+  setImageLayout,
+  imageWidth,
+  setImageWidth,
   canUndo,
   canRedo,
   undo,
@@ -114,6 +123,44 @@ const SaveUploads = ({
   const downloadImage = () => {
     imageGeneratorRef.current?.download(imagePreview);
     closeImagePreview();
+  };
+
+  const changeImageLayout = (layout) => {
+    if (layout === imageLayout || isGeneratingPreview) return;
+
+    setImageLayout(layout);
+    setIsGeneratingPreview(true);
+
+    requestAnimationFrame(async () => {
+      try {
+        const imageDataUrl = await imageGeneratorRef.current?.getImageDataUrl();
+        if (imageDataUrl) setImagePreview(imageDataUrl);
+      } catch (error) {
+        console.error("Failed to generate stat block image:", error);
+        alert("Unable to generate the stat block image.");
+      } finally {
+        setIsGeneratingPreview(false);
+      }
+    });
+  };
+
+  const changeImageWidth = (width) => {
+    if (width === imageWidth || isGeneratingPreview) return;
+
+    setImageWidth(width);
+    setIsGeneratingPreview(true);
+
+    requestAnimationFrame(async () => {
+      try {
+        const imageDataUrl = await imageGeneratorRef.current?.getImageDataUrl();
+        if (imageDataUrl) setImagePreview(imageDataUrl);
+      } catch (error) {
+        console.error("Failed to generate stat block image:", error);
+        alert("Unable to generate the stat block image.");
+      } finally {
+        setIsGeneratingPreview(false);
+      }
+    });
   };
 
   const handleFileUpload = (e) => {
@@ -809,14 +856,74 @@ const SaveUploads = ({
                 <FontAwesomeIcon icon={faXmark} aria-hidden="true" />
               </button>
             </div>
+            <div
+              className="stat-block-image-layout-options"
+              role="group"
+              aria-label="Image layout"
+            >
+              {[1, 2].map((layout) => (
+                <button
+                  key={layout}
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => changeImageLayout(layout)}
+                  disabled={isGeneratingPreview}
+                  aria-pressed={imageLayout === layout}
+                >
+                  Type {layout}
+                </button>
+              ))}
+            </div>
             {isGeneratingPreview ? (
               <p>Preparing image...</p>
             ) : (
-              <img
-                className="stat-block-image-modal-preview"
-                src={imagePreview}
-                alt={`Preview of ${statBlock.name || "stat block"}`}
-              />
+              <div className="stat-block-image-preview-row">
+                <img
+                  className="stat-block-image-modal-preview"
+                  src={imagePreview}
+                  alt={`Preview of ${statBlock.name || "stat block"}`}
+                  style={{ width: `${imageWidth}px` }}
+                />
+                <div
+                  className="stat-block-image-width-options"
+                  role="group"
+                  aria-label="Image width"
+                >
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() =>
+                      changeImageWidth(
+                        Math.max(MIN_IMAGE_WIDTH, imageWidth - IMAGE_WIDTH_STEP),
+                      )
+                    }
+                    disabled={
+                      isGeneratingPreview || imageWidth <= MIN_IMAGE_WIDTH
+                    }
+                    aria-label="Decrease image width"
+                    title="Decrease image width"
+                  >
+                    <FontAwesomeIcon icon={faMinus} aria-hidden="true" />
+                  </button>
+                  <span aria-live="polite">{imageWidth}px</span>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() =>
+                      changeImageWidth(
+                        Math.min(MAX_IMAGE_WIDTH, imageWidth + IMAGE_WIDTH_STEP),
+                      )
+                    }
+                    disabled={
+                      isGeneratingPreview || imageWidth >= MAX_IMAGE_WIDTH
+                    }
+                    aria-label="Increase image width"
+                    title="Increase image width"
+                  >
+                    <FontAwesomeIcon icon={faPlus} aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
             )}
             <div className="stat-block-image-modal-actions">
               <button
