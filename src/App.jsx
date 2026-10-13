@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import StatBlockBuilder from "./StatBlockBuilder/StatBlockBuilder";
 import InitiativeTracker from "./InitiativeTracker/InitiativeTracker";
 import CharacterSheet from "./CharacterSheet/CharacterSheet";
@@ -17,24 +18,37 @@ const PAGE_IDS = [
   "dice-studio",
 ];
 
+const PAGE_BY_PATH = {
+  "/": "initiative-tracker",
+  ...Object.fromEntries(PAGE_IDS.map((pageId) => [`/${pageId}`, pageId])),
+};
+
 function App() {
-  const [page, setPage] = useState(
-    () => {
-      const savedPage = localStorage.getItem("currentPage");
-      return PAGE_IDS.includes(savedPage) ? savedPage : "initiative-tracker";
-    },
+  const location = useLocation();
+  const navigate = useNavigate();
+  const pathname = location.pathname.replace(/\/+$/, "") || "/";
+  const isKnownPath = Object.prototype.hasOwnProperty.call(
+    PAGE_BY_PATH,
+    pathname,
   );
+  const page = isKnownPath ? PAGE_BY_PATH[pathname] : "initiative-tracker";
 
   useEffect(() => {
     ensureAnonymousSession();
   }, []);
 
+  useEffect(() => {
+    if (!isKnownPath) {
+      navigate("/initiative-tracker", { replace: true });
+    }
+  }, [isKnownPath, navigate]);
+
   const changePage = (newPage) => {
-    const nextPage = PAGE_IDS.includes(newPage)
-      ? newPage
-      : "initiative-tracker";
-    localStorage.setItem("currentPage", nextPage);
-    setPage(nextPage);
+    if (PAGE_IDS.includes(newPage)) {
+      navigate(`/${newPage}`);
+    } else {
+      navigate("/initiative-tracker");
+    }
   };
 
   return (

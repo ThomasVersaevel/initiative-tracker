@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import DiceBox from "@3d-dice/dice-box";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { NumericInput } from "../NumericInput";
 import { Header } from "../Header";
-import {
-  faPlus,
-  faMinus,
-} from "@fortawesome/free-solid-svg-icons";
+import AbilityScores from "./components/AbilityScores";
+import CombatStatsBar from "./components/CombatStatsBar";
+import SavingThrows from "./components/SavingThrows";
+import Skills from "./components/Skills";
+import CharacterContentPanel from "./components/CharacterContentPanel";
 import "./CharacterSheet.css";
 
 const initialStats = {
@@ -74,12 +73,14 @@ export default function CharacterSheet({ setPage }) {
   const [initiative] = useState(0);
   const [speed] = useState(30);
   const [proficiencyBonus] = useState(2);
-  const [activeTab, setActiveTab] = useState("actions");
-  const [lastRoll, setLastRoll] = useState(null);
+  const [rollResults, setRollResults] = useState([]);
   const [isDiceFading, setIsDiceFading] = useState(false);
+  const [rollError, setRollError] = useState("");
   const [hpChange, setHpChange] = useState(1);
   const diceRef = useRef(null);
   const diceCleanupTimerRef = useRef(null);
+  const nextRollIdRef = useRef(0);
+  const activeRollsRef = useRef(0);
 
   useEffect(() => {
     if (!diceRef.current) {
@@ -111,15 +112,6 @@ export default function CharacterSheet({ setPage }) {
     return () => clearTimeout(diceCleanupTimerRef.current);
   }, []);
 
-  const scheduleDiceCleanup = () => {
-    clearTimeout(diceCleanupTimerRef.current);
-    setIsDiceFading(true);
-    diceCleanupTimerRef.current = setTimeout(() => {
-      diceRef.current?.clear();
-      setIsDiceFading(false);
-    }, 550);
-  };
-
   const abilityEntries = useMemo(() => {
     return Object.entries(abilityMeta).map(([key, meta]) => {
       const stat = stats[key];
@@ -130,63 +122,84 @@ export default function CharacterSheet({ setPage }) {
         full: meta.full,
         score: stat,
         mod,
+        modifierText: sign(mod),
       };
     });
   }, [stats]);
 
-  const rollAbility = (abilityKey, rollName = abilityMeta[abilityKey].full) => {
-    const mod = modifierForScore(stats[abilityKey]);
-    const roll = Math.floor(Math.random() * 20) + 1;
-    setLastRoll(null);
+  const savingThrowEntries = savingThrows.map((item) => ({
+    ...item,
+    modifierText: sign(modifierForScore(stats[item.ability])),
+  }));
+  const skillEntries = skillRows.map((row) => ({
+    ...row,
+    modifierText: sign(modifierForScore(stats[row.ability])),
+  }));
+
+  const rollDice = (name, modifier) => {
+    const id = nextRollIdRef.current++;
+    const fallbackRoll = Math.floor(Math.random() * 20) + 1;
+    setRollResults((current) => [
+      ...current,
+      { id, name, roll: null, modifier, total: null, status: "rolling" },
+    ]);
+    setRollError("");
     clearTimeout(diceCleanupTimerRef.current);
     setIsDiceFading(false);
 
-    if (diceRef.current) {
-      diceRef.current.roll("1d20").then((results) => {
-        const result = results?.[0]?.value ?? roll;
-        setLastRoll({
-          name: rollName,
-          roll: result,
-          modifier: mod,
-          total: result + mod,
-        });
-        scheduleDiceCleanup();
-      });
-    } else {
-      setLastRoll({
-        name: rollName,
-        roll,
-        modifier: mod,
-        total: roll + mod,
-      });
+    const resolveRoll = (result) => {
+      setRollResults((current) =>
+        current.map((entry) =>
+          entry.id === id
+            ? {
+                ...entry,
+                roll: result,
+                total: result + modifier,
+                status: "resolved",
+              }
+            : entry,
+        ),
+      );
+    };
+
+    if (!diceRef.current) {
+      resolveRoll(fallbackRoll);
+      return;
     }
+
+    activeRollsRef.current += 1;
+    Promise.resolve()
+      .then(() => diceRef.current.add("1d20"))
+      .then((results) => {
+        resolveRoll(results?.[0]?.value ?? fallbackRoll);
+      })
+      .catch((error) => {
+        console.error("Unable to complete dice roll.", error);
+        setRollError("A dice roll could not be completed.");
+        setRollResults((current) =>
+          current.map((entry) =>
+            entry.id === id ? { ...entry, status: "failed" } : entry,
+          ),
+        );
+      })
+      .finally(() => {
+        activeRollsRef.current -= 1;
+        if (activeRollsRef.current === 0) {
+          setIsDiceFading(true);
+          diceCleanupTimerRef.current = setTimeout(() => {
+            diceRef.current?.clear();
+            setIsDiceFading(false);
+          }, 550);
+        }
+      });
+  };
+
+  const rollAbility = (abilityKey, rollName = abilityMeta[abilityKey].full) => {
+    rollDice(rollName, modifierForScore(stats[abilityKey]));
   };
 
   const rollInitiative = () => {
-    const roll = Math.floor(Math.random() * 20) + 1;
-    setLastRoll(null);
-    clearTimeout(diceCleanupTimerRef.current);
-    setIsDiceFading(false);
-
-    if (diceRef.current) {
-      diceRef.current.roll("1d20").then((results) => {
-        const result = results?.[0]?.value ?? roll;
-        setLastRoll({
-          name: "Initiative",
-          roll: result,
-          modifier: initiative,
-          total: result + initiative,
-        });
-        scheduleDiceCleanup();
-      });
-    } else {
-      setLastRoll({
-        name: "Initiative",
-        roll,
-        modifier: initiative,
-        total: roll + initiative,
-      });
-    }
+    rollDice("Initiative", initiative);
   };
 
   const updateStat = (key, nextValue) => {
@@ -236,142 +249,31 @@ export default function CharacterSheet({ setPage }) {
           </section>
 
           <section className="character-stats-row">
-            <div className="ability-stack">
-              {abilityEntries.map((ability) => (
-                <div className="ability-card" key={ability.key}>
-                  <div className="ability-label">{ability.full}</div>
-                  <button
-                    className="ability-modifier"
-                    type="button"
-                    onClick={() => rollAbility(ability.key)}
-                  >
-                    {sign(ability.mod)}
-                  </button>
-                  <NumericInput
-                    className="ability-override"
-                    min="1"
-                    max="30"
-                    value={ability.score}
-                    onChange={(e) => updateStat(ability.key, e.target.value)}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div className="core-info-strip">
-              <div className="core-info-block">
-                <div className="core-label">Proficiency</div>
-                <div className="core-value stat-shape proficiency-shape">
-                  {sign(proficiencyBonus)}
-                </div>
-              </div>
-              <div className="core-info-block">
-                <div className="core-label">Speed</div>
-                <div className="core-value stat-shape speed-shape">
-                  {speed} ft
-                </div>
-              </div>
-              <div className="core-info-block">
-                <div className="core-label">Hero Points</div>
-                <div className="core-value hp-controls">
-                  <button
-                    type="button"
-                    onClick={() => setHeroPoints(heroPoints - 1)}
-                  >
-                    <FontAwesomeIcon icon={faMinus} />
-                  </button>
-                  <span className="hp-number">{heroPoints}</span>
-                  <button
-                    type="button"
-                    onClick={() => setHeroPoints(heroPoints + 1)}
-                  >
-                    <FontAwesomeIcon icon={faPlus} />
-                  </button>
-                </div>
-              </div>
-              <div className="core-info-block">
-                <div className="core-label">Initiative</div>
-                <button
-                  type="button"
-                  className="initiative-button"
-                  onClick={rollInitiative}
-                >
-                  {sign(initiative)}
-                </button>
-              </div>
-              <div className="core-info-block">
-                <div className="core-label">Armor Class</div>
-                <div className="core-value stat-shape armor-shape">{ac}</div>
-              </div>
-              <div className="core-info-block">
-                <div className="core-label">HP</div>
-                <div className="core-value hp-controls">
-                  <NumericInput
-                    className="hp-current"
-                    value={hp}
-                    onChange={(e) => setHp(Number(e.target.value))}
-                  />
-                  <span>/</span>
-                  <input
-                    className="hp-max"
-                    type="number"
-                    value={maxHp}
-                    readOnly
-                    aria-label="Maximum hit points"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setHp(hp - hpChange)}
-                    aria-label="Decrease hit points"
-                  >
-                    <FontAwesomeIcon icon={faMinus} />
-                  </button>
-                  <NumericInput
-                    className="hp-change"
-                    min="1"
-                    value={hpChange}
-                    onChange={(e) =>
-                      setHpChange(Math.max(1, Number(e.target.value) || 1))
-                    }
-                    aria-label="Hit point change amount"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setHp(hp + hpChange)}
-                    aria-label="Increase hit points"
-                  >
-                    <FontAwesomeIcon icon={faPlus} />
-                  </button>
-                </div>
-              </div>
-            </div>
+            <AbilityScores
+              abilities={abilityEntries}
+              onRoll={rollAbility}
+              onUpdate={updateStat}
+            />
+            <CombatStatsBar
+              proficiencyBonus={proficiencyBonus}
+              speed={speed}
+              heroPoints={heroPoints}
+              setHeroPoints={setHeroPoints}
+              initiative={initiative}
+              onRollInitiative={rollInitiative}
+              ac={ac}
+              hp={hp}
+              setHp={setHp}
+              maxHp={maxHp}
+              hpChange={hpChange}
+              setHpChange={setHpChange}
+              formatModifier={sign}
+            />
           </section>
 
           <section className="character-lower-grid">
             <section className="sheet-column">
-              <h3>Saving Throws</h3>
-              <div className="saving-grid">
-                {savingThrows.map((item) => (
-                  <div className="save-row" key={item.label}>
-                    <button
-                      className="skill-mod save-roll-button"
-                      type="button"
-                      onClick={() =>
-                        rollAbility(item.ability, `${item.label} save`)
-                      }
-                      aria-label={`Roll ${item.label} save`}
-                    >
-                      {sign(modifierForScore(stats[item.ability]))}
-                    </button>
-                    <span
-                      className="save-proc skill-proficiency"
-                      aria-hidden="true"
-                    ></span>
-                    <span className="save-label">{item.label}</span>
-                  </div>
-                ))}
-              </div>
-
+              <SavingThrows rows={savingThrowEntries} onRoll={rollAbility} />
               <h3>Senses</h3>
               <div className="senses-list">
                 <span>Passive Perception 10</span>
@@ -383,95 +285,37 @@ export default function CharacterSheet({ setPage }) {
               </div>
             </section>
 
-            <section className="sheet-column skills">
-              <h3>Skills</h3>
-              <div className="skill-list">
-                {skillRows.map((row) => (
-                  <div className="skill-row" key={row.name}>
-                    <span
-                      className={`skill-proficiency ${row.prof ? "active" : ""}`}
-                    ></span>
-                    <span className="skill-ability">{row.ability}</span>
-                    <span className="skill-name">{row.name}</span>
-                    <button
-                      className="skill-mod"
-                      type="button"
-                      onClick={() => rollAbility(row.ability, row.name)}
-                    >
-                      {sign(modifierForScore(stats[row.ability]))}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className="tabs-block">
-              <div className="tabs-heading">
-                {[
-                  ["actions", "Actions"],
-                  ["spells", "Spells"],
-                  ["features", "Features"],
-                  ["inventory", "Inventory"],
-                  ["extra", "Extra"],
-                ].map(([key, label]) => (
-                  <button
-                    className={`tab-button ${activeTab === key ? "active" : ""}`}
-                    key={key}
-                    type="button"
-                    onClick={() => setActiveTab(key)}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              <div className="tab-content">
-                {activeTab === "actions" && (
-                  <ul>
-                    <li>Attack: Longsword</li>
-                    <li>Second Wind</li>
-                  </ul>
-                )}
-                {activeTab === "spells" && (
-                  <ul>
-                    <li>No prepared spells</li>
-                  </ul>
-                )}
-                {activeTab === "features" && (
-                  <ul>
-                    <li>Fighting Style: Defense</li>
-                    <li>Second Wind</li>
-                  </ul>
-                )}
-                {activeTab === "inventory" && (
-                  <ul>
-                    <li>Longsword</li>
-                    <li>Shield</li>
-                    <li>Explorer’s pack</li>
-                  </ul>
-                )}
-                {activeTab === "extra" && (
-                  <ul>
-                    <li>Human</li>
-                    <li>Level 1 Fighter</li>
-                    <li>Background: Outlander</li>
-                  </ul>
-                )}
-              </div>
-            </section>
+            <Skills rows={skillEntries} onRoll={rollAbility} />
+            <CharacterContentPanel />
           </section>
 
           <div className={`dicebox-overlay ${isDiceFading ? "fading" : ""}`}>
             <div id="dice-box-char" />
           </div>
-          {lastRoll && (
-            <div className="roll-result" role="status">
-              <span className="roll-result-name">{lastRoll.name}</span>
-              <strong>{lastRoll.total}</strong>
-              <span>
-                {lastRoll.roll} {sign(lastRoll.modifier)}
-              </span>
-            </div>
-          )}
+          <div className="roll-results">
+            {rollResults.map((roll) => (
+              <div className="roll-result" key={roll.id} role="status">
+                <span className="roll-result-name">{roll.name}</span>
+                {roll.status === "rolling" ? (
+                  <span>Rolling...</span>
+                ) : roll.status === "failed" ? (
+                  <span>Roll failed</span>
+                ) : (
+                  <>
+                    <strong>{roll.total}</strong>
+                    <span>
+                      {roll.roll} {sign(roll.modifier)}
+                    </span>
+                  </>
+                )}
+              </div>
+            ))}
+            {rollError && (
+              <div className="roll-error" role="alert">
+                {rollError}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
