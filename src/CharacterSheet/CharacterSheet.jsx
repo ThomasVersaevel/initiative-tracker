@@ -109,7 +109,10 @@ export default function CharacterSheet({
   const maxHp = 10;
   const [ac] = useState(10);
   const initiative = modifierForScore(stats.dex);
-  const speed = characterData.speciesSpeed ?? 30;
+  const speed =
+    characterData.speciesSpeed ??
+    characterData.speciesSnapshot?.species?.speed ??
+    30;
   const proficiencyBonus = Math.min(
     6,
     2 + Math.floor(((characterData.classLevel || 1) - 1) / 4),
@@ -290,19 +293,44 @@ export default function CharacterSheet({
     );
   }
 
+  const className =
+    characterData.classSnapshot?.class?.name ?? characterData.className;
+  const subclassName =
+    characterData.classSnapshot?.subclass?.name ?? characterData.subclass;
   const characterDescription = [
-    [characterData.species, characterData.speciesLineage].filter(Boolean).join(" "),
-    characterData.className,
-    `Level ${characterData.classLevel || 1}`,
+    [
+      characterData.speciesSnapshot?.species?.name ?? characterData.species,
+      characterData.speciesLineage,
+    ]
+      .filter(Boolean)
+      .join(" "),
+    characterData.speciesSize && `Size ${characterData.speciesSize}`,
+    className &&
+      `Level ${characterData.classLevel || 1} ${className}${
+        subclassName ? ` (${subclassName})` : ""
+      }`,
   ].filter(Boolean);
+  const classProficiencyData =
+    characterData.classSnapshot?.class?.proficiencies ?? {};
+  const proficiencyDetails = [
+    characterData.classProficiencies,
+    characterData.classSkills?.length &&
+      `Skills: ${characterData.classSkills.join(", ")}`,
+    classProficiencyData.weapon_proficiencies &&
+      `Weapons: ${classProficiencyData.weapon_proficiencies}`,
+    classProficiencyData.armor_training &&
+      `Armor: ${classProficiencyData.armor_training}`,
+    classProficiencyData.tool_proficiencies &&
+      `Tools: ${classProficiencyData.tool_proficiencies}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <div className="character-sheet-page">
       <Header
         title="Character Sheet"
         setPage={setPage}
-        previousPage={{ page: "characters", label: "Characters" }}
-        nextPage={{ page: "dice-studio", label: "Dice Studio" }}
         className="statblock-page-header"
       />
 
@@ -369,12 +397,18 @@ export default function CharacterSheet({
               <h3>Senses</h3>
               <div className="senses-list">
                 <span>Passive Perception {10 + modifierForScore(stats.wis) + (proficientSkills.has("Perception") ? proficiencyBonus : 0)}</span>
-                {characterData.speciesLanguages && <span>Languages: {characterData.speciesLanguages}</span>}
+                {(characterData.speciesLanguages ||
+                  characterData.speciesSnapshot?.species?.languages?.length) && (
+                  <span>
+                    Languages: {characterData.speciesLanguages ||
+                      characterData.speciesSnapshot.species.languages.join(", ")}
+                  </span>
+                )}
               </div>
 
               <h3>Proficiencies</h3>
               <div className="proficiency-list">
-                {characterData.classProficiencies || "No proficiencies recorded"}
+                {proficiencyDetails || "No proficiencies recorded"}
               </div>
             </section>
 

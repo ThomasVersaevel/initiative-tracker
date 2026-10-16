@@ -132,8 +132,6 @@ export function Header({
     <PageHeader
       title="Take Initiative"
       setPage={setPage}
-      previousPage={{ page: "dice-studio", label: "Dice Studio" }}
-      nextPage={{ page: "stat-block-builder", label: "Stat Block Builder" }}
       leftContent={
         <>
         <div className="hamburger-container" onBlur={handleBlur} ref={menuRef}>

@@ -30,8 +30,18 @@ Create and save multiple character sheets per account. The Characters page lists
 your saved sheets and opens each one with its saved identity, ability scores,
 proficiencies, features, and equipment.
 
-Apply the Supabase migration in `supabase/migrations/20261015000000_character_sheets.sql`
-to create the account-owned character sheet table and its row-level security policy.
+Apply the Supabase migrations in `supabase/migrations` to create the account-owned
+character sheet table and the rules catalog (rulesets, classes, subclasses,
+species, level-based class/subclass/species features, and class progression),
+with row-level security policies. The D&D SRD 5.2.1 migration seeds its nine
+player species and their traits, including lineage and ancestry choices.
+
+The seeded class and species data is derived from the D&D System Reference Document 5.2.1,
+Copyright Wizards of the Coast LLC, licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), and sourced from the
+[official SRD page](https://www.dndbeyond.com/srd). The text was extracted,
+normalized, and structured as catalog records. The SRD includes 12 classes and
+one subclass for each; it does not include every option from the 2024 rulebooks.
 
 ### development
 

@@ -503,8 +503,6 @@ function StatBlockBuilder({ setPage }) {
       <Header
         title="Stat block builder"
         setPage={setPage}
-        previousPage={{ page: "initiative-tracker", label: "Initiative Tracker" }}
-        nextPage={{ page: "token-stamp", label: "Token Stamp" }}
       />
 
       <div className="App-body flex">

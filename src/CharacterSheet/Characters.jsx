@@ -62,12 +62,11 @@ export default function Characters({
       <Header
         title="Characters"
         setPage={setPage}
-        nextPage={{ page: "initiative-tracker", label: "Initiative Tracker" }}
         className="statblock-page-header"
-        rightContent={
+        leftContent={
           <button
             type="button"
-            className="characters-create-button"
+            className="menu-btn"
             onClick={onCreateCharacter}
           >
             New Character

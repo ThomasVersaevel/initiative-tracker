@@ -148,8 +148,6 @@ export default function DiceStudio({ setPage, compact = false }) {
         <Header
           title="Dice Studio"
           setPage={setPage}
-          previousPage={{ page: "characters", label: "Characters" }}
-          nextPage={{ page: "initiative-tracker", label: "Initiative Tracker" }}
           className="statblock-page-header"
         />
       )}

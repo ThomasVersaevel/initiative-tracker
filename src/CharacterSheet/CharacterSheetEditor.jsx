@@ -1,4 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { NavigationMenu } from "../Header";
+import { ensureAnonymousSession, isSupabaseConfigured, supabase } from "../Supabase";
 import "./CharacterSheetEditor.css";
 
 const tabs = ["Basic", "Class", "Race", "Background", "Abilities", "Extra"];
@@ -17,21 +19,7 @@ const skills = [
   "Sleight of Hand", "Stealth", "Survival",
 ];
 
-const classes = {
-  Artificer: { skillCount: 2, equipment: ["Choose artisan's tools", "Choose a simple weapon", "Explorer's pack"] },
-  Barbarian: { skillCount: 2, equipment: ["Choose a martial melee weapon", "Two handaxes", "Explorer's pack"] },
-  Bard: { skillCount: 3, equipment: ["Choose a musical instrument", "Leather armor", "Dagger"] },
-  Cleric: { skillCount: 2, equipment: ["Choose a simple weapon", "Shield", "Holy symbol"] },
-  Druid: { skillCount: 2, equipment: ["Wooden shield", "Druidic focus", "Explorer's pack"] },
-  Fighter: { skillCount: 2, equipment: ["Choose a martial weapon", "Shield", "Explorer's pack"] },
-  Monk: { skillCount: 2, equipment: ["Choose a simple weapon", "Dungeoneer's pack", "10 darts"] },
-  Paladin: { skillCount: 2, equipment: ["Choose a martial weapon", "Shield", "Holy symbol"] },
-  Ranger: { skillCount: 3, equipment: ["Choose a martial weapon", "Choose two simple weapons", "Explorer's pack"] },
-  Rogue: { skillCount: 4, equipment: ["Choose a rapier or shortsword", "Shortbow and arrows", "Burglar's pack"] },
-  Sorcerer: { skillCount: 2, equipment: ["Choose a simple weapon", "Arcane focus", "Explorer's pack"] },
-  Warlock: { skillCount: 2, equipment: ["Choose a simple weapon", "Arcane focus", "Scholar's pack"] },
-  Wizard: { skillCount: 2, equipment: ["Choose a simple weapon", "Spellbook", "Scholar's pack"] },
-};
+const rulesetSlug = "dnd-srd-5-2-1";
 
 const backgrounds = {
   Acolyte: { skills: ["Insight", "Religion"], equipment: ["Holy symbol", "Prayer book", "Common clothes"] },
@@ -49,7 +37,6 @@ const backgrounds = {
   Wayfarer: { skills: ["Insight", "Survival"], equipment: ["Bedroll", "Traveler's clothes"] },
 };
 
-const species = ["Aasimar", "Dragonborn", "Dwarf", "Elf", "Gnome", "Goliath", "Halfling", "Human", "Orc", "Tiefling"];
 const standardArray = [15, 14, 13, 12, 10, 8];
 
 function modifier(score) {
@@ -72,16 +59,25 @@ function Field({ label, children, hint }) {
   );
 }
 
-function EquipmentPreview({ title, items }) {
+function EquipmentPreview({ title, items, description }) {
   return (
     <section className="editor-preview">
       <h3>{title}</h3>
+      {description && <p>{description}</p>}
       {items?.length ? (
         <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
-      ) : (
+      ) : description ? null : (
         <p>Select an option to preview its starting equipment.</p>
       )}
-      <small>Equipment is added to the character from the Extra tab.</small>
+      {items?.length > 0 && (
+        <small>Equipment is added to the character from the Extra tab.</small>
+      )}
+      {description && !items?.length && (
+        <small>
+          Review the equipment options, then add chosen items individually in
+          the Extra tab.
+        </small>
+      )}
     </section>
   );
 }
@@ -91,8 +87,11 @@ const emptyCharacter = {
   portrait: "",
   advancement: "milestone",
   className: "",
+  classId: "",
   classLevel: 1,
   subclass: "",
+  subclassId: "",
+  classSnapshot: null,
   classSkills: [],
   classProficiencies: "",
   classFeatures: "",
@@ -126,7 +125,7 @@ const emptyCharacter = {
 };
 
 export default function CharacterSheetEditor({
-  onBack,
+  setPage,
   onSave,
   initialCharacter,
 }) {
@@ -140,6 +139,198 @@ export default function CharacterSheetEditor({
   const [newItem, setNewItem] = useState("");
   const [saveError, setSaveError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [classCatalog, setClassCatalog] = useState({
+    classes: [],
+    isLoading: true,
+    error: "",
+    ruleset: null,
+  });
+  const [speciesCatalog, setSpeciesCatalog] = useState({
+    species: [],
+    isLoading: true,
+    error: "",
+    ruleset: null,
+  });
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadClassCatalog = async () => {
+      if (!isSupabaseConfigured) {
+        if (isActive) {
+          setClassCatalog({
+            classes: [],
+            isLoading: false,
+            error: "Connect Supabase to load the class catalog.",
+            ruleset: null,
+          });
+          setSpeciesCatalog({
+            species: [],
+            isLoading: false,
+            error: "Connect Supabase to load the species catalog.",
+            ruleset: null,
+          });
+        }
+        return;
+      }
+
+      const { configured, userId, error: sessionError } =
+        await ensureAnonymousSession();
+      if (!isActive) return;
+      if (!configured || sessionError || !userId) {
+        setClassCatalog({
+          classes: [],
+          isLoading: false,
+          error:
+            sessionError?.friendlyMessage ||
+            sessionError?.message ||
+            "Unable to connect to the class catalog.",
+          ruleset: null,
+        });
+        setSpeciesCatalog({
+          species: [],
+          isLoading: false,
+          error:
+            sessionError?.friendlyMessage ||
+            sessionError?.message ||
+            "Unable to connect to the species catalog.",
+          ruleset: null,
+        });
+        return;
+      }
+
+      const { data: ruleset, error: rulesetError } = await supabase
+        .from("rulesets")
+        .select("id, name, slug")
+        .eq("slug", rulesetSlug)
+        .maybeSingle();
+
+      if (!isActive) return;
+      if (rulesetError || !ruleset) {
+        if (rulesetError) {
+          console.error("Failed to load the SRD ruleset:", rulesetError);
+        }
+        setClassCatalog({
+          classes: [],
+          isLoading: false,
+          error: rulesetError
+            ? "Unable to load the class ruleset. Apply the class catalog migrations and try again."
+            : "The SRD class catalog is not installed yet. Apply the class catalog migrations.",
+          ruleset: null,
+        });
+        setSpeciesCatalog({
+          species: [],
+          isLoading: false,
+          error: "Unable to load the species ruleset.",
+          ruleset: null,
+        });
+        return;
+      }
+
+      const { data: speciesRows, error: speciesError } = await supabase
+        .from("species")
+        .select(`
+          id, slug, name, description, creature_type, size_options, speed, languages,
+          species_features (id, slug, name, description, level, sort_order, choices)
+        `)
+        .eq("ruleset_id", ruleset.id)
+        .eq("status", "published")
+        .order("name");
+
+      if (!isActive) return;
+      if (speciesError) {
+        console.error("Failed to load the species catalog:", speciesError);
+        setSpeciesCatalog({
+          species: [],
+          isLoading: false,
+          error:
+            "Unable to load the species catalog. Apply the species catalog migration and try again.",
+          ruleset,
+        });
+      } else {
+        setSpeciesCatalog({
+          species: (speciesRows ?? []).map((speciesData) => ({
+            ...speciesData,
+            species_features: [...(speciesData.species_features ?? [])].sort(
+              (left, right) =>
+                left.level - right.level || left.sort_order - right.sort_order,
+            ),
+          })),
+          isLoading: false,
+          error: "",
+          ruleset,
+        });
+      }
+
+      const { data: rows, error: classesError } = await supabase
+        .from("classes")
+        .select(`
+          id, slug, name, description, hit_die, primary_abilities,
+          saving_throw_proficiencies, proficiencies, starting_equipment,
+          class_features (id, slug, name, description, level, sort_order),
+          subclasses (
+            id, slug, name, description, unlock_level,
+            subclass_features (id, slug, name, description, level, sort_order)
+          )
+        `)
+        .eq("ruleset_id", ruleset.id)
+        .eq("status", "published")
+        .order("name");
+
+      if (!isActive) return;
+      if (classesError) {
+        console.error("Failed to load the class catalog:", classesError);
+        setClassCatalog({
+          classes: [],
+          isLoading: false,
+          error: "Unable to load the class catalog. Please try again.",
+          ruleset,
+        });
+        return;
+      }
+
+      const sortFeatures = (features = []) =>
+        [...features].sort(
+          (left, right) =>
+            left.level - right.level || left.sort_order - right.sort_order,
+        );
+      setClassCatalog({
+        classes: (rows ?? []).map((classData) => ({
+          ...classData,
+          class_features: sortFeatures(classData.class_features),
+          subclasses: (classData.subclasses ?? []).map((subclass) => ({
+            ...subclass,
+            subclass_features: sortFeatures(subclass.subclass_features),
+          })),
+        })),
+        isLoading: false,
+        error: "",
+        ruleset,
+      });
+    };
+
+    loadClassCatalog().catch((error) => {
+      console.error("Failed to load the class catalog:", error);
+      if (isActive) {
+        setClassCatalog({
+          classes: [],
+          isLoading: false,
+          error: error.message || "Unable to load the class catalog.",
+          ruleset: null,
+        });
+        setSpeciesCatalog({
+          species: [],
+          isLoading: false,
+          error: error.message || "Unable to load the species catalog.",
+          ruleset: null,
+        });
+      }
+    });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   const update = (field, value) => {
     setCharacter((current) => ({ ...current, [field]: value }));
@@ -159,18 +350,55 @@ export default function CharacterSheetEditor({
     }));
   };
 
-  const classEquipment = classes[character.className]?.equipment ?? [];
+  const selectedClass = classCatalog.classes.find(
+    (classData) =>
+      classData.id === character.classId ||
+      classData.name === character.className,
+  );
+  const selectedSubclass = selectedClass?.subclasses.find(
+    (subclass) =>
+      subclass.id === character.subclassId ||
+      subclass.name === character.subclass,
+  );
+  const selectedSpecies = speciesCatalog.species.find(
+    (speciesData) =>
+      speciesData.id === character.speciesId ||
+      speciesData.name === character.species,
+  );
+  const selectedSpeciesFeatures = (selectedSpecies?.species_features ?? []).filter(
+    (feature) => feature.level <= character.classLevel,
+  );
+  const classEquipment = selectedClass?.starting_equipment?.items ?? [];
+  const classEquipmentDescription =
+    selectedClass?.starting_equipment?.description ?? "";
   const backgroundEquipment = backgrounds[character.background]?.equipment ?? [];
   const combinedEquipment = useMemo(
     () => [...classEquipment, ...backgroundEquipment],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [character.className, character.background],
+    [selectedClass?.id, character.background],
   );
   const pointTotal = Object.values(character.scores).reduce(
     (total, score) => total + pointCost(score),
     0,
   );
-  const selectedClass = classes[character.className];
+  const classFeatures = [
+    ...(selectedClass?.class_features ?? [])
+      .filter((feature) => feature.level <= character.classLevel)
+      .map((feature) => ({ ...feature, source: "class" })),
+    ...(selectedSubclass?.subclass_features ?? [])
+      .filter((feature) => feature.level <= character.classLevel)
+      .map((feature) => ({ ...feature, source: "subclass" })),
+  ].sort(
+    (left, right) =>
+      left.level - right.level ||
+      left.sort_order - right.sort_order ||
+      left.name.localeCompare(right.name),
+  );
+  const classSkillCount =
+    selectedClass?.proficiencies?.skill_choice_count ?? 0;
+  const allowedClassSkills = new Set(
+    selectedClass?.proficiencies?.skill_options ?? [],
+  );
 
   const save = async () => {
     if (!character.name.trim()) {
@@ -182,7 +410,86 @@ export default function CharacterSheetEditor({
     setIsSaving(true);
     setSaveError("");
     try {
-      await onSave(character);
+      const classSnapshot = selectedClass
+        ? {
+            ruleset: classCatalog.ruleset,
+            class: {
+              id: selectedClass.id,
+              slug: selectedClass.slug,
+              name: selectedClass.name,
+              description: selectedClass.description,
+              hitDie: selectedClass.hit_die,
+              primaryAbilities: selectedClass.primary_abilities,
+              savingThrowProficiencies:
+                selectedClass.saving_throw_proficiencies,
+              proficiencies: selectedClass.proficiencies,
+              startingEquipment: selectedClass.starting_equipment,
+            },
+            subclass: selectedSubclass
+              ? {
+                  id: selectedSubclass.id,
+                  slug: selectedSubclass.slug,
+                  name: selectedSubclass.name,
+                  description: selectedSubclass.description,
+                }
+              : null,
+            features: classFeatures.map(
+              ({ id, level, name, description, source }) => ({
+                id,
+                level,
+                name,
+                description,
+                source,
+              }),
+            ),
+          }
+        : null;
+      const speciesSnapshot = selectedSpecies
+        ? {
+            ruleset: speciesCatalog.ruleset,
+            species: {
+              id: selectedSpecies.id,
+              slug: selectedSpecies.slug,
+              name: selectedSpecies.name,
+              description: selectedSpecies.description,
+              creatureType: selectedSpecies.creature_type,
+              sizeOptions: selectedSpecies.size_options,
+              speed: selectedSpecies.speed,
+              languages: selectedSpecies.languages,
+            },
+            features: selectedSpeciesFeatures.map((feature) => ({
+              id: feature.id,
+              slug: feature.slug,
+              name: feature.name,
+              description: feature.description,
+              level: feature.level,
+              choices: Object.fromEntries(
+                (feature.choices ?? []).map((choice) => [
+                  choice.key,
+                  character.speciesChoices?.[`${feature.slug}:${choice.key}`] ?? "",
+                ]),
+              ),
+            })),
+          }
+        : null;
+
+      await onSave({
+        ...character,
+        classId: selectedClass?.id ?? character.classId ?? "",
+        className: selectedClass?.name ?? character.className,
+        subclassId: selectedSubclass?.id ?? character.subclassId ?? "",
+        subclass: selectedSubclass?.name ?? character.subclass,
+        classSnapshot: selectedClass
+          ? classSnapshot
+          : character.classSnapshot,
+        speciesId: selectedSpecies?.id ?? character.speciesId ?? "",
+        species: selectedSpecies?.name ?? character.species,
+        speciesSnapshot: selectedSpecies
+          ? speciesSnapshot
+          : character.species
+            ? character.speciesSnapshot
+            : null,
+      });
     } catch (error) {
       console.error("Failed to save character sheet:", error);
       setSaveError(error.message || "Unable to save this character.");
@@ -194,7 +501,10 @@ export default function CharacterSheetEditor({
   const toggleClassSkill = (skill) => {
     setCharacter((current) => {
       const selected = current.classSkills.includes(skill);
-      if (!selected && current.classSkills.length >= (selectedClass?.skillCount ?? 0)) {
+      if (
+        !selected &&
+        current.classSkills.length >= classSkillCount
+      ) {
         return current;
       }
       return {
@@ -256,56 +566,220 @@ export default function CharacterSheetEditor({
           <div className="editor-form-grid">
             <section className="editor-section">
               <h2>Class</h2>
-              <Field label="Class">
-                <select value={character.className} onChange={(event) => setCharacter((current) => ({ ...current, className: event.target.value, classSkills: [] }))}>
+              <Field
+                label="Class"
+                hint={classCatalog.error || undefined}
+              >
+                <select
+                  value={selectedClass?.id ?? ""}
+                  disabled={classCatalog.isLoading || Boolean(classCatalog.error)}
+                  onChange={(event) => {
+                    const nextClass = classCatalog.classes.find(
+                      (classData) => classData.id === event.target.value,
+                    );
+                    setCharacter((current) => ({
+                      ...current,
+                      classId: nextClass?.id ?? "",
+                      className: nextClass?.name ?? "",
+                      subclassId: "",
+                      subclass: "",
+                      classSkills: [],
+                      classSnapshot: null,
+                    }));
+                  }}
+                >
                   <option value="">Choose a class</option>
-                  {Object.keys(classes).map((name) => <option key={name}>{name}</option>)}
+                  {classCatalog.classes.map((classData) => (
+                    <option key={classData.id} value={classData.id}>
+                      {classData.name}
+                    </option>
+                  ))}
                 </select>
               </Field>
               <Field label="Class level">
                 <input type="number" min="1" max="20" value={character.classLevel} onWheel={(event) => event.currentTarget.blur()} onChange={(event) => update("classLevel", Math.min(20, Math.max(1, Number(event.target.value) || 1)))} />
               </Field>
               <Field label="Subclass">
-                <input value={character.subclass} onChange={(event) => update("subclass", event.target.value)} placeholder="Choose when available" />
+                <select
+                  value={selectedSubclass?.id ?? ""}
+                  disabled={!selectedClass}
+                  onChange={(event) => {
+                    const nextSubclass = selectedClass?.subclasses.find(
+                      (subclass) => subclass.id === event.target.value,
+                    );
+                    setCharacter((current) => ({
+                      ...current,
+                      subclassId: nextSubclass?.id ?? "",
+                      subclass: nextSubclass?.name ?? "",
+                    }));
+                  }}
+                >
+                  <option value="">Choose a subclass</option>
+                  {(selectedClass?.subclasses ?? []).map((subclass) => (
+                    <option key={subclass.id} value={subclass.id}>
+                      {subclass.name} (level {subclass.unlock_level})
+                    </option>
+                  ))}
+                </select>
               </Field>
+              {selectedClass && (
+                <section className="editor-preview">
+                  <h3>{selectedClass.name} core traits</h3>
+                  <p>
+                    <strong>Hit die:</strong> d{selectedClass.hit_die}
+                  </p>
+                  <p>
+                    <strong>Primary abilities:</strong>{" "}
+                    {selectedClass.primary_abilities.join(", ")}
+                  </p>
+                  <p>
+                    <strong>Saving throw proficiencies:</strong>{" "}
+                    {selectedClass.saving_throw_proficiencies.join(", ")}
+                  </p>
+                  <p>
+                    <strong>Skill proficiencies:</strong> Choose{" "}
+                    {classSkillCount}{" "}
+                    {classSkillCount === 1 ? "skill" : "skills"}
+                  </p>
+                  {selectedSubclass?.description && (
+                    <p>
+                      <strong>{selectedSubclass.name}:</strong>{" "}
+                      {selectedSubclass.description}
+                    </p>
+                  )}
+                </section>
+              )}
               <Field label="Class proficiencies" hint="Armor, weapons, tools, or other class-granted proficiencies.">
                 <textarea rows="3" value={character.classProficiencies} onChange={(event) => update("classProficiencies", event.target.value)} />
               </Field>
               <h3 className="editor-subheading">Skill proficiencies</h3>
-              <p className="editor-hint">Choose {selectedClass?.skillCount ?? 0} skills ({character.classSkills.length} selected).</p>
+              <p className="editor-hint">Choose {classSkillCount} skills ({character.classSkills.length} selected).</p>
               <div className="editor-check-grid">
                 {skills.map((skill) => (
                   <label key={skill} className="editor-check">
-                    <input type="checkbox" checked={character.classSkills.includes(skill)} disabled={!selectedClass || (!character.classSkills.includes(skill) && character.classSkills.length >= selectedClass.skillCount)} onChange={() => toggleClassSkill(skill)} />
+                    <input type="checkbox" checked={character.classSkills.includes(skill)} disabled={!selectedClass || (!character.classSkills.includes(skill) && (!allowedClassSkills.has(skill) || character.classSkills.length >= classSkillCount))} onChange={() => toggleClassSkill(skill)} />
                     {skill}
                   </label>
                 ))}
               </div>
-              <Field label="Class features and choices">
-                <textarea rows="4" value={character.classFeatures} onChange={(event) => update("classFeatures", event.target.value)} placeholder="Record class features and level-based choices" />
+              <Field label="Additional class notes">
+                <textarea rows="4" value={character.classFeatures} onChange={(event) => update("classFeatures", event.target.value)} placeholder="Add personal notes or feature choices" />
               </Field>
+              {selectedClass && (
+                <section className="editor-preview">
+                  <h3>
+                    Features gained by level {character.classLevel}
+                  </h3>
+                  {classFeatures.length ? (
+                    <ul>
+                      {classFeatures.map((feature) => (
+                        <li key={`${feature.source}-${feature.id}`}>
+                          <strong>
+                            Level {feature.level}: {feature.name}
+                          </strong>
+                          <p>{feature.description}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No features are recorded for this level.</p>
+                  )}
+                </section>
+              )}
             </section>
-            <EquipmentPreview title="Class starting equipment" items={classEquipment} />
+            <EquipmentPreview
+              title="Class starting equipment"
+              items={classEquipment}
+              description={classEquipmentDescription}
+            />
           </div>
         );
       case "Race":
         return (
           <div className="editor-form-grid">
             <section className="editor-section">
-              <h2>Race</h2>
-              <Field label="Race">
-                <select value={character.species} onChange={(event) => update("species", event.target.value)}>
+              <h2>Species</h2>
+              <Field label="Species" hint={speciesCatalog.error || undefined}>
+                <select
+                  value={selectedSpecies?.id ?? character.species}
+                  disabled={speciesCatalog.isLoading || Boolean(speciesCatalog.error)}
+                  onChange={(event) => {
+                    const nextSpecies = speciesCatalog.species.find(
+                      (speciesData) => speciesData.id === event.target.value,
+                    );
+                    setCharacter((current) => ({
+                      ...current,
+                      speciesId: nextSpecies?.id ?? "",
+                      species: nextSpecies?.name ?? "",
+                      speciesLineage: "",
+                      speciesChoices: {},
+                      speciesSize:
+                        nextSpecies?.size_options?.[0] ??
+                        current.speciesSize,
+                      speciesSpeed: nextSpecies?.speed ?? current.speciesSpeed,
+                      speciesLanguages:
+                        nextSpecies?.languages?.join(", ") ??
+                        current.speciesLanguages,
+                      speciesSnapshot: null,
+                    }));
+                  }}
+                >
                   <option value="">Choose a race</option>
-                  {species.map((item) => <option key={item}>{item}</option>)}
+                  {!selectedSpecies && character.species && (
+                    <option value={character.species}>
+                      {character.species} (saved character)
+                    </option>
+                  )}
+                  {speciesCatalog.species.map((item) => (
+                    <option key={item.id} value={item.id}>{item.name}</option>
+                  ))}
                 </select>
               </Field>
-              <Field label="Lineage or subrace">
-                <input value={character.speciesLineage} onChange={(event) => update("speciesLineage", event.target.value)} />
-              </Field>
+              {selectedSpeciesFeatures.flatMap((feature) =>
+                (feature.choices ?? []).map((choice) => {
+                  const selectionKey = `${feature.slug}:${choice.key}`;
+                  const value =
+                    character.speciesChoices?.[selectionKey] ?? "";
+                  const onChange = (nextValue) => {
+                    setCharacter((current) => ({
+                      ...current,
+                      speciesChoices: {
+                        ...current.speciesChoices,
+                        [selectionKey]: nextValue,
+                      },
+                      ...(choice.key === "lineage" || choice.key === "ancestry"
+                        ? { speciesLineage: nextValue }
+                        : {}),
+                    }));
+                  };
+                  return (
+                    <Field key={selectionKey} label={choice.prompt}>
+                      {choice.allowCustom ? (
+                        <input
+                          value={value}
+                          onChange={(event) => onChange(event.target.value)}
+                        />
+                      ) : (
+                        <select
+                          value={value}
+                          onChange={(event) => onChange(event.target.value)}
+                        >
+                          <option value="">Choose an option</option>
+                          {(choice.options ?? []).map((option) => (
+                            <option key={option} value={option}>{option}</option>
+                          ))}
+                        </select>
+                      )}
+                    </Field>
+                  );
+                }),
+              )}
               <div className="editor-inline-fields">
                 <Field label="Size">
                   <select value={character.speciesSize} onChange={(event) => update("speciesSize", event.target.value)}>
-                    {["Small", "Medium", "Large", "Other"].map((size) => <option key={size}>{size}</option>)}
+                    {(selectedSpecies?.size_options ?? ["Small", "Medium", "Large", "Other"]).map((size) => (
+                      <option key={size}>{size}</option>
+                    ))}
                   </select>
                 </Field>
                 <Field label="Speed (ft.)">
@@ -315,27 +789,35 @@ export default function CharacterSheetEditor({
               <Field label="Languages">
                 <input value={character.speciesLanguages} onChange={(event) => update("speciesLanguages", event.target.value)} placeholder="Languages known" />
               </Field>
-              <div className="editor-inline-fields">
-                <Field label="Race score increase (+2)">
-                  <select value={character.speciesAbilityTwo} onChange={(event) => update("speciesAbilityTwo", event.target.value)}>
-                    <option value="">None</option>
-                    {abilities.map(([key, label]) => <option key={key} value={key}>{label}</option>)}
-                  </select>
-                </Field>
-                <Field label="Race score increase (+1)">
-                  <select value={character.speciesAbilityOne} onChange={(event) => update("speciesAbilityOne", event.target.value)}>
-                    <option value="">None</option>
-                    {abilities.map(([key, label]) => <option key={key} value={key}>{label}</option>)}
-                  </select>
-                </Field>
-              </div>
+              {selectedSpecies && (
+                <>
+                  <h3 className="editor-subheading">Species traits</h3>
+                  <ul>
+                    {selectedSpeciesFeatures.map((feature) => (
+                      <li key={feature.id}>
+                        <strong>{feature.name}.</strong> {feature.description}
+                      </li>
+                    ))}
+                  </ul>
+                  <p>2024 SRD species do not grant ability score increases.</p>
+                </>
+              )}
               <Field label="Traits and other choices" hint="Record racial traits or additional choices.">
                 <textarea rows="5" value={character.speciesNotes} onChange={(event) => update("speciesNotes", event.target.value)} placeholder="Traits, languages, or other choices" />
               </Field>
             </section>
             <section className="editor-section editor-note-panel">
-              <h2>{character.species || "Race"} details</h2>
-              <p>Race-specific traits and choices can be recorded here, separate from class and background selections.</p>
+              <h2>{character.species || "Species"} details</h2>
+              {selectedSpecies ? (
+                <>
+                  <p>{selectedSpecies.description}</p>
+                  <p>Creature type: {selectedSpecies.creature_type}</p>
+                  <p>Languages: {selectedSpecies.languages.join(", ")}</p>
+                  <p>Species choices are saved with this character.</p>
+                </>
+              ) : (
+                <p>Species traits and choices can be recorded separately from class and background selections.</p>
+              )}
             </section>
           </div>
         );
@@ -448,7 +930,7 @@ export default function CharacterSheetEditor({
             </section>
             <section className="editor-section">
               <h2>Equipment</h2>
-              <p className="editor-hint">Starting equipment is previewed in Class and Background, and added here.</p>
+              <p className="editor-hint">Choose class equipment from its options and add the items individually here. Background equipment can be added from its preview.</p>
               <div className="editor-preview-list">
                 <h3>Class and background equipment</h3>
                 {combinedEquipment.length ? <ul>{combinedEquipment.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}</ul> : <p>Select a class or background to preview equipment.</p>}
@@ -485,12 +967,12 @@ export default function CharacterSheetEditor({
   return (
     <main className="character-editor-page">
       <header className="character-editor-header">
-        {onBack && <button className="editor-back-button" type="button" onClick={onBack}>Back</button>}
+        <NavigationMenu setPage={setPage} />
         <div>
           <p className="editor-eyebrow">Character Builder</p>
           <h1>{character.name || "New Character"}</h1>
         </div>
-        <div className="editor-header-meta">{character.className ? `${character.className} · Level ${character.classLevel}` : "Draft"}</div>
+        <div className="editor-header-meta">{selectedClass ? `${selectedClass.name}${selectedSubclass ? ` · ${selectedSubclass.name}` : ""} · Level ${character.classLevel}` : "Draft"}</div>
       </header>
       <div className="character-editor-layout">
         <nav className="character-editor-tabs" aria-label="Character editor sections" role="tablist">

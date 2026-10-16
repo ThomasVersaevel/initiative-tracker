@@ -24,6 +24,13 @@ const PAGE_BY_PATH = {
   ...Object.fromEntries(PAGE_IDS.map((pageId) => [`/${pageId}`, pageId])),
 };
 
+const PAGE_VARIANTS = {
+  initial: { x: "100%" },
+  animate: { x: 0 },
+  exit: { x: "-100%" },
+};
+const PAGE_TRANSITION = { duration: 0.1, ease: "easeInOut" };
+
 function App() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -166,10 +173,11 @@ function App() {
         {page === "initiative-tracker" && (
           <motion.div
             key="initiative-tracker"
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ duration: 0.1, ease: "easeInOut" }}
+            variants={PAGE_VARIANTS}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={PAGE_TRANSITION}
             className="absolute inset-0 h-full w-full page"
           >
             <InitiativeTracker setPage={changePage} />
@@ -179,10 +187,11 @@ function App() {
         {page === "characters" && (
           <motion.div
             key="characters"
-            initial={{ x: "-100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ duration: 0.1, ease: "easeInOut" }}
+            variants={PAGE_VARIANTS}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={PAGE_TRANSITION}
             className="absolute inset-0 h-full w-full page"
           >
             <Characters
@@ -196,10 +205,11 @@ function App() {
         {page === "stat-block-builder" && (
           <motion.div
             key="stat-block-builder"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ duration: 0.1, ease: "easeInOut" }}
+            variants={PAGE_VARIANTS}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={PAGE_TRANSITION}
             className="absolute inset-0 h-full w-full"
           >
             <StatBlockBuilder setPage={changePage} />
@@ -208,10 +218,11 @@ function App() {
         {page === "token-stamp" && (
           <motion.div
             key="token-stamp"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ duration: 0.1, ease: "easeInOut" }}
+            variants={PAGE_VARIANTS}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={PAGE_TRANSITION}
             className="absolute inset-0 h-full w-full"
           >
             <TokenStamp setPage={changePage} />
@@ -221,10 +232,11 @@ function App() {
         {page === "character-sheet" && (
           <motion.div
             key="character-sheet"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ duration: 0.1, ease: "easeInOut" }}
+            variants={PAGE_VARIANTS}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={PAGE_TRANSITION}
             className="absolute inset-0 h-full w-full"
           >
             <CharacterSheet
@@ -243,20 +255,17 @@ function App() {
         {page === "character-sheet-editor" && (
           <motion.div
             key="character-sheet-editor"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ duration: 0.1, ease: "easeInOut" }}
+            variants={PAGE_VARIANTS}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={PAGE_TRANSITION}
             className="absolute inset-0 h-full w-full"
           >
             <CharacterSheetEditor
               key={selectedCharacter?.id || "new"}
               initialCharacter={selectedCharacter?.data}
-              onBack={() =>
-                selectedCharacter
-                  ? navigate(`/character-sheet/${selectedCharacter.id}`)
-                  : changePage("characters")
-              }
+              setPage={changePage}
               onSave={(data) => saveCharacter(data, selectedCharacter?.id)}
             />
           </motion.div>
@@ -265,10 +274,11 @@ function App() {
         {page === "dice-studio" && (
           <motion.div
             key="dice-studio"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "-100%" }}
-            transition={{ duration: 0.1, ease: "easeInOut" }}
+            variants={PAGE_VARIANTS}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={PAGE_TRANSITION}
             className="absolute inset-0 h-full w-full"
           >
             <DiceStudio setPage={changePage} />
