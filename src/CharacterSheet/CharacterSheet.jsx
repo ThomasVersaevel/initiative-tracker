@@ -64,15 +64,56 @@ function sign(value) {
   return value >= 0 ? `+${value}` : `${value}`;
 }
 
-export default function CharacterSheet({ setPage }) {
-  const [stats, setStats] = useState(initialStats);
+function statsFromCharacter(characterData = {}) {
+  const baseScores = { ...initialStats, ...characterData.scores };
+  const bonuses = [
+    [characterData.speciesAbilityTwo, 2],
+    [characterData.speciesAbilityOne, 1],
+    [characterData.backgroundAbilityTwo, 2],
+    [characterData.backgroundAbilityOne, 1],
+  ];
+  bonuses.forEach(([ability, amount]) => {
+    if (ability && baseScores[ability] !== undefined) {
+      baseScores[ability] += amount;
+    }
+  });
+  return baseScores;
+}
+
+const backgroundSkillProficiencies = {
+  Acolyte: ["Insight", "Religion"],
+  Artisan: ["Investigation", "Persuasion"],
+  Criminal: ["Sleight of Hand", "Stealth"],
+  Entertainer: ["Acrobatics", "Performance"],
+  Farmer: ["Animal Handling", "Nature"],
+  Guard: ["Athletics", "Perception"],
+  Guide: ["Stealth", "Survival"],
+  Hermit: ["Medicine", "Religion"],
+  Noble: ["History", "Persuasion"],
+  Sage: ["Arcana", "History"],
+  Sailor: ["Acrobatics", "Perception"],
+  Soldier: ["Athletics", "Intimidation"],
+  Wayfarer: ["Insight", "Survival"],
+};
+
+export default function CharacterSheet({
+  setPage,
+  character,
+  isLoading,
+  loadError,
+}) {
+  const characterData = character?.data ?? {};
+  const [stats, setStats] = useState(() => statsFromCharacter(characterData));
   const [heroPoints, setHeroPoints] = useState(5);
   const [hp, setHp] = useState(10);
   const maxHp = 10;
   const [ac] = useState(10);
-  const [initiative] = useState(0);
-  const [speed] = useState(30);
-  const [proficiencyBonus] = useState(2);
+  const initiative = modifierForScore(stats.dex);
+  const speed = characterData.speciesSpeed ?? 30;
+  const proficiencyBonus = Math.min(
+    6,
+    2 + Math.floor(((characterData.classLevel || 1) - 1) / 4),
+  );
   const [rollResults, setRollResults] = useState([]);
   const [isDiceFading, setIsDiceFading] = useState(false);
   const [rollError, setRollError] = useState("");
@@ -83,6 +124,14 @@ export default function CharacterSheet({ setPage }) {
   const activeRollsRef = useRef(0);
 
   useEffect(() => {
+    if (character) {
+      setStats(statsFromCharacter(character.data));
+    }
+  }, [character]);
+
+  useEffect(() => {
+    if (!character || isLoading || loadError) return undefined;
+
     if (!diceRef.current) {
       const dice = new DiceBox("#dice-box-char", {
         id: "charsheet-dice",
@@ -106,7 +155,7 @@ export default function CharacterSheet({ setPage }) {
           // no-op if dice library cannot initialize here
         });
     }
-  }, []);
+  }, [character, isLoading, loadError]);
 
   useEffect(() => {
     return () => clearTimeout(diceCleanupTimerRef.current);
@@ -131,9 +180,17 @@ export default function CharacterSheet({ setPage }) {
     ...item,
     modifierText: sign(modifierForScore(stats[item.ability])),
   }));
+  const proficientSkills = new Set([
+    ...(characterData.classSkills ?? []),
+    ...(backgroundSkillProficiencies[characterData.background] ?? []),
+  ]);
   const skillEntries = skillRows.map((row) => ({
     ...row,
-    modifierText: sign(modifierForScore(stats[row.ability])),
+    prof: proficientSkills.has(row.name),
+    modifierText: sign(
+      modifierForScore(stats[row.ability]) +
+        (proficientSkills.has(row.name) ? proficiencyBonus : 0),
+    ),
   }));
 
   const rollDice = (name, modifier) => {
@@ -194,8 +251,16 @@ export default function CharacterSheet({ setPage }) {
       });
   };
 
-  const rollAbility = (abilityKey, rollName = abilityMeta[abilityKey].full) => {
-    rollDice(rollName, modifierForScore(stats[abilityKey]));
+  const rollAbility = (
+    abilityKey,
+    rollName = abilityMeta[abilityKey].full,
+    isProficient = false,
+  ) => {
+    rollDice(
+      rollName,
+      modifierForScore(stats[abilityKey]) +
+        (isProficient ? proficiencyBonus : 0),
+    );
   };
 
   const rollInitiative = () => {
@@ -210,12 +275,33 @@ export default function CharacterSheet({ setPage }) {
     }));
   };
 
+  if (isLoading) {
+    return <div className="character-sheet-state">Loading character sheet…</div>;
+  }
+
+  if (loadError || !character) {
+    return (
+      <div className="character-sheet-state" role={loadError ? "alert" : undefined}>
+        <p>{loadError || "Choose a saved character to view its sheet."}</p>
+        <button type="button" className="sheet-button" onClick={() => setPage("characters")}>
+          Back to Characters
+        </button>
+      </div>
+    );
+  }
+
+  const characterDescription = [
+    [characterData.species, characterData.speciesLineage].filter(Boolean).join(" "),
+    characterData.className,
+    `Level ${characterData.classLevel || 1}`,
+  ].filter(Boolean);
+
   return (
     <div className="character-sheet-page">
       <Header
         title="Character Sheet"
         setPage={setPage}
-        previousPage={{ page: "token-stamp", label: "Token Stamp" }}
+        previousPage={{ page: "characters", label: "Characters" }}
         nextPage={{ page: "dice-studio", label: "Dice Studio" }}
         className="statblock-page-header"
       />
@@ -225,12 +311,18 @@ export default function CharacterSheet({ setPage }) {
           <section className="character-top-row">
             <div className="character-ident">
               <div className="character-image">
-                <img alt="Dikke bilal" src="/images/dikke_bilal.png" />
+                {characterData.portrait ? (
+                  <img alt={`${character.name} portrait`} src={characterData.portrait} />
+                ) : (
+                  <span aria-hidden="true">
+                    {(character.name || "?").trim().charAt(0).toUpperCase()}
+                  </span>
+                )}
               </div>
               <div>
-                <div className="character-name">Dikke Bilal</div>
+                <div className="character-name">{character.name}</div>
                 <div className="character-subline">
-                  Subek · Cook · Level 1
+                  {characterDescription.join(" · ")}
                 </div>
               </div>
             </div>
@@ -276,17 +368,18 @@ export default function CharacterSheet({ setPage }) {
               <SavingThrows rows={savingThrowEntries} onRoll={rollAbility} />
               <h3>Senses</h3>
               <div className="senses-list">
-                <span>Passive Perception 10</span>
+                <span>Passive Perception {10 + modifierForScore(stats.wis) + (proficientSkills.has("Perception") ? proficiencyBonus : 0)}</span>
+                {characterData.speciesLanguages && <span>Languages: {characterData.speciesLanguages}</span>}
               </div>
 
               <h3>Proficiencies</h3>
-              <div className="proficiency-lis t">
-                <span>Simple weapons</span>
+              <div className="proficiency-list">
+                {characterData.classProficiencies || "No proficiencies recorded"}
               </div>
             </section>
 
             <Skills rows={skillEntries} onRoll={rollAbility} />
-            <CharacterContentPanel />
+            <CharacterContentPanel character={characterData} />
           </section>
 
           <div className={`dicebox-overlay ${isDiceFading ? "fading" : ""}`}>

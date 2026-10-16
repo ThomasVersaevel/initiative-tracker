@@ -86,47 +86,60 @@ function EquipmentPreview({ title, items }) {
   );
 }
 
-export default function CharacterSheetEditor({ onBack }) {
+const emptyCharacter = {
+  name: "",
+  portrait: "",
+  advancement: "milestone",
+  className: "",
+  classLevel: 1,
+  subclass: "",
+  classSkills: [],
+  classProficiencies: "",
+  classFeatures: "",
+  species: "",
+  speciesLineage: "",
+  speciesSize: "Medium",
+  speciesSpeed: 30,
+  speciesLanguages: "",
+  speciesNotes: "",
+  speciesAbilityTwo: "",
+  speciesAbilityOne: "",
+  background: "",
+  backgroundNotes: "",
+  backgroundTools: "",
+  backgroundLanguages: "",
+  backgroundFeat: "",
+  backgroundAbilityTwo: "",
+  backgroundAbilityOne: "",
+  abilityMethod: "standard",
+  scores: { str: 15, dex: 14, con: 13, int: 12, wis: 10, cha: 8 },
+  appearance: "",
+  personality: "",
+  ideals: "",
+  bonds: "",
+  flaws: "",
+  backstory: "",
+  allies: "",
+  organizations: "",
+  notes: "",
+  equipment: [],
+};
+
+export default function CharacterSheetEditor({
+  onBack,
+  onSave,
+  initialCharacter,
+}) {
   const [activeTab, setActiveTab] = useState("Basic");
-  const [character, setCharacter] = useState({
-    name: "",
-    portrait: "",
-    advancement: "milestone",
-    className: "",
-    classLevel: 1,
-    subclass: "",
-    classSkills: [],
-    classProficiencies: "",
-    classFeatures: "",
-    species: "",
-    speciesLineage: "",
-    speciesSize: "Medium",
-    speciesSpeed: 30,
-    speciesLanguages: "",
-    speciesNotes: "",
-    speciesAbilityTwo: "",
-    speciesAbilityOne: "",
-    background: "",
-    backgroundNotes: "",
-    backgroundTools: "",
-    backgroundLanguages: "",
-    backgroundFeat: "",
-    backgroundAbilityTwo: "",
-    backgroundAbilityOne: "",
-    abilityMethod: "standard",
-    scores: { str: 15, dex: 14, con: 13, int: 12, wis: 10, cha: 8 },
-    appearance: "",
-    personality: "",
-    ideals: "",
-    bonds: "",
-    flaws: "",
-    backstory: "",
-    allies: "",
-    organizations: "",
-    notes: "",
-    equipment: [],
-  });
+  const [character, setCharacter] = useState(() => ({
+    ...emptyCharacter,
+    ...initialCharacter,
+    scores: { ...emptyCharacter.scores, ...initialCharacter?.scores },
+    equipment: initialCharacter?.equipment ?? [],
+  }));
   const [newItem, setNewItem] = useState("");
+  const [saveError, setSaveError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const update = (field, value) => {
     setCharacter((current) => ({ ...current, [field]: value }));
@@ -158,6 +171,25 @@ export default function CharacterSheetEditor({ onBack }) {
     0,
   );
   const selectedClass = classes[character.className];
+
+  const save = async () => {
+    if (!character.name.trim()) {
+      setActiveTab("Basic");
+      setSaveError("Enter a character name before saving.");
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError("");
+    try {
+      await onSave(character);
+    } catch (error) {
+      console.error("Failed to save character sheet:", error);
+      setSaveError(error.message || "Unable to save this character.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const toggleClassSkill = (skill) => {
     setCharacter((current) => {
@@ -475,10 +507,14 @@ export default function CharacterSheetEditor({ onBack }) {
           </div>
           {renderTab()}
           <div className="editor-content-footer">
-            <span>{activeTab} · {tabs.indexOf(activeTab) + 1} of {tabs.length}</span>
+            <div>
+              <span>{activeTab} · {tabs.indexOf(activeTab) + 1} of {tabs.length}</span>
+              {saveError && <p className="editor-error" role="alert">{saveError}</p>}
+            </div>
             <div>
               {tabs.indexOf(activeTab) > 0 && <button type="button" className="editor-button secondary" onClick={() => setActiveTab(tabs[tabs.indexOf(activeTab) - 1])}>Previous</button>}
               {tabs.indexOf(activeTab) < tabs.length - 1 && <button type="button" className="editor-button" onClick={() => setActiveTab(tabs[tabs.indexOf(activeTab) + 1])}>Next section</button>}
+              {onSave && <button type="button" className="editor-button" onClick={save} disabled={isSaving}>{isSaving ? "Saving…" : "Save Character"}</button>}
             </div>
           </div>
         </div>

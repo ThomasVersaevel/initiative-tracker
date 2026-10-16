@@ -9,6 +9,24 @@
   flex-direction: column;
 }
 
+.character-sheet-state {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  box-sizing: border-box;
+  background: #20242a;
+  color: #eef3f8;
+  text-align: center;
+}
+
+.character-sheet-state p {
+  max-width: 520px;
+}
+
 .character-sheet-page .App-body {
   flex: 1 1 auto;
   height: calc(100vh - 7vh);
@@ -68,6 +86,12 @@
   object-fit: cover;
 }
 
+.character-image > span {
+  color: #ffe5b3;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+}
+
 .character-name {
   font-size: 30px;
   font-weight: 700;
@@ -76,6 +100,18 @@
 
 .character-subline {
   font-size: 14px;
+  color: #b9c2da;
+}
+
+.proficiency-list {
+  color: #c5cddd;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.character-content-empty {
+  margin: 0;
   color: #b9c2da;
 }
 

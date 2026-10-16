@@ -15,7 +15,7 @@ export default function Skills({ rows, onRoll }) {
             <button
               className="skill-mod"
               type="button"
-              onClick={() => onRoll(row.ability, row.name)}
+              onClick={() => onRoll(row.ability, row.name, row.prof)}
             >
               {row.modifierText}
             </button>

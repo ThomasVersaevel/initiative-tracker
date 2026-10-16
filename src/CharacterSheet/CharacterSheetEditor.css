@@ -386,7 +386,13 @@
 
 .editor-content-footer > div {
   display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
+}
+
+.editor-content-footer .editor-error {
+  margin: 0;
 }
 
 @media (max-width: 800px) {

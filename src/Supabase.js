@@ -18,54 +18,64 @@ export const isSupabaseConfigured = Boolean(
     process.env.REACT_APP_SUPABASE_PUBLISHABLE_KEY,
 );
 
-export const ensureAnonymousSession = async () => {
-  try {
-    if (!isSupabaseConfigured) {
-      return { configured: false, userId: null, error: null };
-    }
+let anonymousSessionPromise = null;
 
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession();
+export const ensureAnonymousSession = () => {
+  if (!anonymousSessionPromise) {
+    anonymousSessionPromise = (async () => {
+      try {
+        if (!isSupabaseConfigured) {
+          return { configured: false, userId: null, error: null };
+        }
 
-    if (sessionError) {
-      return { configured: true, userId: null, error: sessionError };
-    }
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
 
-    if (session?.user?.id) {
-      return { configured: true, userId: session.user.id, error: null };
-    }
+        if (sessionError) {
+          return { configured: true, userId: null, error: sessionError };
+        }
 
-    const { data, error } = await supabase.auth.signInAnonymously();
+        if (session?.user?.id) {
+          return { configured: true, userId: session.user.id, error: null };
+        }
 
-    if (error) {
-      return {
-        configured: true,
-        userId: null,
-        error: {
-          ...error,
-          friendlyMessage:
-            error?.status === 422
-              ? "Anonymous sign-in is disabled in Supabase Auth. Enable 'Anonymous' in Authentication > Providers."
-              : error?.message || "Anonymous sign-in failed.",
-        },
-      };
-    }
+        const { data, error } = await supabase.auth.signInAnonymously();
 
-    return {
-      configured: true,
-      userId: data.user?.id ?? null,
-      error: null,
-    };
-  } catch (error) {
-    return {
-      configured: true,
-      userId: null,
-      error: {
-        ...error,
-        friendlyMessage: error?.message || "Anonymous sign-in failed.",
-      },
-    };
+        if (error) {
+          return {
+            configured: true,
+            userId: null,
+            error: {
+              ...error,
+              friendlyMessage:
+                error?.status === 422
+                  ? "Anonymous sign-in is disabled in Supabase Auth. Enable 'Anonymous' in Authentication > Providers."
+                  : error?.message || "Anonymous sign-in failed.",
+            },
+          };
+        }
+
+        return {
+          configured: true,
+          userId: data.user?.id ?? null,
+          error: null,
+        };
+      } catch (error) {
+        return {
+          configured: true,
+          userId: null,
+          error: {
+            ...error,
+            friendlyMessage: error?.message || "Anonymous sign-in failed.",
+          },
+        };
+      }
+    })().finally(() => {
+      anonymousSessionPromise = null;
+    });
   }
+
+  return anonymousSessionPromise;
 };

@@ -24,7 +24,15 @@ Allows saving and importing saved characters and monster stat-blocks.
 Build your own monster with this modular stat block building application.
 Saved in database and importable in the initiative tracker.
 
+#### Character sheets
+
+Create and save multiple character sheets per account. The Characters page lists
+your saved sheets and opens each one with its saved identity, ability scores,
+proficiencies, features, and equipment.
+
+Apply the Supabase migration in `supabase/migrations/20261015000000_character_sheets.sql`
+to create the account-owned character sheet table and its row-level security policy.
+
 ### development
 
 Start dev server by running `npm start`  (port 3000)
-
