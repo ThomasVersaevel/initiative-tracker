@@ -2,6 +2,11 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { NumericInput } from "../../NumericInput";
+import {
+	ImportExistingButton,
+	SaveItemButton,
+	useSavedItems,
+} from "./SavedItems";
 
 const createAction = (id) => ({
 	id,
@@ -21,6 +26,9 @@ export function LegendaryStore({
 	setLegendary,
 	initialSection,
 }) {
+	const savedActions = useSavedItems("legendary-action");
+	const savedResistances = useSavedItems("legendary-resistance");
+
 	const updateAction = (id, field, value) => {
 		setLegendary((current) => ({
 			...current,
@@ -90,6 +98,32 @@ export function LegendaryStore({
 		}));
 	};
 
+	const addSavedAction = (action) => {
+		setLegendary((current) => ({
+			...current,
+			actions: [
+				...current.actions,
+				{
+					...action,
+					id: current.actions.reduce((maxId, item) => Math.max(maxId, item.id), 0) + 1,
+				},
+			],
+		}));
+	};
+
+	const addSavedResistance = (resistance) => {
+		setLegendary((current) => ({
+			...current,
+			resistances: [
+				...current.resistances,
+				{
+					...resistance,
+					id: current.resistances.reduce((maxId, item) => Math.max(maxId, item.id), 0) + 1,
+				},
+			],
+		}));
+	};
+
 	const renderActions = () => (
 		<section className="legendary-store-section">
 			<div className="legendary-store-section-header">
@@ -115,6 +149,10 @@ export function LegendaryStore({
 				<div className="attack-editor" key={action.id}>
 					<div className="attack-editor-header">
 						<strong>Action</strong>
+						<SaveItemButton
+							onClick={() => savedActions.saveItem(action, action.name)}
+							disabled={!action.name.trim() && !action.description.trim()}
+						/>
 						<button
 							type="button"
 							className="attack-remove-button"
@@ -158,6 +196,14 @@ export function LegendaryStore({
 				<div className="attack-editor" key={resistance.id}>
 					<div className="attack-editor-header">
 						<strong>Resistance</strong>
+						<SaveItemButton
+							onClick={() =>
+								savedResistances.saveItem(
+									resistance,
+									`Legendary resistance (${resistance.amount} uses)`,
+								)
+							}
+						/>
 						<button
 							type="button"
 							className="attack-remove-button"
@@ -206,9 +252,27 @@ export function LegendaryStore({
 		<div>
 			<div className="store-header">
 				<h2>Legendary</h2>
+				<div className="store-header-actions">
+				<ImportExistingButton
+					sources={[
+						{
+							title: "Legendary actions",
+							...savedActions,
+							onAdd: addSavedAction,
+							onDelete: savedActions.deleteItem,
+						},
+						{
+							title: "Legendary resistances",
+							...savedResistances,
+							onAdd: addSavedResistance,
+							onDelete: savedResistances.deleteItem,
+						},
+					]}
+				/>
 				<button type="button" className="btn" onClick={() => setStorePanelOpen("")}>
 					<FontAwesomeIcon icon={faArrowRight} />
 				</button>
+				</div>
 			</div>
 			<div className="store-items legendary-store">{sections}</div>
 		</div>

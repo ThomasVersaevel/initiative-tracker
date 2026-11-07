@@ -6,6 +6,7 @@ import "./Characters.css";
 export default function Characters({
   setPage,
   onCreateCharacter,
+  onCreateCustomClass,
   onOpenCharacter,
 }) {
   const [characters, setCharacters] = useState([]);
@@ -79,11 +80,20 @@ export default function Characters({
             <p className="characters-eyebrow">Your collection</p>
             <h2>Character Sheets</h2>
           </div>
-          {!isLoading && !error && (
-            <span className="characters-count">
-              {characters.length} {characters.length === 1 ? "character" : "characters"}
-            </span>
-          )}
+          <div className="characters-heading-actions">
+            <button
+              type="button"
+              className="characters-custom-class-button"
+              onClick={onCreateCustomClass}
+            >
+              Create Custom Class
+            </button>
+            {!isLoading && !error && (
+              <span className="characters-count">
+                {characters.length} {characters.length === 1 ? "character" : "characters"}
+              </span>
+            )}
+          </div>
         </div>
 
         {isLoading && <p className="characters-message">Loading characters…</p>}

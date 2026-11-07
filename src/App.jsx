@@ -8,6 +8,7 @@ import CharacterSheetEditor from "./CharacterSheet/CharacterSheetEditor";
 import TokenStamp from "./TokenStamp/TokenStamp";
 import DiceStudio from "./DiceStudio/DiceStudio";
 import Characters from "./CharacterSheet/Characters";
+import CustomClassCreator from "./CharacterSheet/CustomClassCreator";
 import { ensureAnonymousSession, supabase } from "./Supabase";
 
 const PAGE_IDS = [
@@ -16,6 +17,7 @@ const PAGE_IDS = [
   "stat-block-builder",
   "token-stamp",
   "character-sheet-editor",
+  "custom-class-creator",
   "dice-studio",
 ];
 
@@ -197,6 +199,7 @@ function App() {
             <Characters
               setPage={changePage}
               onCreateCharacter={createCharacter}
+              onCreateCustomClass={() => changePage("custom-class-creator")}
               onOpenCharacter={openCharacter}
             />
           </motion.div>
@@ -268,6 +271,20 @@ function App() {
               setPage={changePage}
               onSave={(data) => saveCharacter(data, selectedCharacter?.id)}
             />
+          </motion.div>
+        )}
+
+        {page === "custom-class-creator" && (
+          <motion.div
+            key="custom-class-creator"
+            variants={PAGE_VARIANTS}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={PAGE_TRANSITION}
+            className="absolute inset-0 h-full w-full"
+          >
+            <CustomClassCreator setPage={changePage} />
           </motion.div>
         )}
 

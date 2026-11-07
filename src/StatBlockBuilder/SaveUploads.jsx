@@ -239,6 +239,9 @@ const SaveUploads = ({
     }
 
     const trimmedName = statBlock.name?.trim() || "Unnamed creature";
+    const dataWithoutPortrait = Object.fromEntries(
+      Object.entries(statBlock).filter(([key]) => key !== "portrait"),
+    );
 
     const { data: existingRows, error: lookupError } = await supabase
       .from("stat_blocks")
@@ -258,7 +261,7 @@ const SaveUploads = ({
         .from("stat_blocks")
         .update({
           name: trimmedName,
-          data: statBlock,
+          data: dataWithoutPortrait,
           created_at: new Date().toISOString(),
         })
         .eq("id", existingRows[0].id)
@@ -277,7 +280,7 @@ const SaveUploads = ({
     const { error: insertError } = await supabase.from("stat_blocks").insert({
       user_id: userId,
       name: trimmedName,
-      data: statBlock,
+      data: dataWithoutPortrait,
     });
 
     if (insertError) {

@@ -1,6 +1,11 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  ImportExistingButton,
+  SaveItemButton,
+  useSavedItems,
+} from "./SavedItems";
 
 const createAbility = (id) => ({
   id,
@@ -9,6 +14,8 @@ const createAbility = (id) => ({
 });
 
 export function AbilityStore({ setStorePanelOpen, abilities, setAbilities }) {
+  const savedItems = useSavedItems("ability");
+
   const updateAbility = (id, field, value) => {
     setAbilities((current) => ({
       ...current,
@@ -40,10 +47,37 @@ export function AbilityStore({ setStorePanelOpen, abilities, setAbilities }) {
     }));
   };
 
+  const addSavedAbility = (ability) => {
+    setAbilities((current) => ({
+      ...current,
+      abilities: [
+        ...current.abilities,
+        {
+          ...ability,
+          id: current.abilities.reduce(
+            (maxId, item) => Math.max(maxId, item.id),
+            0,
+          ) + 1,
+        },
+      ],
+    }));
+  };
+
   return (
     <div>
       <div className="store-header">
         <h2>Abilities</h2>
+        <div className="store-header-actions">
+          <ImportExistingButton
+            sources={[
+              {
+                title: "Abilities",
+                ...savedItems,
+                onAdd: addSavedAbility,
+                onDelete: savedItems.deleteItem,
+              },
+            ]}
+          />
         <button
           type="button"
           className="btn"
@@ -51,6 +85,7 @@ export function AbilityStore({ setStorePanelOpen, abilities, setAbilities }) {
         >
           <FontAwesomeIcon icon={faArrowRight} />
         </button>
+        </div>
       </div>
 
       <div className="store-items Ability-store">
@@ -61,11 +96,14 @@ export function AbilityStore({ setStorePanelOpen, abilities, setAbilities }) {
         >
           Add Ability
         </button>
-
         {abilities.abilities.map((ability) => (
           <div className="attack-editor" key={ability.id}>
             <div className="attack-editor-header">
               <strong>Ability</strong>
+              <SaveItemButton
+                onClick={() => savedItems.saveItem(ability, ability.name)}
+                disabled={!ability.name.trim() && !ability.description.trim()}
+              />
               <button
                 type="button"
                 className="ability-remove-button"

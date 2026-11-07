@@ -23,6 +23,8 @@ Allows saving and importing saved characters and monster stat-blocks.
 
 Build your own monster with this modular stat block building application.
 Saved in database and importable in the initiative tracker.
+Save reusable speeds, traits, actions, abilities, and other store entries to a
+personal Supabase library. Portrait images are excluded from cloud saves.
 
 #### Character sheets
 

@@ -1335,7 +1335,7 @@ input {
   align-items: center;
   max-width: min(90vw, 1300px);
   max-height: 95vh;
-  padding: 20px;
+  padding: 0;
   overflow: auto;
   background: var(--main);
   border: 2px solid var(--header);
@@ -1490,7 +1490,7 @@ input {
   height: 100vh;
   background: var(--background-color);
   color: var(--text-color);
-  padding: 20px;
+  padding: 0 20px;
   overflow-x: hidden;
   overflow-y: auto;
   box-shadow: -5px 0 20px rgba(0, 0, 0, 0.3);
@@ -1505,11 +1505,15 @@ input {
 }
 
 .store-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   position: sticky;
   top: 0;
   z-index: 1;
   border-bottom: 2px solid var(--accent-color);
-  padding-bottom: 12px;
+  padding: 20px 0 12px;
   margin-bottom: 15px;
   background: var(--background-color);
 }
@@ -1518,10 +1522,193 @@ input {
   margin: 0;
 }
 
+.store-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.import-existing-button {
+  padding: 5px 8px;
+  color: #212529;
+  background-color: var(--button-brown);
+  border: 1px solid var(--background-darker);
+  font-weight: 600;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.16s ease;
+}
+
+.import-existing-button:hover {
+  background-color: var(--button-dark);
+  border-color: var(--accent-color);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+.import-existing-button:active {
+  background-color: var(--button-brown);
+  box-shadow: none;
+  transform: translateY(1px) scale(0.97);
+}
+
+.import-existing-button:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .import-existing-button {
+    transition: none;
+  }
+}
+
 .store-items {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.saved-items-error {
+  color: #9c2424;
+}
+
+.saved-item-save-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.saved-item-save-button {
+  padding: 3px 7px;
+  font-size: 0.8rem;
+}
+
+.saved-items-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.saved-items-modal {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(560px, 100%);
+  max-height: min(80vh, 720px);
+  padding: 18px;
+  overflow: hidden;
+  color: var(--text-color);
+  background: var(--background-color);
+  border: 1px solid var(--background-darker);
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+.saved-items-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.saved-items-modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.saved-items-modal-close {
+  padding: 0 8px;
+  font-size: 1.5rem;
+}
+
+.saved-items-search {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-weight: 600;
+}
+
+.saved-items-search input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px 10px;
+  color: var(--text-color);
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 5px;
+  font: inherit;
+}
+
+.saved-items-empty {
+  margin: 0;
+}
+
+.saved-items-modal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0 4px 0 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.saved-items-modal-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px;
+  background: var(--background-light);
+  border: 1px solid var(--background-darker);
+  border-radius: 5px;
+}
+
+.saved-items-modal-item-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+  overflow-wrap: anywhere;
+}
+
+.saved-items-modal-item-info > span {
+  font-size: 0.8rem;
+  color: var(--subtext-color);
+}
+
+.saved-items-modal-item-info p {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+}
+
+.saved-items-modal-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+}
+
+.saved-items-modal-actions .button {
+  padding: 4px 7px;
+  font-size: 0.8rem;
+}
+
+.saved-language-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .trait-select-field {

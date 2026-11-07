@@ -8,6 +8,11 @@ import {
   formatResistanceEntry,
   normalizeTraitResistances,
 } from "../TypesUtils/Types";
+import {
+  ImportExistingButton,
+  SaveItemButton,
+  useSavedItems,
+} from "./SavedItems";
 
 export function TraitStore({
   setStorePanelOpen,
@@ -15,6 +20,10 @@ export function TraitStore({
   setTraits,
   initiativeModifier,
 }) {
+  const savedSkills = useSavedItems("trait-skill");
+  const savedResistances = useSavedItems("trait-resistance");
+  const savedSenses = useSavedItems("trait-sense");
+  const savedLanguages = useSavedItems("trait-language");
   const [openCategory, setOpenCategory] = useState(null);
   const [customSense, setCustomSense] = useState("");
   const [customSenseRange, setCustomSenseRange] = useState("");
@@ -112,6 +121,50 @@ export function TraitStore({
     }));
   };
 
+  const addSavedSkill = (skill) => {
+    setTraits((current) => ({
+      ...current,
+      skills: current.skills.some((entry) => entry.name === skill.name)
+        ? current.skills.map((entry) =>
+            entry.name === skill.name ? skill : entry,
+          )
+        : [...current.skills, skill],
+    }));
+  };
+
+  const addSavedResistance = (resistance) => {
+    setTraits((current) => ({
+      ...current,
+      resistances: [
+        ...normalizeTraitResistances(current.resistances).filter(
+          (entry) => entry.damageType !== resistance.damageType,
+        ),
+        resistance,
+      ],
+    }));
+  };
+
+  const addSavedSense = (sense) => {
+    setTraits((current) => ({
+      ...current,
+      senses: [
+        ...current.senses.filter(
+          (entry) => getSenseName(entry) !== sense.name,
+        ),
+        sense,
+      ],
+    }));
+  };
+
+  const addSavedLanguage = (languageItem) => {
+    setTraits((current) => ({
+      ...current,
+      languages: current.languages.includes(languageItem.language)
+        ? current.languages
+        : [...current.languages, languageItem.language],
+    }));
+  };
+
   const renderResistanceEditor = () => (
     <div className="trait-select-field">
       <span>Resistances</span>
@@ -177,18 +230,33 @@ export function TraitStore({
                   </button>
 
                   {selected && (
-                    <div className="trait-relation-picker">
-                      {resistanceRelations.map((relation) => (
-                        <button
-                          type="button"
-                          key={relation.value}
-                          className={`trait-relation-button${normalizeTraitResistances(traits.resistances).find((entry) => entry.damageType === option)?.relation === relation.value ? " selected" : ""}`}
-                          onClick={() => updateResistanceRelation(option, relation.value)}
-                        >
-                          {relation.label}
-                        </button>
-                      ))}
-                    </div>
+                    <>
+                      <div className="trait-relation-picker">
+                        {resistanceRelations.map((relation) => (
+                          <button
+                            type="button"
+                            key={relation.value}
+                            className={`trait-relation-button${normalizeTraitResistances(traits.resistances).find((entry) => entry.damageType === option)?.relation === relation.value ? " selected" : ""}`}
+                            onClick={() => updateResistanceRelation(option, relation.value)}
+                          >
+                            {relation.label}
+                          </button>
+                        ))}
+                      </div>
+                      <SaveItemButton
+                        onClick={() => {
+                          const current = normalizeTraitResistances(
+                            traits.resistances,
+                          ).find((entry) => entry.damageType === option);
+                          if (current) {
+                            savedResistances.saveItem(
+                              current,
+                              `${current.relation} to ${current.damageType}`,
+                            );
+                          }
+                        }}
+                      />
+                    </>
                   )}
                 </div>
               );
@@ -278,6 +346,14 @@ export function TraitStore({
             return (
               <label key={name}>
                 <span>{name} range (ft.)</span>
+                <SaveItemButton
+                  onClick={() =>
+                    savedSenses.saveItem(
+                      { name, range: typeof sense === "string" ? "" : sense.range },
+                      name,
+                    )
+                  }
+                />
                 <NumericInput
                   min="0"
                   placeholder="Optional"
@@ -354,6 +430,18 @@ export function TraitStore({
           </div>
         )}
       </div>
+      {category === "languages" && traits.languages.length > 0 && (
+        <div className="saved-language-buttons">
+          {traits.languages.map((language) => (
+            <SaveItemButton
+              key={language}
+              onClick={() =>
+                savedLanguages.saveItem({ language }, language)
+              }
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 
@@ -361,7 +449,35 @@ export function TraitStore({
     <div>
       <div className="store-header">
         <h2>Traits</h2>
-
+        <div className="store-header-actions">
+          <ImportExistingButton
+            sources={[
+              {
+                title: "Skills",
+                ...savedSkills,
+                onAdd: addSavedSkill,
+                onDelete: savedSkills.deleteItem,
+              },
+              {
+                title: "Resistances",
+                ...savedResistances,
+                onAdd: addSavedResistance,
+                onDelete: savedResistances.deleteItem,
+              },
+              {
+                title: "Senses",
+                ...savedSenses,
+                onAdd: addSavedSense,
+                onDelete: savedSenses.deleteItem,
+              },
+              {
+                title: "Languages",
+                ...savedLanguages,
+                onAdd: addSavedLanguage,
+                onDelete: savedLanguages.deleteItem,
+              },
+            ]}
+          />
         <button
           type="button"
           className="btn"
@@ -369,6 +485,7 @@ export function TraitStore({
         >
           <FontAwesomeIcon icon={faArrowRight} />
         </button>
+        </div>
       </div>
 
       <div className="store-items">
@@ -409,6 +526,11 @@ export function TraitStore({
               {traits.skills.map((skill) => (
                 <label key={skill.name}>
                   <span>{skill.name}</span>
+                  <SaveItemButton
+                    onClick={() =>
+                      savedSkills.saveItem(skill, skill.name)
+                    }
+                  />
                   <NumericInput
                     step="1"
                     value={skill.modifier}

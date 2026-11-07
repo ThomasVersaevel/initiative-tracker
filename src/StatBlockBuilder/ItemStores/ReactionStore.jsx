@@ -1,6 +1,11 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  ImportExistingButton,
+  SaveItemButton,
+  useSavedItems,
+} from "./SavedItems";
 
 const createReaction = (id) => ({
   id,
@@ -13,6 +18,8 @@ export function ReactionStore({
   reactions,
   setReactions,
 }) {
+  const savedItems = useSavedItems("reaction");
+
   const updateReaction = (id, field, value) => {
     setReactions((current) =>
       current.map((reaction) =>
@@ -42,10 +49,31 @@ export function ReactionStore({
     );
   };
 
+  const addSavedReaction = (reaction) => {
+    setReactions((current) => [
+      ...current,
+      {
+        ...reaction,
+        id: current.reduce((maxId, item) => Math.max(maxId, item.id), 0) + 1,
+      },
+    ]);
+  };
+
   return (
     <div>
       <div className="store-header">
         <h2>Reactions</h2>
+        <div className="store-header-actions">
+          <ImportExistingButton
+            sources={[
+              {
+                title: "Reactions",
+                ...savedItems,
+                onAdd: addSavedReaction,
+                onDelete: savedItems.deleteItem,
+              },
+            ]}
+          />
         <button
           type="button"
           className="btn"
@@ -53,6 +81,7 @@ export function ReactionStore({
         >
           <FontAwesomeIcon icon={faArrowRight} />
         </button>
+        </div>
       </div>
 
       <div className="store-items reaction-store">
@@ -63,11 +92,14 @@ export function ReactionStore({
         >
           Add Reaction
         </button>
-
         {reactions.map((reaction) => (
           <div className="attack-editor" key={reaction.id}>
             <div className="attack-editor-header">
               <strong>Reaction</strong>
+              <SaveItemButton
+                onClick={() => savedItems.saveItem(reaction, reaction.name)}
+                disabled={!reaction.name.trim() && !reaction.description.trim()}
+              />
               <button
                 type="button"
                 className="ability-remove-button"
