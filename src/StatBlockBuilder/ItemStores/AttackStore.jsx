@@ -1,6 +1,11 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+	ImportExistingButton,
+	SaveItemButton,
+	useSavedItems,
+} from "./SavedItems";
 
 const createAttack = (id) => ({
 	id,
@@ -13,6 +18,9 @@ export function AttackStore({
 	attacks,
 	setAttacks,
 }) {
+	const savedItems = useSavedItems("action");
+	const savedMultiattacks = useSavedItems("multiattack");
+
 	const updateAttack = (id, field, value) => {
 		setAttacks((current) => ({
 			...current,
@@ -40,6 +48,35 @@ export function AttackStore({
 			attacks: current.attacks.filter((attack) => attack.id !== id),
 		}));
 	};
+
+	const addSavedAttack = (attack) => {
+		setAttacks((current) => ({
+			...current,
+			attacks: [
+				...current.attacks,
+				{
+					...attack,
+					id: current.attacks.reduce(
+						(maxId, item) => Math.max(maxId, item.id),
+						0,
+					) + 1,
+				},
+			],
+		}));
+	};
+
+	const addSavedMultiattack = (multiattack) => {
+		setAttacks((current) => ({
+			...current,
+			multiattack: { ...multiattack, enabled: true },
+		}));
+	};
+
+	const saveMultiattack = () =>
+		savedMultiattacks.saveItem(
+			attacks.multiattack,
+			`Multiattack (${attacks.multiattack.count} attacks)`,
+		);
 
 	const toggleMultiattack = (event) => {
 		setAttacks((current) => ({
@@ -75,6 +112,23 @@ export function AttackStore({
 		<div>
 			<div className="store-header">
 				<h2>Actions</h2>
+				<div className="store-header-actions">
+					<ImportExistingButton
+						sources={[
+							{
+								title: "Actions",
+								...savedItems,
+								onAdd: addSavedAttack,
+								onDelete: savedItems.deleteItem,
+							},
+							{
+								title: "Multiattacks",
+								...savedMultiattacks,
+								onAdd: addSavedMultiattack,
+								onDelete: savedMultiattacks.deleteItem,
+							},
+						]}
+					/>
 				<button
 					type="button"
 					className="btn"
@@ -82,6 +136,7 @@ export function AttackStore({
 				>
 					<FontAwesomeIcon icon={faArrowRight} />
 				</button>
+				</div>
 			</div>
 
 			<div className="store-items attack-store">
@@ -119,17 +174,24 @@ export function AttackStore({
 								}
 							/>
 						</label>
+						<SaveItemButton
+							onClick={saveMultiattack}
+							disabled={!attacks.multiattack.description.trim()}
+						/>
 					</div>
 				)}
 
 				<button type="button" className="button add-button" onClick={addAttack}>
 					Add action
 				</button>
-
 				{attacks.attacks.map((attack) => (
 					<div className="attack-editor" key={attack.id}>
 						<div className="attack-editor-header">
 							<strong>Action</strong>
+							<SaveItemButton
+								onClick={() => savedItems.saveItem(attack, attack.name)}
+								disabled={!attack.name.trim() && !attack.description.trim()}
+							/>
 						<button
 							type="button"
 							className="attack-remove-button"

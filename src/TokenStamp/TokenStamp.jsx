@@ -389,8 +389,6 @@ export default function TokenStamp({ setPage }) {
       <Header
         title="Token Stamp"
         setPage={setPage}
-        previousPage={{ page: "stat-block-builder", label: "Stat Block Builder" }}
-        nextPage={{ page: "character-sheet", label: "Character Sheet" }}
         className="statblock-page-header"
       />
 
